@@ -1,0 +1,806 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Keelson</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Keelson">
+<meta property="og:title" content="Keelson · Paste any plan. Get the dashboard.">
+<meta property="og:description" content="Free one-page dashboard for any project plan, plus self-scheduling plans, RAID logs and go-live runbooks for Excel and Google Sheets.">
+<meta property="og:url" content="https://keelson.co.in/">
+<meta property="og:image" content="https://keelson.co.in/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Self-scheduling project plans, RAID logs and go-live runbooks in Excel, handed over in your client's template, MS Project, Google Sheets, CSV or PDF.">
+<style>
+/* Layout: a product launch page. One lit object (the laptop) on a dark stage, then one idea per screen.
+   Type does the work: system SF/Segoe, heavy weights, a muted second line instead of gradients.
+   One accent (teal) for actions; amber/red/green only for status. Dark-first with a light theme and a toggle. */
+:root {
+  --bg: #000000; --raise: #111113; --raise-2: #1a1a1d; --ink: #f5f5f7; --muted: #8a8a90; --faint: #5a5a60;
+  --line: rgba(255, 255, 255, .1); --nav: rgba(16, 16, 18, .72); --spot: rgba(255, 255, 255, .085);
+  --accent: #39c9be; --on-accent: #021c1a;
+  --ok: #4fd18f; --ok-bg: rgba(79, 209, 143, .13); --warn: #f6ad3b; --warn-bg: rgba(246, 173, 59, .14); --bad: #ff6b61; --bad-bg: rgba(255, 107, 97, .14);
+  --bar: rgba(57, 201, 190, .22); --bar-done: #39c9be;
+  --shadow: 0 60px 120px -50px rgba(0, 0, 0, .95);
+  --sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI Variable Display", "Segoe UI", system-ui, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+  --ease: cubic-bezier(.22, .8, .2, 1);
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) {
+  --bg: #ffffff; --raise: #f5f5f7; --raise-2: #e9e9ed; --ink: #1d1d1f; --muted: #6e6e73; --faint: #a1a1a6;
+  --line: rgba(0, 0, 0, .09); --nav: rgba(255, 255, 255, .78); --spot: rgba(0, 0, 0, .045);
+  --accent: #087b83; --on-accent: #ffffff;
+  --ok: #138a4f; --ok-bg: rgba(19, 138, 79, .1); --warn: #b06500; --warn-bg: rgba(246, 173, 59, .2); --bad: #c93127; --bad-bg: rgba(201, 49, 39, .09);
+  --bar: rgba(8, 123, 131, .17); --bar-done: #087b83;
+  --shadow: 0 60px 110px -55px rgba(20, 30, 50, .5); color-scheme: light } }
+:root[data-theme="light"] {
+  --bg: #ffffff; --raise: #f5f5f7; --raise-2: #e9e9ed; --ink: #1d1d1f; --muted: #6e6e73; --faint: #a1a1a6;
+  --line: rgba(0, 0, 0, .09); --nav: rgba(255, 255, 255, .78); --spot: rgba(0, 0, 0, .045);
+  --accent: #087b83; --on-accent: #ffffff;
+  --ok: #138a4f; --ok-bg: rgba(19, 138, 79, .1); --warn: #b06500; --warn-bg: rgba(246, 173, 59, .2); --bad: #c93127; --bad-bg: rgba(201, 49, 39, .09);
+  --bar: rgba(8, 123, 131, .17); --bar-done: #087b83;
+  --shadow: 0 60px 110px -55px rgba(20, 30, 50, .5); color-scheme: light }
+
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html { scroll-behavior: smooth }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 400 17px/1.47 var(--sans); letter-spacing: -.021em; -webkit-font-smoothing: antialiased;
+  overflow-x: hidden; transition: background-color .4s, color .4s }
+.wrap { max-width: 1024px; margin: 0 auto; padding-left: max(22px, env(safe-area-inset-left, 0px)); padding-right: max(22px, env(safe-area-inset-right, 0px)) }
+.wide { max-width: 1240px }
+h1, h2, h3 { margin: 0; font-weight: 700; text-wrap: balance }
+h1 { font-size: clamp(3rem, 8.6vw, 6.2rem); line-height: 1.02; letter-spacing: -.048em }
+h2 { font-size: clamp(2.2rem, 5.4vw, 3.9rem); line-height: 1.06; letter-spacing: -.042em }
+h3 { font-size: clamp(1.25rem, 2.2vw, 1.6rem); line-height: 1.14; letter-spacing: -.03em }
+p { margin: 0 }
+a { color: var(--accent) }
+.dim { color: var(--muted) }
+sup { font-size: .55em; color: var(--muted); margin-left: 1px } sup a { color: inherit; text-decoration: none }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 8px }
+.lede { font-size: clamp(1.1rem, 1.85vw, 1.42rem); line-height: 1.38; color: var(--muted); font-weight: 500; letter-spacing: -.022em }
+.lede b { color: var(--ink); font-weight: 600 }
+.kicker { font-size: clamp(1rem, 1.5vw, 1.2rem); font-weight: 600; color: var(--accent); letter-spacing: -.015em }
+section { padding-block: clamp(96px, 13vw, 168px) }
+.head { display: grid; gap: 16px; justify-items: center; text-align: center; margin-bottom: clamp(44px, 6vw, 72px) }
+.head .lede { max-width: 38ch }
+
+/* nav */
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 40; background: var(--bg) }
+.nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30; background: var(--nav); border-bottom: 1px solid var(--line);
+  -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px) }
+.nav .wrap { display: flex; align-items: center; gap: 24px; height: 52px }
+.brand { display: flex; align-items: center; gap: 8px; color: var(--ink); text-decoration: none; font-weight: 600; font-size: 1.12rem; letter-spacing: -.03em }
+.brand svg { width: 22px; height: 22px }
+.links { display: flex; gap: 24px; margin-left: auto }
+.links a { color: var(--muted); text-decoration: none; font-size: .78rem; transition: color .25s }
+.links a:hover { color: var(--ink) }
+.theme { width: 32px; height: 32px; border-radius: 50%; border: 0; background: transparent; color: var(--muted); display: grid; place-items: center; cursor: pointer; transition: color .25s, background .25s }
+.theme:hover { color: var(--ink); background: var(--raise-2) }
+.theme svg { width: 17px; height: 17px }
+@media (max-width: 800px) { .links { display: none } .theme { margin-left: auto } }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: 980px; padding: 12px 22px; font: 400 1.05rem/1.1 var(--sans);
+  letter-spacing: -.02em; text-decoration: none; cursor: pointer; transition: background .25s, transform .35s var(--ease), filter .25s }
+.btn.fill { background: var(--accent); color: var(--on-accent) }
+.btn.fill:hover { filter: brightness(1.08) }
+.btn.fill:active { transform: scale(.97) }
+.btn.line { color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); background: transparent }
+.btn.line:hover { background: color-mix(in srgb, var(--accent) 10%, transparent) }
+.btn.sm { padding: 5px 12px; font-size: .78rem }
+.more { color: var(--accent); text-decoration: none; font-size: 1.05rem; letter-spacing: -.02em }
+.more::after { content: " ›" } .more:hover { text-decoration: underline }
+
+/* motion: resting state is always fully visible; supporting browsers ease things in as they arrive */
+@supports (animation-timeline: view()) {
+  .rise { animation: rise linear both; animation-timeline: view(); animation-range: entry 5% entry 55% }
+  @keyframes rise { from { opacity: .4; transform: translateY(32px) } to { opacity: 1; transform: none } }
+  .open { animation: open linear both; animation-timeline: view(); animation-range: entry 0% cover 32%; transform-origin: 50% 100% }
+  @keyframes open { from { transform: perspective(1600px) rotateX(16deg) scale(.93) } to { transform: none } }
+}
+.in { animation: in 1s var(--ease) both } .in.d2 { animation-delay: .1s } .in.d3 { animation-delay: .2s } .in.d4 { animation-delay: .32s }
+@keyframes in { from { opacity: .45; transform: translateY(14px) } to { opacity: 1; transform: none } }
+@media (prefers-reduced-motion: reduce) { .rise, .open, .in, .live::before { animation: none !important } html { scroll-behavior: auto } * { transition: none !important } }
+
+/* hero with a single spotlight behind the product */
+.hero { position: relative; padding-block: clamp(64px, 9vw, 112px) 24px; text-align: center; overflow: hidden }
+.hero::before { content: ""; position: absolute; left: 50%; top: 52%; width: 1300px; height: 900px; transform: translateX(-50%); pointer-events: none;
+  background: radial-gradient(closest-side, var(--spot), transparent) }
+.hero .wrap { position: relative; display: grid; justify-items: center; gap: 22px }
+.hero .lede { max-width: 34ch }
+.ctas { display: flex; flex-wrap: wrap; gap: 14px 26px; align-items: center; justify-content: center }
+.avail { font-size: .84rem; color: var(--muted) } .avail b { color: var(--ink); font-weight: 600 }
+
+/* laptop */
+.mac { width: min(100%, 1020px); margin: 40px auto 0 }
+.lid { background: linear-gradient(#2a2a2d, #121214); border-radius: 20px 20px 6px 6px; padding: clamp(7px, 1.2vw, 13px); position: relative;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, .09), var(--shadow) }
+.lid::before { content: ""; position: absolute; top: 0; left: 50%; width: 11%; height: clamp(5px, .9vw, 9px); transform: translateX(-50%);
+  background: #0b0b0c; border-radius: 0 0 8px 8px; z-index: 2 }
+.deck { height: clamp(9px, 1.4vw, 16px); margin: 0 -6%; border-radius: 2px 2px 14px 14px; position: relative;
+  background: linear-gradient(#d9dadd, #a3a5aa 55%, #6f7176) }
+.deck::before { content: ""; position: absolute; left: 50%; top: 0; width: 14%; height: 45%; transform: translateX(-50%); border-radius: 0 0 9px 9px; background: linear-gradient(#a8aaae, #c6c7cb) }
+.app { border-radius: 9px; overflow: hidden; background: var(--raise); color: var(--ink); text-align: left }
+.bar { display: flex; align-items: center; gap: 12px; padding: 9px 12px; background: var(--raise-2); border-bottom: 1px solid var(--line); flex-wrap: wrap }
+.dots { display: flex; gap: 7px } .dots i { width: 11px; height: 11px; border-radius: 50% }
+.dots i:nth-child(1) { background: #ff5f57 } .dots i:nth-child(2) { background: #febc2e } .dots i:nth-child(3) { background: #28c840 }
+.seg { display: flex; padding: 2px; gap: 2px; border-radius: 8px; background: color-mix(in srgb, var(--ink) 6%, transparent) }
+.seg button { border: 0; background: transparent; color: var(--muted); font: 500 .78rem/1 var(--sans); padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: .2s }
+.seg button[aria-selected="true"] { background: var(--raise); color: var(--ink); box-shadow: 0 1px 2px rgba(0, 0, 0, .25) }
+.fname { margin-left: auto; font: .72rem/1 var(--mono); color: var(--faint) }
+@media (max-width: 640px) { .fname { display: none } }
+.panel { padding: clamp(14px, 2vw, 22px); display: grid; gap: 16px } .panel > * { min-width: 0 }
+.kpis { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 9px }
+@media (max-width: 900px) { .kpis { grid-template-columns: repeat(3, minmax(0, 1fr)) } }
+.kpi { padding: 11px 12px; border-radius: 10px; background: var(--raise-2); display: grid; gap: 3px; min-width: 0 }
+.kpi span { font-size: .68rem; color: var(--muted) }
+.kpi b { font-size: clamp(1.05rem, 1.9vw, 1.45rem); letter-spacing: -.035em; white-space: nowrap; font-variant-numeric: tabular-nums }
+.kpi small { font-size: .66rem; color: var(--faint) }
+.kpi.amber { background: var(--warn-bg) } .kpi.amber b { color: var(--warn) }
+.why { font-size: .82rem; color: var(--muted) } .why b { color: var(--ink); font-weight: 600 }
+.gantt { overflow-x: auto }
+.g { min-width: 540px; position: relative }
+.gr { display: grid; grid-template-columns: 160px minmax(0, 1fr) 38px; gap: 12px; align-items: center; height: 22px; font-size: .75rem }
+.gr .n { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--muted) }
+.gr .p { font: .68rem/1 var(--mono); color: var(--faint); text-align: right }
+.gr.h { font: .64rem/1 var(--mono); color: var(--faint); height: 18px }
+.tk { position: relative; height: 8px }
+.tk i { position: absolute; top: 0; height: 8px; border-radius: 4px; background: var(--bar); overflow: hidden }
+.tk i b { position: absolute; inset: 0 auto 0 0; background: var(--bar-done); border-radius: 4px }
+.tk i.late { box-shadow: 0 0 0 1.5px var(--bad) }
+.tk span { position: absolute; top: 1px }
+.now-line { position: absolute; top: 18px; bottom: 0; border-left: 1.5px dashed var(--warn); left: calc(172px + (100% - 222px) * .689) }
+.raid { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 20px; align-items: start }
+@media (max-width: 760px) { .raid { grid-template-columns: minmax(0, 1fr) } }
+.heat { display: grid; grid-template-columns: 18px repeat(5, minmax(0, 1fr)); gap: 4px; max-width: 290px; font: .66rem/1 var(--mono); color: var(--faint) }
+.heat span { display: grid; place-items: center }
+.heat .c { aspect-ratio: 1.3; border-radius: 6px; color: #fff; font: 600 .86rem/1 var(--sans) }
+.lo { background: rgba(79, 209, 143, .5) } .md { background: rgba(246, 173, 59, .75) } .hi { background: rgba(255, 99, 88, .85) }
+.list { display: grid; gap: 6px }
+.li { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 9px 11px; border-radius: 9px; background: var(--raise-2); font-size: .8rem }
+.li .id { font: .7rem/1 var(--mono); color: var(--faint) }
+.tag { font: 600 .66rem/1 var(--mono); padding: 5px 7px; border-radius: 5px; white-space: nowrap; letter-spacing: 0 }
+.tag.bad { background: var(--bad-bg); color: var(--bad) } .tag.warn { background: var(--warn-bg); color: var(--warn) }
+.tag.ok { background: var(--ok-bg); color: var(--ok) } .tag.mute { background: color-mix(in srgb, var(--ink) 7%, transparent); color: var(--muted) }
+.rb { display: grid; grid-template-columns: 26px minmax(0, 1fr) 92px auto; gap: 10px; align-items: center; padding: 9px 11px; border-radius: 9px; background: var(--raise-2); font-size: .82rem }
+.rb .no { font: .7rem/1 var(--mono); color: var(--faint) } .rb time { font: .7rem/1 var(--mono); color: var(--muted); text-align: right }
+.rb.now { box-shadow: inset 0 0 0 1.5px var(--accent) }
+@media (max-width: 520px) { .rb { grid-template-columns: 22px minmax(0, 1fr) auto } .rb time { display: none } }
+.live::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 7px; background: var(--accent); vertical-align: 1px; animation: pulse 1.6s ease-in-out infinite }
+@keyframes pulse { 50% { opacity: .2 } }
+.trio { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px }
+@media (max-width: 520px) { .trio { grid-template-columns: minmax(0, 1fr) } }
+.trio div { padding: 12px 13px; border-radius: 10px; background: var(--raise-2); display: grid; gap: 3px }
+.trio span { font-size: .7rem; color: var(--muted) } .trio b { font-size: 1rem; letter-spacing: -.02em }
+
+/* "things you'll stop doing" rail */
+.rail { display: grid; grid-auto-flow: column; grid-auto-columns: min(82vw, 340px); gap: 18px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none;
+  padding: 6px max(22px, calc((100vw - 1024px) / 2 + 22px)) 12px; scroll-padding-inline: max(22px, calc((100vw - 1024px) / 2 + 22px)) }
+.rail::-webkit-scrollbar { display: none }
+.stop { scroll-snap-align: start; background: var(--raise); border-radius: 26px; padding: 28px 26px; min-height: 420px; display: grid; grid-template-rows: auto auto 1fr; gap: 12px; color: var(--ink); text-decoration: none; transition: transform .45s var(--ease) }
+.stop:hover { transform: translateY(-4px) }
+.stop .x { font: 600 .74rem/1 var(--mono); color: var(--bad); text-decoration: line-through; text-decoration-thickness: 1.5px }
+.stop p { font-size: 1.28rem; font-weight: 600; line-height: 1.2; letter-spacing: -.028em } .stop p span { color: var(--muted) }
+.stop .vis { align-self: end; display: grid; gap: 8px }
+.mb { height: 10px; border-radius: 5px; background: var(--bar-done) }
+.rail-nav { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px }
+.round { width: 36px; height: 36px; border-radius: 50%; border: 0; background: var(--raise); color: var(--ink); font-size: 1.15rem; cursor: pointer; transition: background .25s }
+.round:hover { background: var(--raise-2) }
+
+/* pinned story */
+.story { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: clamp(30px, 5vw, 70px) }
+.stage { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 84px); height: min(580px, calc(100vh - 120px)); display: grid; place-items: center }
+.views { position: relative; width: 100%; height: 100% }
+.view { position: absolute; inset: 0; display: grid; place-items: center; opacity: 0; transform: translateY(18px) scale(.95); transition: opacity .6s var(--ease), transform .75s var(--ease); pointer-events: none }
+.view.on { opacity: 1; transform: none }
+.doc { width: 100%; max-width: 560px; border-radius: 16px; overflow: hidden; background: var(--raise); box-shadow: var(--shadow); border: 1px solid var(--line) }
+.doc-h { display: flex; align-items: center; gap: 10px; padding: 11px 14px; font: 600 .78rem/1 var(--sans) }
+.doc-h i { width: 22px; height: 22px; border-radius: 6px; display: grid; place-items: center; font: 700 .58rem/1 var(--mono); color: #fff; font-style: normal }
+.doc-h span { margin-left: auto; color: var(--muted); font-weight: 400; font-size: .7rem }
+.scroll { overflow-x: auto }
+.tb { width: 100%; border-collapse: collapse; font-size: .74rem }
+.tb th, .tb td { padding: 7px 9px; text-align: left; white-space: nowrap; border-top: 1px solid var(--line) }
+.tb th { font-weight: 600 } .tb td { color: var(--muted) } .tb .s td { color: var(--ink); font-weight: 600 } .tb .in2 { padding-left: 22px }
+.tb .num { font-variant-numeric: tabular-nums; font-family: var(--mono); font-size: .72rem }
+.t-ours th { background: var(--accent); color: var(--on-accent) }
+.t-client th { background: #1f3a5f; color: #fff }
+.t-msp th { background: #2b579a; color: #fff }
+.t-gs th { background: var(--raise-2); color: var(--faint); text-align: center; font-weight: 500 } .t-gs .rn { color: var(--faint); background: var(--raise-2); text-align: center }
+.paper { width: 72%; max-width: 360px; aspect-ratio: 1 / 1.414; background: #fff; border-radius: 6px; box-shadow: var(--shadow); padding: 7% 8%; display: grid; align-content: start; gap: 4%; color: #1d1d1f }
+.paper .ph { height: 7%; background: #1f3a5f; border-radius: 3px; display: flex; align-items: center; padding-left: 4%; color: #fff; font: 700 clamp(.5rem, 1.2vw, .76rem)/1 var(--sans) }
+.paper .ts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4% }
+.paper .ts div { aspect-ratio: 1.6; border-radius: 4px; background: #f2f4f7; display: grid; place-items: center; font: 700 clamp(.5rem, 1.25vw, .88rem)/1 var(--sans) }
+.paper .ts .a { background: #f79009; color: #fff }
+.paper .ln { height: 3.4%; border-radius: 2px; background: #e4e7ec } .paper .ln.t { background: #a8d5d8 }
+.steps { display: grid }
+.step { min-height: 76vh; display: grid; align-content: center; gap: 14px; opacity: .28; transition: opacity .5s var(--ease) }
+.step.on { opacity: 1 } .step:first-child { min-height: 58vh } .step:last-child { min-height: 68vh }
+.step h3 { font-size: clamp(1.7rem, 3.3vw, 2.5rem); letter-spacing: -.04em }
+.step p { color: var(--muted); font-size: 1.08rem; max-width: 30ch }
+.step small { font: 600 .72rem/1 var(--mono); color: var(--accent); letter-spacing: .05em; text-transform: uppercase }
+@media (max-width: 900px) {
+  .story { grid-template-columns: minmax(0, 1fr); gap: 0 }
+  .stage { top: calc(env(safe-area-inset-top, 0px) + 56px); height: 46vh; z-index: 2; background: var(--bg); padding-block: 8px }
+  .step { min-height: 60vh; align-content: end; padding-bottom: 8vh; opacity: 0 } .step.on { opacity: 1 } .step p { max-width: none }
+}
+
+/* feature rows */
+.feature { display: grid; grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr); gap: clamp(32px, 6vw, 80px); align-items: center }
+.feature.flip { grid-template-columns: minmax(0, 1.18fr) minmax(0, .82fr) } .feature.flip > .copy { order: 2 }
+@media (max-width: 900px) { .feature, .feature.flip { grid-template-columns: minmax(0, 1fr) } .feature.flip > .copy { order: 0 } }
+.copy { display: grid; gap: 18px; min-width: 0 } .copy .lede { max-width: 30ch }
+.card { background: var(--raise); border-radius: 26px; padding: clamp(22px, 3vw, 32px); display: grid; gap: 18px; min-width: 0 }
+.card > * { min-width: 0 }
+
+/* slider demo */
+.dur { display: grid; gap: 10px }
+.dur-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap }
+.dur-top label { font-weight: 600 }
+.dur-top output { font: 600 1.05rem/1 var(--sans); color: var(--accent); font-variant-numeric: tabular-nums }
+input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 28px; background: transparent; cursor: pointer }
+input[type=range]::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: linear-gradient(90deg, var(--accent) var(--p, 0%), var(--raise-2) var(--p, 0%)) }
+input[type=range]::-moz-range-track { height: 4px; border-radius: 2px; background: var(--raise-2) }
+input[type=range]::-moz-range-progress { height: 4px; border-radius: 2px; background: var(--accent) }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; margin-top: -10px; border-radius: 50%; background: #fff; box-shadow: 0 1px 4px rgba(0, 0, 0, .35), 0 0 0 .5px rgba(0, 0, 0, .1) }
+input[type=range]::-moz-range-thumb { width: 24px; height: 24px; border: 0; border-radius: 50%; background: #fff; box-shadow: 0 1px 4px rgba(0, 0, 0, .35) }
+.ticks { display: flex; justify-content: space-between; font: .68rem/1 var(--mono); color: var(--faint); padding-inline: 8px }
+.dr { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 14px; align-items: center; font-size: .82rem; margin-block: 8px }
+@media (max-width: 480px) { .dr, .daxis { grid-template-columns: 112px minmax(0, 1fr) !important } }
+.dr .n { display: grid; min-width: 0 } .dr .n span { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.dr time { font: .68rem/1.3 var(--mono); color: var(--faint); transition: color .3s }
+.dt { position: relative; height: 12px; border-radius: 6px; background: var(--raise-2) }
+.dt i { position: absolute; top: 0; height: 12px; border-radius: 6px; background: var(--bar-done); transition: left .6s var(--ease), width .6s var(--ease), background .3s }
+.dt i.ms { width: 12px !important; transform: rotate(45deg) scale(.78); border-radius: 2px; background: var(--ink) }
+.dr.moved time { color: var(--bad) } .dr.moved .dt i, .dr.moved .dt i.ms { background: var(--bad) }
+.daxis { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 14px; font: .64rem/1 var(--mono); color: var(--faint) }
+.daxis div { position: relative; height: 12px } .daxis div span { position: absolute }
+.out { display: flex; flex-wrap: wrap; gap: 6px 18px; align-items: baseline; padding-top: 14px; border-top: 1px solid var(--line) }
+.out b { font-size: 1.75rem; letter-spacing: -.04em; transition: color .3s; font-variant-numeric: tabular-nums } .out b.bad { color: var(--bad) }
+.out span { color: var(--muted); font-size: .88rem }
+
+/* status */
+.ragrow { display: flex; align-items: center; gap: 18px }
+.ragcell { width: 92px; height: 64px; border-radius: 14px; background: var(--warn); color: #2b1700; display: grid; place-items: center; font-weight: 800; font-size: 1.05rem; letter-spacing: -.02em; flex: none }
+.ragrow b { display: block; font-size: 1.15rem; letter-spacing: -.02em } .ragrow span { color: var(--muted); font-size: .88rem }
+.rule { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 12px 14px; border-radius: 12px; background: var(--raise-2); font-size: .92rem }
+.mk { width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font-size: .72rem; font-weight: 700 }
+.mk.y { background: var(--ok-bg); color: var(--ok) } .mk.n { background: var(--warn-bg); color: var(--warn) }
+.rule .v { font: .8rem/1 var(--mono); color: var(--muted) }
+.note { font-size: .84rem; color: var(--muted) }
+
+/* frameworks + specs */
+.fw { width: 100%; border-collapse: collapse; font-size: .9rem; min-width: 620px }
+.fw th { text-align: left; font-size: .74rem; font-weight: 500; color: var(--faint); padding: 0 16px 10px }
+.fw td { padding: 13px 16px; border-top: 1px solid var(--line); vertical-align: top }
+.fw td:first-child { font-weight: 600; white-space: nowrap } .fw td:nth-child(2) { color: var(--muted) }
+.fw td.where { font: .78rem/1.4 var(--mono); color: var(--accent); white-space: nowrap }
+.fw tr.grp td { border-top: 0; padding: 26px 16px 8px; font-size: .8rem; font-weight: 700; color: var(--ink); letter-spacing: -.01em }
+.fw tr.grp:first-child td { padding-top: 6px }
+.specs { border-top: 1px solid var(--line) }
+.spec { display: grid; grid-template-columns: minmax(150px, .32fr) minmax(0, 1fr); gap: 24px; padding-block: 26px; border-bottom: 1px solid var(--line) }
+@media (max-width: 640px) { .spec { grid-template-columns: minmax(0, 1fr); gap: 8px } }
+.spec h3 { font-size: 1.15rem } .spec div { color: var(--muted); display: grid; gap: 6px } .spec div b { color: var(--ink); font-weight: 600 }
+
+/* compare */
+.compare { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px }
+@media (max-width: 900px) { .compare { grid-template-columns: minmax(0, 1fr) } }
+.plan { background: var(--raise); border-radius: 26px; padding: 34px 26px; display: grid; gap: 22px; align-content: start; justify-items: center; text-align: center; position: relative }
+.plan.best { box-shadow: inset 0 0 0 2px var(--accent) }
+.plan .flag { position: absolute; top: 16px; right: 18px; font-size: .72rem; font-weight: 600; color: var(--warn) }
+.plan .price { font-size: 3.1rem; font-weight: 700; letter-spacing: -.05em; line-height: 1 }
+.plan .price small { display: block; margin-top: 8px; font-size: .82rem; font-weight: 400; letter-spacing: -.01em; color: var(--muted) }
+.plan ul { list-style: none; margin: 0; padding: 22px 0 0; display: grid; gap: 15px; border-top: 1px solid var(--line); width: 100% }
+.plan li { display: grid; gap: 2px; font-size: .92rem } .plan li span { color: var(--muted); font-size: .8rem } .plan li.no { color: var(--faint) }
+.fine { font-size: .8rem; color: var(--muted) }
+.store-msg { margin: 22px auto 0; max-width: 560px; padding: 12px 18px; border-radius: 14px; background: var(--warn-bg); font-size: .9rem; text-align: center }
+
+/* faq + notes */
+.faq { max-width: 800px; margin: 0 auto }
+details { border-bottom: 1px solid var(--line); padding-block: 22px }
+summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: 18px; font-size: 1.14rem; font-weight: 600; letter-spacing: -.025em }
+summary::-webkit-details-marker { display: none }
+summary::after { content: "+"; color: var(--muted); font-weight: 300; font-size: 1.6rem; line-height: .8; transition: transform .35s var(--ease) }
+details[open] summary::after { transform: rotate(45deg) }
+details p { margin-top: 12px; color: var(--muted); max-width: 62ch }
+.notes { border-top: 1px solid var(--line); padding-block: 26px; font-size: .74rem; color: var(--muted); line-height: 1.5 }
+.notes ol { margin: 0; padding-left: 18px; display: grid; gap: 6px }
+footer { padding-block: 0 46px; font-size: .74rem; color: var(--faint) }
+footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px 30px; border-top: 1px solid var(--line); padding-top: 18px }
+footer a { color: var(--muted); text-decoration: none } footer a:hover { color: var(--ink) }
+/* dashboard before/after */
+.pill { display: inline-flex; gap: 8px; align-items: center; padding: 6px 14px; border-radius: 980px; background: var(--raise); color: var(--ink); text-decoration: none; font-size: .86rem; letter-spacing: -.01em }
+.pill b { color: var(--accent); font-weight: 600 } .pill:hover { background: var(--raise-2) }
+.toggle { display: inline-flex; padding: 3px; gap: 2px; border-radius: 980px; background: var(--raise) }
+.toggle button { border: 0; background: transparent; color: var(--muted); font: 500 .9rem/1 var(--sans); padding: 9px 18px; border-radius: 980px; cursor: pointer; transition: color .25s, background .25s }
+.toggle button[aria-selected="true"] { background: var(--ink); color: var(--bg) }
+.ba { display: grid; justify-items: center; gap: 28px }
+.ba-stage { position: relative; width: 100%; max-width: 900px }
+.ba-v { position: absolute; inset: 0 0 auto; display: grid; justify-items: center; opacity: 0; transform: scale(.97); transform-origin: top; transition: opacity .6s var(--ease), transform .6s var(--ease); pointer-events: none }
+.ba-v.on { position: relative; opacity: 1; transform: none; pointer-events: auto }
+.ba .doc { max-width: 900px }
+.ba .tb td:nth-child(n+3) { font-family: var(--mono); font-size: .7rem }
+.shot { margin: 0; width: 100%; border-radius: 14px; overflow: hidden; background: #fff; box-shadow: var(--shadow); border: 1px solid var(--line) }
+.shot img { display: block; width: 100%; height: auto }
+.ba-cap { font-size: .82rem; color: var(--muted); text-align: center }
+.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(20px, 4vw, 48px); margin-top: clamp(44px, 6vw, 72px) }
+.three h3 { margin: 0 0 6px; font-size: 1.12rem; letter-spacing: -.02em }
+.three p { margin: 0; color: var(--muted); font-size: .95rem }
+.three code { font: .8rem var(--mono); color: var(--ink) }
+@media (max-width: 760px) { .three { grid-template-columns: minmax(0, 1fr) } }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap wide">
+    <a class="brand" href="#top" aria-label="Keelson home">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><rect x="9" y="8" width="10.5" height="48" rx="5.25" fill="#39c9be"/><path d="M27 28.5 44 11.5" stroke="currentColor" stroke-width="10" stroke-linecap="round" opacity=".42"/><path d="M27 35.5 40 48.5" stroke="currentColor" stroke-width="10" stroke-linecap="round"/><path d="M51 50.2l6.3 6.3-6.3 6.3-6.3-6.3z" fill="#f5a524"/>
+</svg>
+      Keelson
+    </a>
+    <nav class="links" aria-label="Sections">
+      <a href="#dash">Dashboard</a><a href="#stop">Why</a><a href="#formats">Formats</a><a href="#schedule">Scheduling</a><a href="#golive">Go-live</a><a href="#frameworks">Frameworks</a><a href="#specs">Specs</a><a href="#compare">Compare</a>
+    </nav>
+    <button class="theme" id="theme" type="button" aria-label="Switch to light mode"></button>
+    <a class="btn fill sm" href="#compare" data-store="sample">Get it free</a>
+  </div>
+</header>
+
+<main id="top">
+  <!-- HERO -->
+  <div class="hero">
+    <div class="wrap wide">
+      <a class="pill in" href="#dash"><b>New</b> Free dashboard for any plan ›</a>
+      <h1 class="in d2">Plan once.<br><span class="dim">Deliver anywhere.</span></h1>
+      <p class="lede in d3">The project plan that schedules itself, reports its own status and runs your go-live. Then hands it over in <b>your client's template</b>, MS Project, Google Sheets, CSV or PDF.</p>
+      <div class="ctas in d4">
+        <a class="btn fill" href="#compare" data-store="sample">Download free sample</a>
+        <a class="more" href="#compare">Buy from $9</a>
+      </div>
+      <p class="avail in d4">Now available: <b>Software / SaaS Implementation pack</b> · Excel 2021+ and Google Sheets · No macros</p>
+
+      <div class="mac open">
+        <div class="lid">
+          <figure class="app" style="margin:0" aria-label="Keelson workbook with fictional sample data">
+            <div class="bar">
+              <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              <div class="seg" role="tablist" aria-label="Workbook views">
+                <button role="tab" id="t-dash" aria-controls="p-dash" aria-selected="true">Dashboard</button>
+                <button role="tab" id="t-raid" aria-controls="p-raid" aria-selected="false">RAID</button>
+                <button role="tab" id="t-run" aria-controls="p-run" aria-selected="false">Runbook</button>
+              </div>
+              <span class="fname">Keelson-Project-Plan-SAMPLE.xlsx</span>
+            </div>
+            <div class="panel" role="tabpanel" id="p-dash" aria-labelledby="t-dash">
+              <div class="kpis">
+                <div class="kpi amber"><span>Overall status</span><b>Amber</b><small>Calculated by rules</small></div>
+                <div class="kpi"><span>Forecast finish</span><b>14 Apr</b><small>Baseline 12 Apr</small></div>
+                <div class="kpi"><span>Variance</span><b>+2 days</b><small>working days</small></div>
+                <div class="kpi"><span>Complete</span><b>72%</b><small>Planned 75%</small></div>
+                <div class="kpi"><span>Schedule (SPI)</span><b>0.95</b><small>earned ÷ planned</small></div>
+                <div class="kpi"><span>Overdue tasks</span><b>2</b><small>0 milestones</small></div>
+              </div>
+              <p class="why"><b>Why Amber:</b> forecast finish is 2 working days behind baseline. Status date 23 Feb 2027.</p>
+              <div class="gantt"><div class="g">
+                <div class="gr h"><span></span><span class="tk"><span style="left:0">Nov</span><span style="left:17.7%">Dec</span><span style="left:36.6%">Jan</span><span style="left:55.5%">Feb</span><span style="left:72.6%">Mar</span><span style="left:91.5%">Apr</span></span><span></span></div>
+                <div class="gr"><span class="n">Initiation</span><span class="tk"><i style="left:0;width:2.4%"><b style="width:100%"></b></i></span><span class="p">100%</span></div>
+                <div class="gr"><span class="n">Discovery &amp; Requirements</span><span class="tk"><i style="left:2.4%;width:11.6%"><b style="width:100%"></b></i></span><span class="p">100%</span></div>
+                <div class="gr"><span class="n">Solution Design</span><span class="tk"><i style="left:14%;width:10.4%"><b style="width:100%"></b></i></span><span class="p">100%</span></div>
+                <div class="gr"><span class="n">Data Migration</span><span class="tk"><i style="left:19.5%;width:28.7%"><b style="width:100%"></b></i></span><span class="p">100%</span></div>
+                <div class="gr"><span class="n">Build &amp; Configure</span><span class="tk"><i class="late" style="left:40.2%;width:25.6%"><b style="width:98%"></b></i></span><span class="p">98%</span></div>
+                <div class="gr"><span class="n">Integrations</span><span class="tk"><i class="late" style="left:43.3%;width:15.2%"><b style="width:97%"></b></i></span><span class="p">97%</span></div>
+                <div class="gr"><span class="n">Testing</span><span class="tk"><i style="left:25.6%;width:57.3%"><b style="width:20%"></b></i></span><span class="p">20%</span></div>
+                <div class="gr"><span class="n">Deployment &amp; Cutover</span><span class="tk"><i style="left:48.2%;width:37.8%"><b style="width:40%"></b></i></span><span class="p">40%</span></div>
+                <div class="gr"><span class="n">Hypercare &amp; Closure</span><span class="tk"><i style="left:86%;width:14%"><b style="width:0"></b></i></span><span class="p">0%</span></div>
+                <div class="now-line" aria-hidden="true"></div>
+              </div></div>
+            </div>
+            <div class="panel" role="tabpanel" id="p-raid" aria-labelledby="t-raid" hidden>
+              <div class="raid">
+                <div class="heat" aria-label="Open risks by probability and impact">
+                  <span>5</span><span class="c lo"></span><span class="c md"></span><span class="c hi"></span><span class="c hi"></span><span class="c hi"></span>
+                  <span>4</span><span class="c lo"></span><span class="c md"></span><span class="c md">1</span><span class="c hi">1</span><span class="c hi">1</span>
+                  <span>3</span><span class="c lo"></span><span class="c md"></span><span class="c md">1</span><span class="c md">2</span><span class="c hi">1</span>
+                  <span>2</span><span class="c lo"></span><span class="c lo"></span><span class="c lo">1</span><span class="c md">1</span><span class="c md">1</span>
+                  <span>1</span><span class="c lo"></span><span class="c lo"></span><span class="c lo"></span><span class="c lo"></span><span class="c lo"></span>
+                  <span></span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+                </div>
+                <div class="list">
+                  <div class="li"><span class="id">R-02</span><span>Legacy data quality worse than profiled</span><span class="tag bad">20 · overdue</span></div>
+                  <div class="li"><span class="id">R-01</span><span>ERP vendor delivers v3 API late</span><span class="tag bad">16 High</span></div>
+                  <div class="li"><span class="id">R-08</span><span>Cutover window too short for full load</span><span class="tag bad">15 High</span></div>
+                  <div class="li"><span class="id">CR-04</span><span>ERP payload rework, awaiting decision</span><span class="tag warn">+4 days</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="panel" role="tabpanel" id="p-run" aria-labelledby="t-run" hidden>
+              <div class="list">
+                <div class="rb"><span class="no">8</span><span>Load work orders and 24 months of history</span><time>ended 07:20</time><span class="tag warn">+35 min</span></div>
+                <div class="rb"><span class="no">9</span><span>Reconcile counts and totals · Go/No-Go point</span><time>ended 08:20</time><span class="tag ok">Done</span></div>
+                <div class="rb now"><span class="no">14</span><span class="live">Smoke test a work order</span><time>due 11:30</time><span class="tag mute">Running</span></div>
+                <div class="rb"><span class="no">15</span><span>Business verification · final Go/No-Go</span><time>due 13:30</time><span class="tag mute">Next</span></div>
+              </div>
+              <div class="trio">
+                <div><span>Go / No-Go</span><b style="color:var(--warn)">GO WITH CONDITIONS</b></div>
+                <div><span>Forecast vs plan</span><b style="color:var(--bad)">+70 min</b></div>
+                <div><span>Hypercare SLA met</span><b>78%</b></div>
+              </div>
+            </div>
+          </figure>
+        </div>
+        <div class="deck" aria-hidden="true"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD FOR ANY PLAN -->
+  <section id="dash" style="padding-top:clamp(72px,10vw,120px)">
+    <div class="wrap">
+      <div class="head rise"><p class="kicker">Keelson Dashboard · Free</p>
+        <h2>Paste any plan.<br><span class="dim">Get the dashboard they asked for.</span></h2>
+        <p class="lede">From MS Project, Jira, Smartsheet or the client's own Excel. One page your sponsor reads in a minute, and your plan never leaves your computer.</p></div>
+      <div class="ba rise">
+        <div class="toggle" role="tablist" aria-label="Before and after">
+          <button role="tab" id="b-plan" aria-controls="v-plan" aria-selected="true">Your plan</button>
+          <button role="tab" id="b-dash" aria-controls="v-dash" aria-selected="false">Their dashboard</button>
+        </div>
+        <div class="ba-stage">
+          <div class="ba-v on" id="v-plan" role="tabpanel" aria-labelledby="b-plan"><div class="doc"><div class="doc-h"><i style="background:#2b579a">P</i>Pasted from MS Project<span>79 rows · text dates · no formatting</span></div>
+            <div class="scroll"><table class="tb t-gs"><thead><tr><th></th><th>ID</th><th>Task Name</th><th>Duration</th><th>Start</th><th>Finish</th><th>% Complete</th><th>Resource Names</th></tr></thead><tbody>
+              <tr class="s"><td class="rn">55</td><td class="num">54</td><td>Testing</td><td></td><td>Mon 12/14/26</td><td>Wed 3/17/27</td><td></td><td></td></tr>
+              <tr><td class="rn">56</td><td class="num">55</td><td class="in2">Test strategy &amp; UAT scripts</td><td>5 days</td><td>Mon 12/14/26</td><td>Fri 12/18/26</td><td>100%</td><td>Morgan Brooks</td></tr>
+              <tr><td class="rn">57</td><td class="num">56</td><td class="in2">System integration testing (SIT)</td><td>10 days</td><td>Thu 2/18/27</td><td>Wed 3/3/27</td><td>30%</td><td>Morgan Brooks</td></tr>
+              <tr><td class="rn">58</td><td class="num">57</td><td class="in2">Performance &amp; load testing</td><td>4 days</td><td>Thu 2/25/27</td><td>Tue 3/2/27</td><td>0%</td><td>Morgan Brooks</td></tr>
+              <tr><td class="rn">59</td><td class="num">58</td><td class="in2">Security &amp; penetration test</td><td>5 days</td><td>Tue 2/23/27</td><td>Mon 3/1/27</td><td>0%</td><td>Blake Ito</td></tr>
+              <tr><td class="rn">60</td><td class="num">59</td><td class="in2">User acceptance testing (UAT)</td><td>10 days</td><td>Thu 3/4/27</td><td>Wed 3/17/27</td><td>0%</td><td>Avery Singh</td></tr>
+              <tr><td class="rn">61</td><td class="num">60</td><td class="in2">Defect triage &amp; regression</td><td>5 days</td><td>Thu 3/11/27</td><td>Wed 3/17/27</td><td>0%</td><td>Morgan Brooks</td></tr>
+              <tr><td class="rn">62</td><td class="num">61</td><td class="in2">UAT sign-off</td><td>0 days</td><td>Wed 3/17/27</td><td>Wed 3/17/27</td><td>0%</td><td>Avery Singh</td></tr></tbody></table></div></div></div>
+          <div class="ba-v" id="v-dash" role="tabpanel" aria-labelledby="b-dash"><figure class="shot"><a href="dashboard-sample.webp" target="_blank" rel="noopener"><img src="dashboard-sample.webp" width="1563" height="1721" loading="lazy" decoding="async" alt="One-page dashboard for the fictional FieldFlow project: overall status Amber, 73% complete, forecast finish 14 April 2027, 7 of 11 milestones met, 2 overdue tasks, progress by phase, milestones, a timeline, overdue tasks and tasks due in the next 14 days."></a></figure></div>
+        </div>
+        <p class="ba-cap">The real file, filled in from the pasted plan. Tap to open full size. Sample project is fictional.<sup><a href="#n7">7</a></sup></p>
+        <div class="ctas"><a class="btn fill" href="#compare" data-store="dashboard">Download the dashboard free</a><a class="more" href="#faq">Will it read my plan</a></div>
+      </div>
+      <div class="three">
+        <div class="rise"><h3>Finds your columns.</h3><p>Finish, End Date, Due Date, Resource Names, Assignee, Epic Link… over 100 header names from the tools PMs actually use. Anything it misses, you pick once from a dropdown.</p></div>
+        <div class="rise"><h3>Reads messy dates.</h3><p><code>Mon 3/17/27</code>, <code>17/03/2027</code>, <code>17-Mar-27</code> or real Excel dates. It works out day-or-month-first from your own data.</p></div>
+        <div class="rise"><h3>Shows its working.</h3><p>Green, Amber or Red from rules you can change, or your own call with a reason. A data check flags missing dates before your sponsor does.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- THINGS YOU'LL STOP DOING -->
+  <section id="stop" style="padding-top:clamp(72px,10vw,120px)">
+    <div class="wrap"><h2 class="rise">Things you'll stop doing<br><span class="dim">on Monday.</span></h2></div>
+    <div class="rail" id="rail" tabindex="0" aria-label="Things you'll stop doing" style="margin-top:44px">
+      <a class="stop" href="#formats"><span class="x">Retyping the plan</span><p>Into the client's template, every week. <span>Map their columns once; paste the result.</span></p>
+        <div class="vis"><span class="tag ok" style="justify-self:start">Ref ← WBS</span><span class="tag ok" style="justify-self:start">Activity ← Task name</span><span class="tag ok" style="justify-self:start">End Date ← Finish · dd/mm/yyyy</span></div></a>
+      <a class="stop" href="#schedule"><span class="x">Moving dates by hand</span><p>When one task slips. <span>Every successor reschedules around weekends and holidays.</span></p>
+        <div class="vis"><div class="mb" style="width:46%"></div><div class="mb" style="width:58%;margin-left:32%"></div><div class="mb" style="width:38%;margin-left:58%;background:var(--bad)"></div></div></a>
+      <a class="stop" href="#status"><span class="x">Defending a colour</span><p>You picked in a meeting. <span>The RAG comes from rules, and shows its working.</span></p>
+        <div class="vis"><div class="rule" style="padding:9px 11px"><span class="mk n">!</span><span style="font-size:.84rem">Finish vs baseline</span><span class="v">+2 days</span></div><div class="rule" style="padding:9px 11px"><span class="mk y">✓</span><span style="font-size:.84rem">Overdue milestones</span><span class="v">0</span></div></div></a>
+      <a class="stop" href="#golive"><span class="x">Running cutover from chat</span><p>At three in the morning. <span>A runbook that re-forecasts as each step finishes.</span></p>
+        <div class="vis"><div class="rb now"><span class="no">14</span><span class="live">Smoke test</span><time>11:30</time><span class="tag mute">Running</span></div><div class="trio" style="grid-template-columns:1fr 1fr"><div><span>Go / No-Go</span><b style="color:var(--warn);font-size:.8rem">GO WITH CONDITIONS</b></div><div><span>Forecast</span><b style="color:var(--bad)">+70 min</b></div></div></div></a>
+      <a class="stop" href="#specs"><span class="x">Asking IT about macros</span><p>Before you can open a template. <span>Plain .xlsx, nothing locked, nothing to approve.</span></p>
+        <div class="vis"><span style="font-size:4.4rem;font-weight:700;letter-spacing:-.06em;line-height:1">0</span><span class="note">macros, add-ins or passwords</span></div></a>
+    </div>
+    <div class="wrap rail-nav"><button class="round" id="prev" aria-label="Previous">‹</button><button class="round" id="next" aria-label="Next">›</button></div>
+  </section>
+
+  <!-- PINNED STORY -->
+  <section id="formats">
+    <div class="wrap">
+      <div class="head rise"><p class="kicker">One plan. Every format.</p><h2>Hand it over the way<br><span class="dim">they asked for it.</span></h2></div>
+      <div class="story">
+        <div class="stage"><div class="views">
+          <div class="view on" data-v="0"><div class="doc"><div class="doc-h"><i style="background:#1e8f5a">X</i>Your plan<span>Keelson-Project-Plan.xlsx</span></div>
+            <div class="scroll"><table class="tb t-ours"><thead><tr><th>ID</th><th>WBS</th><th>Task</th><th>Start</th><th>Finish</th><th>%</th></tr></thead><tbody>
+              <tr class="s"><td class="num">54</td><td>8</td><td>Testing</td><td>14-Dec-26</td><td>17-Mar-27</td><td class="num">20%</td></tr>
+              <tr><td class="num">55</td><td>8.1</td><td class="in2">Test strategy &amp; UAT scripts</td><td>14-Dec-26</td><td>18-Dec-26</td><td class="num">100%</td></tr>
+              <tr><td class="num">56</td><td>8.2</td><td class="in2">System integration testing</td><td>18-Feb-27</td><td>03-Mar-27</td><td class="num">30%</td></tr>
+              <tr><td class="num">59</td><td>8.5</td><td class="in2">User acceptance testing</td><td>04-Mar-27</td><td>17-Mar-27</td><td class="num">0%</td></tr>
+              <tr><td class="num">61</td><td>8.7</td><td class="in2">UAT sign-off</td><td>17-Mar-27</td><td>17-Mar-27</td><td class="num">0%</td></tr></tbody></table></div></div></div>
+          <div class="view" data-v="1"><div class="doc"><div class="doc-h"><i style="background:#0f8f86">C</i>Client's template<span>Brightwater PMO standard (fictional)</span></div>
+            <div class="scroll"><table class="tb t-client"><thead><tr><th>Ref</th><th>Activity</th><th>Responsible</th><th>End Date</th><th>RAG Status</th><th>Project</th></tr></thead><tbody>
+              <tr class="s"><td>8</td><td>Testing</td><td></td><td>17/03/2027</td><td>In Progress</td><td>FF-2026</td></tr>
+              <tr><td>8.1</td><td class="in2">Test strategy &amp; UAT scripts</td><td>Morgan Brooks</td><td>18/12/2026</td><td>Complete</td><td>FF-2026</td></tr>
+              <tr><td>8.2</td><td class="in2">System integration testing</td><td>Morgan Brooks</td><td>03/03/2027</td><td>In Progress</td><td>FF-2026</td></tr>
+              <tr><td>8.5</td><td class="in2">User acceptance testing</td><td>Avery Singh</td><td>17/03/2027</td><td>Not Started</td><td>FF-2026</td></tr>
+              <tr><td>8.7</td><td class="in2">UAT sign-off</td><td>Avery Singh</td><td>17/03/2027</td><td>Not Started</td><td>FF-2026</td></tr></tbody></table></div></div></div>
+          <div class="view" data-v="2"><div class="doc"><div class="doc-h"><i style="background:#2b579a">P</i>MS Project<span>Keelson-Project-Plan-MSProject.xml</span></div>
+            <div class="scroll"><table class="tb t-msp"><thead><tr><th>ID</th><th>Task Name</th><th>Duration</th><th>Predecessors</th></tr></thead><tbody>
+              <tr class="s"><td class="num">54</td><td>Testing</td><td>62 days</td><td></td></tr>
+              <tr><td class="num">55</td><td class="in2">Test strategy &amp; UAT scripts</td><td>5 days</td><td>21</td></tr>
+              <tr><td class="num">56</td><td class="in2">System integration testing (SIT)</td><td>10 days</td><td>42,47,55</td></tr>
+              <tr><td class="num">57</td><td class="in2">Performance &amp; load testing</td><td>4 days</td><td>56SS+5 days</td></tr>
+              <tr><td class="num">59</td><td class="in2">User acceptance testing (UAT)</td><td>10 days</td><td>56,52</td></tr></tbody></table></div></div></div>
+          <div class="view" data-v="3"><div class="doc"><div class="doc-h"><i style="background:#1fa463">S</i>Google Sheets<span>Uploaded .xlsx, formulas live</span></div>
+            <div class="scroll"><table class="tb t-gs"><thead><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th></tr></thead><tbody>
+              <tr class="s"><td class="rn">58</td><td class="num">54</td><td>8</td><td>Testing</td><td>14-Dec-26</td><td>17-Mar-27</td></tr>
+              <tr><td class="rn">59</td><td class="num">55</td><td>8.1</td><td class="in2">Test strategy &amp; UAT scripts</td><td>14-Dec-26</td><td>18-Dec-26</td></tr>
+              <tr><td class="rn">60</td><td class="num">56</td><td>8.2</td><td class="in2">System integration testing</td><td>18-Feb-27</td><td>03-Mar-27</td></tr>
+              <tr><td class="rn">63</td><td class="num">59</td><td>8.5</td><td class="in2">User acceptance testing</td><td>04-Mar-27</td><td>17-Mar-27</td></tr>
+              <tr><td class="rn">65</td><td class="num">61</td><td>8.7</td><td class="in2">UAT sign-off</td><td>17-Mar-27</td><td>17-Mar-27</td></tr></tbody></table></div></div></div>
+          <div class="view" data-v="4"><div class="paper" aria-label="Printed dashboard page"><div class="ph">Project Dashboard</div>
+            <div class="ts"><div class="a">Amber</div><div>14 Apr</div><div>+2 days</div><div>72%</div><div>0.95</div><div>2</div></div>
+            <div class="ln t" style="width:90%"></div><div class="ln" style="width:70%"></div><div class="ln t" style="width:80%"></div><div class="ln" style="width:60%"></div><div class="ln t" style="width:85%"></div><div class="ln" style="width:50%"></div></div></div>
+        </div></div>
+        <div class="steps">
+          <div class="step on" data-s="0"><small>The source</small><h3>One plan you actually maintain.</h3><p>Dates, roll-ups and status all calculate from the tasks you type. This is the only place you update.</p></div>
+          <div class="step" data-s="1"><small>Client's own Excel</small><h3>Their columns, their order, their dates.</h3><p>Describe the client's template once. Every week, copy the Client Format tab into their file.<sup><a href="#n4">4</a></sup></p></div>
+          <div class="step" data-s="2"><small>MS Project</small><h3>Ready for Project, links intact.</h3><p>Hierarchy, durations, baselines and dependencies, renumbered for Project's own task IDs.<sup><a href="#n2">2</a></sup></p></div>
+          <div class="step" data-s="3"><small>Google Sheets</small><h3>Upload it. It still calculates.</h3><p>No macros means nothing to convert. The plan keeps scheduling in the browser.<sup><a href="#n1">1</a></sup></p></div>
+          <div class="step" data-s="4"><small>PDF and CSV</small><h3>Print it, or pipe it anywhere.</h3><p>Print-ready layouts for the steering committee, and CSV for Jira, Power BI or your own database.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCHEDULE -->
+  <section id="schedule">
+    <div class="wrap feature">
+      <div class="copy rise">
+        <p class="kicker">It schedules itself</p>
+        <h2>Drag one duration.<br><span class="dim">Watch go‑live move.</span></h2>
+        <p class="lede">Successors, phases, the Gantt and the dashboard recalculate around weekends and your holidays.</p>
+        <p class="fine">Every position below comes from the Keelson scheduler run on the sample plan. Presidents' Day (15 Feb) is in its holiday list, which is why some days of slip cost more than others.</p>
+      </div>
+      <div class="card rise" id="demo">
+        <div class="dur">
+          <div class="dur-top"><label for="slider">Customer portal build</label><output id="slv" for="slider">6 days</output></div>
+          <input type="range" id="slider" min="6" max="12" step="1" value="6" aria-describedby="slv">
+          <div class="ticks" aria-hidden="true"><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span></div>
+        </div>
+        <div class="daxis" aria-hidden="true"><span></span><div><span style="left:0">18 Jan</span><span style="left:20%">Feb</span><span style="left:60%">Mar</span></div></div>
+        <div id="rows"></div>
+        <div class="out" aria-live="polite"><b id="gl">Go‑live Thu 18 Mar</b><span id="gv">On baseline</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATUS -->
+  <section id="status">
+    <div class="wrap feature flip">
+      <div class="copy rise">
+        <p class="kicker">A status you can defend</p>
+        <h2>The colour shows<br><span class="dim">its working.</span></h2>
+        <p class="lede">Slip, overdue milestones, overdue tasks and schedule performance decide it, against tolerances you set once. Override it if you must; your reason prints right beside it.</p>
+      </div>
+      <div class="card rise">
+        <div class="ragrow"><div class="ragcell" aria-hidden="true">Amber</div><div><b>Calculated by rules</b><span>Status date 23 Feb 2027</span></div></div>
+        <div class="rule"><span class="mk n">!</span><span>Forecast finish no later than baseline</span><span class="v">+2 days</span></div>
+        <div class="rule"><span class="mk y">✓</span><span>No overdue milestones</span><span class="v">0</span></div>
+        <div class="rule"><span class="mk y">✓</span><span>No more than 2 overdue tasks</span><span class="v">2</span></div>
+        <div class="rule"><span class="mk y">✓</span><span>Schedule performance at least 0.95<sup><a href="#n5">5</a></sup></span><span class="v">0.95</span></div>
+        <p class="note">PM override: none. Change the colour and readers see both values, and why.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- GO-LIVE -->
+  <section id="golive">
+    <div class="wrap feature">
+      <div class="copy rise">
+        <p class="kicker">Go-live, under control</p>
+        <h2>The cutover weekend,<br><span class="dim">minute by minute.</span></h2>
+        <p class="lede">Enter actual times as steps finish. Every later step re-forecasts, the Go/No-Go answers from your criteria, and hypercare tracks SLAs from the first ticket.</p>
+      </div>
+      <div class="card rise">
+        <div class="list">
+          <div class="rb"><span class="no">8</span><span>Load work orders and 24 months of history</span><time>ended 07:20</time><span class="tag warn">+35 min</span></div>
+          <div class="rb"><span class="no">9</span><span>Reconcile counts and totals</span><time>ended 08:20</time><span class="tag ok">Done</span></div>
+          <div class="rb now"><span class="no">14</span><span class="live">Smoke test a work order</span><time>due 11:30</time><span class="tag mute">Running</span></div>
+          <div class="rb"><span class="no">15</span><span>Business verification</span><time>due 13:30</time><span class="tag mute">Next</span></div>
+          <div class="rb"><span class="no">101</span><span style="color:var(--muted)">Rollback: restore legacy database</span><time>window 12:20</time><span class="tag mute">If needed</span></div>
+        </div>
+        <div class="trio">
+          <div><span>Go / No-Go</span><b style="color:var(--warn)">GO WITH CONDITIONS</b></div>
+          <div><span>Forecast vs plan</span><b style="color:var(--bad)">+70 min</b></div>
+          <div><span>Hypercare SLA met</span><b>78%</b></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FRAMEWORKS -->
+  <section id="frameworks">
+    <div class="wrap">
+      <div class="head rise"><p class="kicker">Fluent in your method</p><h2>PMBOK, PRINCE2, agile and ITIL.<br><span class="dim">Already in the right places.</span></h2>
+        <p class="lede">If you trained for the PMP, PRINCE2, PMI-ACP, ITIL or CISM, you'll recognise every artefact and know where to find it.</p></div>
+      <div class="card rise" style="overflow-x:auto">
+        <table class="fw">
+          <thead><tr><th>You know it as</th><th>In Keelson</th><th>Where</th></tr></thead>
+          <tbody>
+            <tr class="grp"><td colspan="3">PMBOK® Guide · PMP®</td></tr>
+            <tr><td>Schedule baseline</td><td>Baseline start and finish per task, variance in working days</td><td class="where">Plan</td></tr>
+            <tr><td>Risk register</td><td>Probability × impact, owner, response, dated action</td><td class="where">RAID › Risks</td></tr>
+            <tr><td>Issue, assumption and decision logs</td><td>A register each, with owners and overdue flags</td><td class="where">RAID</td></tr>
+            <tr><td>Integrated change control</td><td>Schedule and cost impact, approval, baseline-updated check</td><td class="where">RAID › Changes</td></tr>
+            <tr><td>Schedule performance (SPI)</td><td>Duration-weighted earned ÷ planned progress at the status date<sup><a href="#n5">5</a></sup></td><td class="where">Dashboard</td></tr>
+            <tr class="grp"><td colspan="3">PRINCE2®</td></tr>
+            <tr><td>Tolerances</td><td>RAG thresholds set once; breach one and the colour changes</td><td class="where">Settings</td></tr>
+            <tr><td>Highlight report</td><td>Dashboard with the three-line status narrative</td><td class="where">Dashboard</td></tr>
+            <tr class="grp"><td colspan="3">PMI-ACP® · Scrum · hybrid delivery</td></tr>
+            <tr><td>Sprints in a stage-gated plan</td><td>Sprint planning, build and review milestones inside Build</td><td class="where">Plan › 5.1–5.3</td></tr>
+            <tr class="grp"><td colspan="3">ITIL® 4</td></tr>
+            <tr><td>Change enablement, release &amp; deployment</td><td>Approved changes, timed cutover, rollback window</td><td class="where">Runbook</td></tr>
+            <tr><td>Incident management, service transition</td><td>P1–P4 SLAs, breach flags, handover to BAU support</td><td class="where">Hypercare · Plan 11.2</td></tr>
+            <tr class="grp"><td colspan="3">CISM® · ISO/IEC 27001</td></tr>
+            <tr><td>Risk assessment and treatment</td><td>Likelihood × impact heat map; avoid, mitigate, transfer, accept</td><td class="where">RAID › Summary</td></tr>
+            <tr><td>Security workstream</td><td>Security requirements, access model, pen test as a Go/No-Go criterion</td><td class="where">Plan · Go-No-Go</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="fine" style="text-align:center;margin-top:18px">Keelson is independent and not endorsed or certified by any of these bodies.<sup><a href="#n6">6</a></sup></p>
+    </div>
+  </section>
+
+  <!-- SPECS -->
+  <section id="specs" style="padding-top:0">
+    <div class="wrap">
+      <div class="head rise" style="justify-items:start;text-align:left"><h2>The details.</h2></div>
+      <div class="specs rise">
+        <div class="spec"><h3>Workbooks</h3><div><b>Project Plan &amp; Gantt · RAID &amp; Change Log · Go-Live Runbook</b><span>Each one twice: blank for your project, and filled with a worked example.</span></div></div>
+        <div class="spec"><h3>Plan</h3><div><span>500 tasks, up to 3 predecessors each, 52-week Gantt.</span><span>Finish-to-start and start-to-start with leads and lags in working days. FF and SF links are flagged and treated as finish-to-start.</span><span>Monday to Friday plus your own holiday list.</span></div></div>
+        <div class="spec"><h3>Status</h3><div><span>Rule-based RAG against tolerances: finish slip, overdue milestones, overdue tasks, SPI.<sup><a href="#n5">5</a></sup></span><span>PM override with a visible reason. A Data Check column explains every bad input in plain words.</span></div></div>
+        <div class="spec"><h3>Registers</h3><div><span>Risks with heat map and top five, issues, assumptions, dependencies, decisions, change requests with schedule and cost impact.</span></div></div>
+        <div class="spec"><h3>Go-live</h3><div><span>Timed runbook with forecast times, rollback window, Go/No-Go from your criteria, P1–P4 hypercare SLAs and a daily ticket trend.</span></div></div>
+        <div class="spec"><h3>Hand-over</h3><div><span>Client's own template: up to 20 columns, any order, fixed values, five date styles, weekly-grid view.<sup><a href="#n4">4</a></sup></span><span>MS Project XML (beta)<sup><a href="#n2">2</a></sup>, CSV for every register, printable PDF.</span></div></div>
+        <div class="spec"><h3>Requirements</h3><div><span>Excel for Microsoft 365 or Excel 2021 and later, on Windows or Mac. Or Google Sheets.<sup><a href="#n1">1</a></sup></span><span>No macros, add-ins or passwords.</span></div></div>
+        <div class="spec"><h3>Licence</h3><div><span>Unlimited own and client projects. One licence per person. Share filled-in files freely; don't resell the templates.</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPARE -->
+  <section id="compare">
+    <div class="wrap">
+      <div class="head rise"><h2>Which Keelson<br><span class="dim">is right for you?</span></h2></div>
+      <div class="compare rise">
+        <article class="plan"><h3>Free sample</h3><p class="price">$0<small>Try it on a real plan</small></p>
+          <a class="btn line" href="#compare" data-store="sample">Download</a>
+          <ul><li>Project Plan &amp; Gantt<span>Software implementation, blank and filled in</span></li><li>Client-format mapper<span>Your client's own template</span></li>
+            <li class="no">RAID &amp; Change Log<span>Not included</span></li><li class="no">Go-Live Runbook<span>Not included</span></li><li>Dashboard for any plan<span>Paste a plan, get a one-pager</span></li></ul></article>
+        <article class="plan"><h3>One pack</h3><p class="price">$9<small>One project type, one time</small></p>
+          <a class="btn fill" href="#compare" data-store="software">Buy Software pack</a>
+          <ul><li>Project Plan &amp; Gantt<span>Blank and filled in</span></li><li>Client-format mapper<span>Your client's own template</span></li>
+            <li>RAID &amp; Change Log<span>Risks, issues, decisions, changes</span></li><li>Go-Live Runbook<span>Cutover, Go/No-Go, hypercare</span></li><li>Dashboard for any plan<span>Plus MS Project XML, CSV, PDF</span></li></ul></article>
+        <article class="plan best"><span class="flag">Best value</span><h3>All five packs</h3><p class="price">$29<small>Software now, four more as released</small></p>
+          <a class="btn fill" href="#compare" data-store="bundle">Buy all five</a>
+          <ul><li>Everything in One pack<span>For every project type</span></li><li>ERP / CRM, IAM, Cloud, General<span>Delivered free as each is finished</span></li>
+            <li>Client-format mapper<span>In every pack</span></li><li>Unlimited client projects<span>One licence per person</span></li><li>Dashboard for any plan<span>Free v1.x updates</span></li></ul></article>
+      </div>
+      <p class="fine" style="text-align:center;margin-top:26px">Prices in USD. Secure checkout and instant download by Lemon Squeezy, which also handles sales tax and VAT.</p>
+      <p class="store-msg" id="store-msg" hidden>Checkout opens at launch. The store links aren't connected yet.</p>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" style="padding-top:0">
+    <div class="wrap">
+      <div class="head rise"><h2>Questions, answered.</h2></div>
+      <div class="faq">
+        <details><summary>Will the dashboard read my plan?</summary><p>If it has one row per task with a name and a finish or due date, yes. It recognises the usual column names from MS Project, Smartsheet, Jira, Asana, Monday and most client trackers, and title rows above the headers are fine. Phases come from a Phase or Workstream column, or from your outline levels or WBS. Everything happens inside the Excel file: nothing is uploaded.</p></details>
+        <details><summary>Can it really match my client's Excel template?</summary><p>For templates with one row per task, yes: up to 20 columns in any order, fixed values, blank columns and five date styles. Merged cells or several rows per task still need a tidy-up after pasting.</p></details>
+        <details><summary>Is it PMBOK or PRINCE2 compliant?</summary><p>It uses their vocabulary and the artefacts both expect: baselines, tolerances, registers and change control. No standards body certifies templates, and Keelson doesn't claim to be certified or endorsed.</p></details>
+        <details><summary>Can I use it on client projects?</summary><p>Yes, on any number of your own and your clients' projects. Share the filled-in files with anyone; don't resell or give away the templates themselves.</p></details>
+        <details><summary>Do I need to enable macros?</summary><p>No. Every workbook is a plain .xlsx with formulas only, so company security settings won't block it.</p></details>
+        <details><summary>Will I get a native .mpp file?</summary><p>No. You get MS Project XML, which MS Project desktop opens directly, plus an import tab. Microsoft Planner can't import either.</p></details>
+        <details><summary>When do the other packs arrive?</summary><p>As each one is finished. If you bought all five, each new pack lands on your order page and in your inbox at no extra cost.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0;text-align:center">
+    <div class="wrap rise" style="display:grid;gap:26px;justify-items:center">
+      <h2>Your next plan is<br><span class="dim">already half built.</span></h2>
+      <div class="ctas"><a class="btn fill" href="#compare" data-store="sample">Download free sample</a><a class="more" href="#compare">Compare packs</a></div>
+    </div>
+  </section>
+</main>
+
+<div class="wrap notes"><ol>
+  <li id="n1">Every value in every workbook is recalculated on each build and compared with an independent reference calculation, including invalid input and a full 500-task plan. Excel 2019 and earlier are not supported. In Google Sheets, charts and some formatting may look different.</li>
+  <li id="n2">MS Project and Smartsheet import are in beta. The XML is generated and read back with an independent MS Project file reader on each build; check dates after importing. Native .mpp files are not produced.</li>
+  <li id="n3">Sample company, people and project are fictional. Every date and figure on this page comes from the sample workbooks.</li>
+  <li id="n4">Templates with one row per task, up to 20 columns. Merged cells, several rows per task or grouping by person need a manual step after pasting.</li>
+  <li id="n5">Keelson's SPI weights progress by task duration because templates rarely hold cost data. It is a schedule measure in the spirit of earned schedule, not the cost-based EV ÷ PV of earned value management.</li>
+  <li id="n6">PMI, PMP, PMBOK and PMI-ACP are registered marks of the Project Management Institute, Inc. PRINCE2 and ITIL are registered trademarks of AXELOS Limited, part of PeopleCert. CISM is a registered trademark of ISACA. ISO/IEC 27001 is a standard of ISO and IEC. Keelson is not affiliated with, endorsed or certified by any of them.</li>
+  <li id="n7">The dashboard is checked on each build by pasting the same plan in five shapes (MS Project export, MS Project text paste, Jira CSV, a client tracker with title rows and day-first dates, and Keelson's own plan) and comparing every figure with an independent reference calculation. Up to 1,000 rows. Working days are Monday to Friday.</li>
+</ol></div>
+<footer><div class="wrap"><span>© 2026 Keelson · Templates v1.0.0</span><span><a href="legal.html#licence">Licence</a> · <a href="legal.html#refunds">Refunds</a> · <a href="legal.html#privacy">Privacy</a> · <a href="mailto:support@keelson.co.in">Contact</a></span></div></footer>
+
+<script>
+// day/night: follow the device until the visitor chooses; remember the choice when storage is available
+const root = document.documentElement, themeBtn = document.getElementById("theme");
+const SUN = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="10" cy="10" r="3.6"/><path d="M10 1.8v2.1M10 16.1v2.1M1.8 10h2.1M16.1 10h2.1M4.2 4.2l1.5 1.5M14.3 14.3l1.5 1.5M4.2 15.8l1.5-1.5M14.3 5.7l1.5-1.5"/></svg>';
+const MOON = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M16.5 12.6A7 7 0 017.4 3.5a7 7 0 109.1 9.1z"/></svg>';
+try { const saved = localStorage.getItem("keelson-theme"); if (saved === "light" || saved === "dark") root.dataset.theme = saved; } catch (e) {}
+const current = () => root.dataset.theme || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+const paintBtn = () => { const dark = current() === "dark"; themeBtn.innerHTML = dark ? SUN : MOON; themeBtn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode"); };
+themeBtn.addEventListener("click", () => {
+  const next = current() === "dark" ? "light" : "dark";
+  root.dataset.theme = next;
+  try { localStorage.setItem("keelson-theme", next); } catch (e) {}
+  paintBtn();
+});
+matchMedia("(prefers-color-scheme: light)").addEventListener?.("change", paintBtn);
+paintBtn();
+
+// Lemon Squeezy product links: paste each product's share URL before launch
+const STORE = { sample: "", dashboard: "", software: "", bundle: "" };
+const msg = document.getElementById("store-msg");
+document.querySelectorAll("[data-store]").forEach(a => {
+  const url = STORE[a.dataset.store];
+  if (url) { a.href = url; a.target = "_blank"; a.rel = "noopener"; return; }
+  a.addEventListener("click", () => { msg.hidden = false; });
+});
+
+// dashboard before/after: flips to the dashboard once, the first time it scrolls into view
+const baTabs = [...document.querySelectorAll('.toggle [role="tab"]')];
+let baTouched = false;
+const baShow = t => baTabs.forEach(o => {
+  o.setAttribute("aria-selected", o === t);
+  document.getElementById(o.getAttribute("aria-controls")).classList.toggle("on", o === t);
+});
+baTabs.forEach(t => t.addEventListener("click", () => { baTouched = true; baShow(t); }));
+if ("IntersectionObserver" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  const baIo = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return;
+    baIo.disconnect();
+    setTimeout(() => { if (!baTouched) baShow(baTabs[1]); }, 1400);
+  }), { threshold: .6 });
+  baIo.observe(document.querySelector(".ba-stage"));
+}
+
+// laptop tabs
+const tabs = [...document.querySelectorAll('.seg [role="tab"]')];
+tabs.forEach(t => t.addEventListener("click", () => tabs.forEach(o => {
+  o.setAttribute("aria-selected", o === t); document.getElementById(o.getAttribute("aria-controls")).hidden = o !== t;
+})));
+
+// rail
+const rail = document.getElementById("rail");
+const step = () => rail.querySelector(".stop").getBoundingClientRect().width + 18;
+document.getElementById("prev").addEventListener("click", () => rail.scrollBy({ left: -step(), behavior: "smooth" }));
+document.getElementById("next").addEventListener("click", () => rail.scrollBy({ left: step(), behavior: "smooth" }));
+
+// pinned story
+const views = [...document.querySelectorAll(".view")], steps = [...document.querySelectorAll(".step")];
+if ("IntersectionObserver" in window) {
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return;
+    steps.forEach(x => x.classList.toggle("on", x === e.target));
+    views.forEach(v => v.classList.toggle("on", v.dataset.v === e.target.dataset.s));
+  }), { rootMargin: "-45% 0px -45% 0px" });
+  steps.forEach(s => io.observe(s));
+} else steps.forEach(s => s.classList.add("on"));
+
+// slider demo: every value precomputed by the Keelson scheduler on the sample plan
+const SCHED = {"6":{"rows":[[5.7,11.4,"22 Jan–29 Jan"],[35.7,1.4,"Fri 12 Feb"],[41.4,20,"16 Feb–1 Mar"],[61.4,20,"2 Mar–15 Mar"],[80,1.4,"Mon 15 Mar"],[84.3,1.4,"Thu 18 Mar"]],"golive":"Thu 18 Mar","var":0},"7":{"rows":[[5.7,15.7,"22 Jan–1 Feb"],[41.4,1.4,"Tue 16 Feb"],[42.9,20,"17 Feb–2 Mar"],[62.9,20,"3 Mar–16 Mar"],[81.4,1.4,"Tue 16 Mar"],[85.7,1.4,"Fri 19 Mar"]],"golive":"Fri 19 Mar","var":1},"8":{"rows":[[5.7,17.1,"22 Jan–2 Feb"],[42.9,1.4,"Wed 17 Feb"],[44.3,20,"18 Feb–3 Mar"],[64.3,20,"4 Mar–17 Mar"],[82.9,1.4,"Wed 17 Mar"],[90,1.4,"Mon 22 Mar"]],"golive":"Mon 22 Mar","var":2},"9":{"rows":[[5.7,18.6,"22 Jan–3 Feb"],[44.3,1.4,"Thu 18 Feb"],[45.7,20,"19 Feb–4 Mar"],[65.7,20,"5 Mar–18 Mar"],[84.3,1.4,"Thu 18 Mar"],[91.4,1.4,"Tue 23 Mar"]],"golive":"Tue 23 Mar","var":3},"10":{"rows":[[5.7,20,"22 Jan–4 Feb"],[45.7,1.4,"Fri 19 Feb"],[50,17.1,"22 Feb–5 Mar"],[70,17.1,"8 Mar–19 Mar"],[85.7,1.4,"Fri 19 Mar"],[92.9,1.4,"Wed 24 Mar"]],"golive":"Wed 24 Mar","var":4},"11":{"rows":[[5.7,21.4,"22 Jan–5 Feb"],[50,1.4,"Mon 22 Feb"],[51.4,20,"23 Feb–8 Mar"],[71.4,20,"9 Mar–22 Mar"],[90,1.4,"Mon 22 Mar"],[94.3,1.4,"Thu 25 Mar"]],"golive":"Thu 25 Mar","var":5},"12":{"rows":[[5.7,25.7,"22 Jan–8 Feb"],[51.4,1.4,"Tue 23 Feb"],[52.9,20,"24 Feb–9 Mar"],[72.9,20,"10 Mar–23 Mar"],[91.4,1.4,"Tue 23 Mar"],[95.7,1.4,"Fri 26 Mar"]],"golive":"Fri 26 Mar","var":6}};
+const NAMES = ["Customer portal build", "Build complete", "System testing", "User acceptance testing", "Go / No-Go", "Go-live"];
+const MS = [0, 1, 0, 0, 1, 1];
+const host = document.getElementById("rows"), slider = document.getElementById("slider");
+host.innerHTML = NAMES.map((n, i) => `<div class="dr"><div class="n"><span>${n}</span><time></time></div><div class="dt"><i class="${MS[i] ? "ms" : ""}"></i></div></div>`).join("");
+const render = () => {
+  const v = Number(slider.value), r = SCHED[v], base = SCHED[6];
+  slider.style.setProperty("--p", ((v - 6) / 6 * 100) + "%");
+  document.getElementById("slv").textContent = v + " days";
+  [...host.children].forEach((row, i) => {
+    const [l, w, t] = r.rows[i], bar = row.querySelector("i");
+    bar.style.left = l + "%"; bar.style.width = w + "%"; row.querySelector("time").textContent = t;
+    row.classList.toggle("moved", t !== base.rows[i][2]);
+  });
+  const gl = document.getElementById("gl");
+  gl.textContent = "Go‑live " + r.golive; gl.classList.toggle("bad", r.var > 0);
+  document.getElementById("gv").textContent = r.var ? `+${r.var} working day${r.var > 1 ? "s" : ""} vs baseline. Every date after it moved on its own.` : "On baseline";
+};
+slider.addEventListener("input", render);
+render();
+</script>
+</body>
+</html>
