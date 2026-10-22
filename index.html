@@ -332,6 +332,15 @@ footer a { color: var(--muted); text-decoration: none } footer a:hover { color: 
 .three p { margin: 0; color: var(--muted); font-size: .95rem }
 .three code { font: .8rem var(--mono); color: var(--ink) }
 @media (max-width: 760px) { .three { grid-template-columns: minmax(0, 1fr) } }
+/* works with: product names in text with our own neutral icons (no third-party logos) */
+.works { padding-block: clamp(40px, 6vw, 64px) 0; text-align: center }
+.works .kicker { font-size: .95rem; color: var(--muted); font-weight: 500 }
+.wlist { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin: 18px auto 0; padding: 0; list-style: none; max-width: 900px }
+.wlist li { display: flex; align-items: center; gap: 10px; padding: 10px 16px 10px 12px; border-radius: 14px; background: var(--raise); text-align: left }
+.wlist svg { width: 26px; height: 26px; flex: none; color: var(--muted) }
+.wlist b { display: block; font-size: .9rem; font-weight: 600; letter-spacing: -.01em }
+.wlist span { display: block; font-size: .74rem; color: var(--muted) }
+.works .fine { font-size: .72rem; color: var(--faint); margin-top: 14px }
 </style>
 </head>
 <body>
@@ -437,6 +446,13 @@ footer a { color: var(--muted); text-decoration: none } footer a:hover { color: 
       </div>
     </div>
   </div>
+
+  <!-- WORKS WITH -->
+  <section class="works" aria-label="Works with">
+    <div class="wrap"><p class="kicker rise">Works with the tools your plans already live in</p>
+      <ul class="wlist rise"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="M3.5 9h17M3.5 14.5h17M9.5 3.5v17"/></svg><div><b>Microsoft Excel</b><span>2021 or later, and Microsoft 365</span></div></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="M3.5 9h17M3.5 14.5h17M9.5 3.5v17"/></svg><div><b>Google Sheets</b><span>Upload the .xlsx; formulas stay live</span></div></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 6h8M8 12h9M12 18h8"/><path d="M3.5 3.5v17"/></svg><div><b>Microsoft Project</b><span>XML export · paste plans into the dashboard</span></div></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3.5" y="4" width="5" height="16" rx="1.5"/><rect x="9.5" y="4" width="5" height="11" rx="1.5"/><rect x="15.5" y="4" width="5" height="7" rx="1.5"/></svg><div><b>Jira, Smartsheet, Asana</b><span>Paste or CSV into the dashboard</span></div></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M6 3.5h8l4.5 4.5v12.5H6z"/><path d="M14 3.5V8h4.5M9 13h6M9 16.5h6"/></svg><div><b>CSV and PDF</b><span>For any other tool, and for printing</span></div></li></ul>
+      <p class="fine">Product names are trademarks of their owners. Keelson is independent and not affiliated with them.<sup><a href="#n6">6</a></sup></p></div>
+  </section>
 
   <!-- DASHBOARD FOR ANY PLAN -->
   <section id="dash" style="padding-top:clamp(72px,10vw,120px)">
