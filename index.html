@@ -775,10 +775,13 @@ matchMedia("(prefers-color-scheme: light)").addEventListener?.("change", paintBt
 paintBtn();
 
 // Lemon Squeezy product links: paste each product's share URL before launch
-const STORE = { dashboard: "https://keelson.lemonsqueezy.com/checkout/buy/99b08dcc-8db5-4229-930b-4e66e53696e5", software: "", bundle: "" };
+// Until the Lemon Squeezy store is activated, the free dashboard downloads straight from this site.
+// Live checkout (swap back when activated): https://keelson.lemonsqueezy.com/checkout/buy/99b08dcc-8db5-4229-930b-4e66e53696e5
+const STORE = { dashboard: "downloads/Keelson-dashboard-v1.0.0.zip", software: "", bundle: "" };
 const msg = document.getElementById("store-msg");
 document.querySelectorAll("[data-store]").forEach(a => {
   const url = STORE[a.dataset.store];
+  if (url && url.endsWith(".zip")) { a.href = url; a.setAttribute("download", ""); return; }
   if (url) { a.href = url; a.target = "_blank"; a.rel = "noopener"; return; }
   a.addEventListener("click", () => { msg.hidden = false; });
 });
