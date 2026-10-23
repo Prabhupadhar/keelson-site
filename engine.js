@@ -20,7 +20,7 @@
   const CANCEL = ["Cancelled", "Canceled", "Won't Do", "Wont Do", "Won't Fix", "Dropped", "Descoped", "Removed", "Not Required", "Duplicate", "N/A"].map(s => s.toLowerCase());
   const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const WEEKDAYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
-  const RULES = { amberVar: 0, redVar: 10, amberOver: 3, redMs: 2, amberBehind: 10, redBehind: 20 };
+  const RULES = { amberVar: 5, redVar: 15, amberOver: 3, redMs: 2, amberBehind: 10, redBehind: 20 };
   const N_PHASE = 8, N_MS = 8, N_LIST = 6, HDR_SCAN = 10, CAP = 1000, DAY = 864e5;
 
   // dates are whole days since 1970-01-01 (UTC), so arithmetic never meets daylight saving
@@ -36,12 +36,15 @@
     for (let i = 0, s = wd(a + full * 7); i < n % 7; i++) if ((s + i) % 7 < 5) c++;
     return c;
   };
+  // signed working days from a to b, counting b but not a (0 when equal, also when both fall on a weekend)
+  const wdiff = (a, b) => a === b ? 0 : b > a ? nwd(a + 1, b) : -nwd(b + 1, a);
   const isNum = s => /^-?\d+(\.\d+)?$/.test(s);
   const low = s => String(s ?? "").trim().toLowerCase();
   const truthy = s => ["yes", "y", "true", "1", "x"].includes(low(s));
 
   function parseTable(text) {
-    const lines = text.replace(/\r\n?/g, "\n").replace(/\n+$/, "").split("\n");
+    // control characters become spaces (tab, LF and CR are kept: they are the separators)
+    const lines = text.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\uFFFE\uFFFF]/g, " ").replace(/\r\n?/g, "\n").replace(/\n+$/, "").split("\n");
     const head = lines.slice(0, 12).join("\n");
     const sep = head.includes("\t") ? "\t" : (head.split(";").length > head.split(",").length ? ";" : ",");
     if (sep === "\t") return lines.map(l => l.split("\t").map(c => c.trim()));
@@ -172,8 +175,8 @@
       o.w = s != null && f != null ? (f >= s ? Math.max(1, nwd(s, f)) : 1) : 1;
       o.e = s != null && f != null ? (sd < s ? 0 : sd >= f ? 1 : Math.min(1, nwd(s, sd) / o.w)) : (f != null && sd >= f ? 1 : 0);
       o.od = o.leaf && !o.done && f != null && f < sd;
-      o.late = o.od ? Math.max(1, nwd(f, sd) - 1) : null;
-      o.var = f != null && o.bfin != null ? (f >= o.bfin ? nwd(o.bfin, f) - 1 : -(nwd(f, o.bfin) - 1)) : null;
+      o.late = o.od ? Math.max(1, wdiff(f, sd)) : null;
+      o.var = f != null && o.bfin != null ? wdiff(o.bfin, f) : null;
     }
     const leaf = R.filter(o => o.leaf), tasks = leaf.filter(o => o.istask), ms = leaf.filter(o => o.isms);
     const sum = (a, f) => a.reduce((t, o) => t + f(o), 0);
@@ -186,8 +189,8 @@
     k.finish = fins.length ? Math.max(...fins) : null;
     k.bfinish = bfs.length ? Math.max(...bfs) : null;
     k.start = starts.length ? Math.min(...starts) : fins.length ? Math.min(...fins) : null;
-    k.var = k.finish == null || k.bfinish == null ? 0 : k.finish >= k.bfinish ? nwd(k.bfinish, k.finish) - 1 : -(nwd(k.finish, k.bfinish) - 1);
-    k.behind = ww ? Math.round((k.exp - k.pct) * 100) : 0;
+    k.var = k.finish == null || k.bfinish == null ? 0 : wdiff(k.bfinish, k.finish);
+    k.behind = ww ? Math.round(k.exp * 100) - Math.round(k.pct * 100) : 0; // the printed % figures, subtracted
     k.overT = tasks.filter(o => o.od).length; k.overMs = ms.filter(o => o.od).length;
     k.nTask = tasks.length; k.nTaskDone = tasks.filter(o => o.done).length;
     k.nMs = ms.length; k.nMsDone = ms.filter(o => o.done).length;
@@ -195,12 +198,27 @@
     k.nCancel = R.filter(o => o.st === "Cancelled").length;
     const red = k.var > rules.redVar || k.overMs >= rules.redMs || k.behind > rules.redBehind;
     const amber = k.var > rules.amberVar || k.overMs >= 1 || k.overT > rules.amberOver || k.behind > rules.amberBehind;
-    k.rag = !act.length ? "—" : red ? "Red" : amber ? "Amber" : "Green";
-    k.why = k.rag === "Green" ? ["All rules within tolerance"] : [
-      k.var > rules.amberVar && `Finish ${k.var} days late`,
-      k.overMs > 0 && `${k.overMs} milestone${k.overMs > 1 ? "s" : ""} overdue`,
-      k.overT > rules.amberOver && `${k.overT} tasks overdue`,
-      k.behind > rules.amberBehind && `${k.behind} pts behind plan`].filter(Boolean);
+    const noFin = leaf.length - fins.length; // integer tests: > 20% is noFin * 5 > leaves, > 50% is noFin * 2 > leaves
+    const rule = red ? "Red" : amber ? "Amber" : "Green";
+    if (!act.length) { k.ragCalc = "—"; k.why = []; }
+    else if (!fins.length || noFin * 2 > leaf.length) { k.ragCalc = "—"; k.why = ["Not enough dated tasks to assess status"]; }
+    else {
+      k.ragCalc = rule === "Green" && noFin * 5 > leaf.length ? "Amber" : rule;
+      k.why = rule === "Green" ? [k.ragCalc === "Amber" ? `${noFin} tasks have no finish date` : "All rules within tolerance"] : [
+        k.var > rules.amberVar && `Finish ${k.var} days late`,
+        k.overMs > 0 && `${k.overMs} milestone${k.overMs > 1 ? "s" : ""} overdue`,
+        k.overT > rules.amberOver && `${k.overT} tasks overdue`,
+        k.behind > rules.amberBehind && `${k.behind} pts behind plan`].filter(Boolean);
+      if (!bfs.length) k.why.push("No baseline: finish slippage not assessed");
+    }
+    const ov = opt.ragOverride;
+    const useOv = act.length && ov && ["Red", "Amber", "Green"].includes(ov.rag);
+    k.rag = useOv ? ov.rag : k.ragCalc;
+    k.ragReason = useOv ? String(ov.reason ?? "") : null;
+    const openLate = leaf.filter(o => o.od); // open leaves due before the status date: their forecast is stale
+    k.stale = { count: openLate.length, oldest: openLate.length ? Math.min(...openLate.map(o => o.finish)) : null };
+    k.finishPassed = k.finish != null && k.finish < sd && leaf.some(o => !o.done);
+    k.bCover = { with: bfs.length, of: leaf.length };
 
     // phases in order of first leaf; leading completed phases skipped when there are more than 8
     const order = [];
@@ -215,9 +233,13 @@
       const pct = pw ? sum(pt, o => o.w * o.pe) / pw : pl.filter(o => o.done).length / Math.max(1, pl.length);
       const fin = mx(pl.map(o => o.finish).filter(v => v != null)), bfin = mx(pl.map(o => o.bfin).filter(v => v != null));
       const st = mn(pl.map(o => o.start).filter(v => v != null));
-      const status = pl.every(o => o.done) ? "Done" : pl.some(o => o.od) ? "Late" : fin != null && bfin != null && fin > bfin ? "At risk"
+      const exp = pw ? sum(pt, o => o.w * o.e) / pw : 0;
+      const pvar = fin != null && bfin != null ? wdiff(bfin, fin) : null;
+      const behind = pw ? Math.round(exp * 100) - Math.round(pct * 100) : 0;
+      const status = pl.every(o => o.done) ? "Done" : pl.some(o => o.od) ? "Late"
+        : (pvar ?? 0) > rules.amberVar || behind > rules.amberBehind ? "At risk"
         : pct === 0 && st != null && st > sd ? "Planned" : "On track";
-      return { name: p, pct, start: st, finish: fin, status, ms: pl.filter(o => o.isms && o.finish != null).map(o => o.finish) };
+      return { name: p, pct, exp, var: pvar, behind, start: st, finish: fin, status, ms: pl.filter(o => o.isms && o.finish != null).map(o => o.finish) };
     });
     const by = (a, f) => [...a].sort((x, y) => f(x) - f(y) || x.row - y.row);
     const openMs = by(ms.filter(o => !o.done && o.finish != null), o => o.finish);
@@ -233,6 +255,11 @@
     k.overdue = overdue.slice(0, N_LIST).map(item); k.overdueMore = Math.max(0, overdue.length - N_LIST);
     const up = by(tasks.filter(o => !o.done && o.finish != null && o.finish >= sd && o.finish <= sd + upcoming), o => o.finish);
     k.upcoming = up.slice(0, N_LIST).map(item); k.upcomingMore = Math.max(0, up.length - N_LIST); k.upcomingDays = upcoming;
+    // every leaf row, for report builders (dates are day numbers; see fromYMD/iso)
+    const seen = {};
+    k.tasks = leaf.map(o => ({ key: (b => (seen[b] = (seen[b] || 0) + 1) > 1 ? `${b}#${seen[b]}` : b)(o.nm + "|" + o.ph), row: o.row, name: o.nm, owner: o.r_owner, phase: o.ph, start: o.start, finish: o.finish, bfin: o.bfin,
+      pct: o.pct, done: o.done, ms: o.isms, od: o.od, late: o.late, var: o.var, w: o.w }));
+    k.rules = rules;
     k.checks = {
       noFinish: leaf.filter(o => o.finish == null).length,
       badDates: act.filter(o => ["start", "finish", "bfin"].some(f => o["r_" + f] !== "" && o[f] == null)).length,
@@ -243,6 +270,6 @@
   }
 
   const parseDate = (t, dayFirst) => dateValue(dateParts(t), dayFirst);
-  root.KeelsonEngine = { compute, parseTable, detect, parseDate, FIELDS, RULES, fromYMD, iso, fmt, nwd, wd, DAY };
+  root.KeelsonEngine = { compute, parseTable, detect, parseDate, FIELDS, RULES, fromYMD, iso, fmt, nwd, wdiff, wd, DAY };
   if (typeof module !== "undefined") module.exports = root.KeelsonEngine;
 })(typeof window !== "undefined" ? window : globalThis);
