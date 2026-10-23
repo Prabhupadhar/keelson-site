@@ -356,7 +356,7 @@ footer a { color: var(--muted); text-decoration: none } footer a:hover { color: 
       <a href="#dash">Dashboard</a><a href="#stop">Why</a><a href="#formats">Formats</a><a href="#schedule">Scheduling</a><a href="#golive">Go-live</a><a href="#frameworks">Frameworks</a><a href="#specs">Specs</a><a href="#compare">Compare</a>
     </nav>
     <button class="theme" id="theme" type="button" aria-label="Switch to light mode"></button>
-    <a class="btn fill sm" href="#compare" data-store="sample">Get it free</a>
+    <a class="btn fill sm" href="#compare" data-store="dashboard">Get it free</a>
   </div>
 </header>
 
@@ -368,7 +368,7 @@ footer a { color: var(--muted); text-decoration: none } footer a:hover { color: 
       <h1 class="in d2">Plan once.<br><span class="dim">Deliver anywhere.</span></h1>
       <p class="lede in d3">The project plan that schedules itself, reports its own status and runs your go-live. Then hands it over in <b>your client's template</b>, MS Project, Google Sheets, CSV or PDF.</p>
       <div class="ctas in d4">
-        <a class="btn fill" href="#compare" data-store="sample">Download free sample</a>
+        <a class="btn fill" href="#compare" data-store="dashboard">Get the free dashboard</a>
         <a class="more" href="#compare">Buy from $9</a>
       </div>
       <p class="avail in d4">Now available: <b>Software / SaaS Implementation pack</b> · Excel 2021+ and Google Sheets · No macros</p>
@@ -677,10 +677,10 @@ footer a { color: var(--muted); text-decoration: none } footer a:hover { color: 
     <div class="wrap">
       <div class="head rise"><h2>Which Keelson<br><span class="dim">is right for you?</span></h2></div>
       <div class="compare rise">
-        <article class="plan"><h3>Free sample</h3><p class="price">$0<small>Try it on a real plan</small></p>
-          <a class="btn line" href="#compare" data-store="sample">Download</a>
-          <ul><li>Project Plan &amp; Gantt<span>Software implementation, blank and filled in</span></li><li>Client-format mapper<span>Your client's own template</span></li>
-            <li class="no">RAID &amp; Change Log<span>Not included</span></li><li class="no">Go-Live Runbook<span>Not included</span></li><li>Dashboard for any plan<span>Paste a plan, get a one-pager</span></li></ul></article>
+        <article class="plan"><h3>Free dashboard</h3><p class="price">$0<small>Try it on your real plan</small></p>
+          <a class="btn line" href="#compare" data-store="dashboard">Download</a>
+          <ul><li>Dashboard for any plan<span>Paste a plan, get a one-pager</span></li><li>One-page PDF<span>Print or paste into PowerPoint</span></li>
+            <li class="no">Project Plan &amp; Gantt<span>In the packs</span></li><li class="no">RAID &amp; Change Log<span>In the packs</span></li><li class="no">Go-Live Runbook<span>In the packs</span></li></ul></article>
         <article class="plan"><h3>One pack</h3><p class="price">$9<small>One project type, one time</small></p>
           <a class="btn fill" href="#compare" data-store="software">Buy Software pack</a>
           <ul><li>Project Plan &amp; Gantt<span>Blank and filled in</span></li><li>Client-format mapper<span>Your client's own template</span></li>
@@ -691,7 +691,7 @@ footer a { color: var(--muted); text-decoration: none } footer a:hover { color: 
             <li>Client-format mapper<span>In every pack</span></li><li>Unlimited client projects<span>One licence per person</span></li><li>Dashboard for any plan<span>Free v1.x updates</span></li></ul></article>
       </div>
       <p class="fine" style="text-align:center;margin-top:26px">Prices in USD. Secure checkout and instant download by Lemon Squeezy, which also handles sales tax and VAT.</p>
-      <p class="store-msg" id="store-msg" hidden>Checkout opens at launch. The store links aren't connected yet.</p>
+      <p class="store-msg" id="store-msg" hidden>Paid packs open for checkout very soon. The free dashboard is available now.</p>
     </div>
   </section>
 
@@ -714,7 +714,7 @@ footer a { color: var(--muted); text-decoration: none } footer a:hover { color: 
   <section style="padding-top:0;text-align:center">
     <div class="wrap rise" style="display:grid;gap:26px;justify-items:center">
       <h2>Your next plan is<br><span class="dim">already half built.</span></h2>
-      <div class="ctas"><a class="btn fill" href="#compare" data-store="sample">Download free sample</a><a class="more" href="#compare">Compare packs</a></div>
+      <div class="ctas"><a class="btn fill" href="#compare" data-store="dashboard">Get the free dashboard</a><a class="more" href="#compare">Compare packs</a></div>
     </div>
   </section>
 </main>
@@ -748,7 +748,7 @@ matchMedia("(prefers-color-scheme: light)").addEventListener?.("change", paintBt
 paintBtn();
 
 // Lemon Squeezy product links: paste each product's share URL before launch
-const STORE = { sample: "", dashboard: "", software: "", bundle: "" };
+const STORE = { dashboard: "https://keelson.lemonsqueezy.com/checkout/buy/99b08dcc-8db5-4229-930b-4e66e53696e5", software: "", bundle: "" };
 const msg = document.getElementById("store-msg");
 document.querySelectorAll("[data-store]").forEach(a => {
   const url = STORE[a.dataset.store];
