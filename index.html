@@ -21,7 +21,7 @@
    Type does the work: system SF/Segoe, heavy weights, a muted second line instead of gradients.
    One accent (teal) for actions; amber/red/green only for status. Dark-first with a light theme and a toggle. */
 :root {
-  --bg: #000000; --raise: #111113; --raise-2: #1a1a1d; --ink: #f5f5f7; --muted: #8a8a90; --faint: #5a5a60;
+  --bg: #000000; --raise: #111113; --raise-2: #1a1a1d; --ink: #f5f5f7; --muted: #9a9aa0; --faint: #828288;
   --line: rgba(255, 255, 255, .1); --nav: rgba(16, 16, 18, .72); --spot: rgba(255, 255, 255, .085);
   --accent: #39c9be; --on-accent: #021c1a;
   --ok: #4fd18f; --ok-bg: rgba(79, 209, 143, .13); --warn: #f6ad3b; --warn-bg: rgba(246, 173, 59, .14); --bad: #ff6b61; --bad-bg: rgba(255, 107, 97, .14);
@@ -33,17 +33,17 @@
   color-scheme: dark;
 }
 @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) {
-  --bg: #ffffff; --raise: #f5f5f7; --raise-2: #e9e9ed; --ink: #1d1d1f; --muted: #6e6e73; --faint: #a1a1a6;
+  --bg: #ffffff; --raise: #f5f5f7; --raise-2: #e9e9ed; --ink: #1d1d1f; --muted: #56565b; --faint: #68686d;
   --line: rgba(0, 0, 0, .09); --nav: rgba(255, 255, 255, .78); --spot: rgba(0, 0, 0, .045);
   --accent: #087b83; --on-accent: #ffffff;
-  --ok: #138a4f; --ok-bg: rgba(19, 138, 79, .1); --warn: #b06500; --warn-bg: rgba(246, 173, 59, .2); --bad: #c93127; --bad-bg: rgba(201, 49, 39, .09);
+  --ok: #0d7040; --ok-bg: rgba(19, 138, 79, .1); --warn: #955500; --warn-bg: rgba(246, 173, 59, .2); --bad: #b4281f; --bad-bg: rgba(201, 49, 39, .09);
   --bar: rgba(8, 123, 131, .17); --bar-done: #087b83;
   --shadow: 0 60px 110px -55px rgba(20, 30, 50, .5); color-scheme: light } }
 :root[data-theme="light"] {
-  --bg: #ffffff; --raise: #f5f5f7; --raise-2: #e9e9ed; --ink: #1d1d1f; --muted: #6e6e73; --faint: #a1a1a6;
+  --bg: #ffffff; --raise: #f5f5f7; --raise-2: #e9e9ed; --ink: #1d1d1f; --muted: #56565b; --faint: #68686d;
   --line: rgba(0, 0, 0, .09); --nav: rgba(255, 255, 255, .78); --spot: rgba(0, 0, 0, .045);
   --accent: #087b83; --on-accent: #ffffff;
-  --ok: #138a4f; --ok-bg: rgba(19, 138, 79, .1); --warn: #b06500; --warn-bg: rgba(246, 173, 59, .2); --bad: #c93127; --bad-bg: rgba(201, 49, 39, .09);
+  --ok: #0d7040; --ok-bg: rgba(19, 138, 79, .1); --warn: #955500; --warn-bg: rgba(246, 173, 59, .2); --bad: #b4281f; --bad-bg: rgba(201, 49, 39, .09);
   --bar: rgba(8, 123, 131, .17); --bar-done: #087b83;
   --shadow: 0 60px 110px -55px rgba(20, 30, 50, .5); color-scheme: light }
 
@@ -341,6 +341,22 @@ footer a { color: var(--muted); text-decoration: none } footer a:hover { color: 
 .wlist b { display: block; font-size: .9rem; font-weight: 600; letter-spacing: -.01em }
 .wlist span { display: block; font-size: .74rem; color: var(--muted) }
 .works .fine { font-size: .72rem; color: var(--faint); margin-top: 14px }
+/* interaction polish: pointer, 200ms hover states, visible focus everywhere */
+a, button, summary, [role="tab"], label[for] { cursor: pointer }
+.plan, .wlist li, .stop, .proof div { transition: transform .25s var(--ease), box-shadow .25s var(--ease), background .25s }
+@media (hover: hover) { .plan:hover, .wlist li:hover { transform: translateY(-3px); box-shadow: 0 18px 40px rgba(0, 0, 0, .18) } }
+summary:focus-visible, .plan a:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px }
+/* proof: true numbers, not testimonials */
+.proof { padding-block: clamp(56px, 8vw, 96px) 0 }
+.proof .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--line); border-radius: 22px; overflow: hidden; border: 1px solid var(--line) }
+.proof .grid div { background: var(--bg); padding: 28px 24px; text-align: center }
+.proof b { display: block; font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 700; letter-spacing: -.045em; line-height: 1 }
+.proof span { display: block; margin-top: 10px; font-size: .86rem; color: var(--muted); line-height: 1.35 }
+@media (max-width: 760px) { .proof .grid { grid-template-columns: repeat(2, minmax(0, 1fr)) } }
+/* trust row under pricing */
+.trust { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 28px; margin: 30px auto 0; padding: 0; list-style: none; font-size: .88rem; color: var(--muted) }
+.trust li { display: flex; align-items: center; gap: 8px }
+.trust svg { width: 18px; height: 18px; flex: none; color: var(--accent) }
 </style>
 </head>
 <body>
@@ -452,6 +468,16 @@ footer a { color: var(--muted); text-decoration: none } footer a:hover { color: 
     <div class="wrap"><p class="kicker rise">Works with the tools your plans already live in</p>
       <ul class="wlist rise"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="M3.5 9h17M3.5 14.5h17M9.5 3.5v17"/></svg><div><b>Microsoft Excel</b><span>2021 or later, and Microsoft 365</span></div></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="M3.5 9h17M3.5 14.5h17M9.5 3.5v17"/></svg><div><b>Google Sheets</b><span>Upload the .xlsx; formulas stay live</span></div></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 6h8M8 12h9M12 18h8"/><path d="M3.5 3.5v17"/></svg><div><b>Microsoft Project</b><span>XML export · paste plans into the dashboard</span></div></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3.5" y="4" width="5" height="16" rx="1.5"/><rect x="9.5" y="4" width="5" height="11" rx="1.5"/><rect x="15.5" y="4" width="5" height="7" rx="1.5"/></svg><div><b>Jira, Smartsheet, Asana</b><span>Paste or CSV into the dashboard</span></div></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M6 3.5h8l4.5 4.5v12.5H6z"/><path d="M14 3.5V8h4.5M9 13h6M9 16.5h6"/></svg><div><b>CSV and PDF</b><span>For any other tool, and for printing</span></div></li></ul>
       <p class="fine">Product names are trademarks of their owners. Keelson is independent and not affiliated with them.<sup><a href="#n6">6</a></sup></p></div>
+  </section>
+
+  <!-- PROOF: true numbers -->
+  <section class="proof" aria-label="Quality">
+    <div class="wrap"><div class="grid rise">
+      <div><b>169</b><span>automated checks on every release</span></div>
+      <div><b>5</b><span>real-world plan formats tested</span></div>
+      <div><b>100+</b><span>column names recognised</span></div>
+      <div><b>0</b><span>macros, add-ins or uploads</span></div>
+    </div></div>
   </section>
 
   <!-- DASHBOARD FOR ANY PLAN -->
@@ -690,7 +716,8 @@ footer a { color: var(--muted); text-decoration: none } footer a:hover { color: 
           <ul><li>Everything in One pack<span>For every project type</span></li><li>ERP / CRM, IAM, Cloud, General<span>Delivered free as each is finished</span></li>
             <li>Client-format mapper<span>In every pack</span></li><li>Unlimited client projects<span>One licence per person</span></li><li>Dashboard for any plan<span>Free v1.x updates</span></li></ul></article>
       </div>
-      <p class="fine" style="text-align:center;margin-top:26px">Prices in USD. Secure checkout and instant download by Lemon Squeezy, which also handles sales tax and VAT.</p>
+      <ul class="trust"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg><a href="legal.html#refunds" style="color:inherit">14-day money-back guarantee</a></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Instant download</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>Secure checkout, tax and VAT handled</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10"/></svg>Unlimited client projects</li></ul>
+      <p class="fine" style="text-align:center;margin-top:14px">Prices in USD. Checkout by Lemon Squeezy, our merchant of record.</p>
       <p class="store-msg" id="store-msg" hidden>Paid packs open for checkout very soon. The free dashboard is available now.</p>
     </div>
   </section>
