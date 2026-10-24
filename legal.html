@@ -2,43 +2,44 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'; worker-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Keelson · Terms, privacy and refunds</title>
 <meta name="description" content="Keelson licence and terms of use, refund policy, privacy policy and contact details.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preload" href="fonts/plus-jakarta-sans-800.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/plus-jakarta-sans-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="design/tokens.css">
+<link rel="stylesheet" href="site.css">
+<script src="theme.js"></script>
 <style>
-:root { --bg:#000; --raise:#111113; --ink:#f5f5f7; --muted:#8a8a90; --line:rgba(255,255,255,.1); --accent:#39c9be;
-  --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Inter,Roboto,"Helvetica Neue",Arial,sans-serif }
-@media (prefers-color-scheme: light) { :root { --bg:#fff; --raise:#f5f5f7; --ink:#1d1d1f; --muted:#6e6e73; --line:rgba(0,0,0,.09); --accent:#087b83 } }
-* { box-sizing:border-box }
-body { margin:0; background:var(--bg); color:var(--ink); font:400 17px/1.55 var(--sans); letter-spacing:-.01em; -webkit-font-smoothing:antialiased }
-.wrap { max-width:760px; margin:0 auto; padding:0 22px }
-header { border-bottom:1px solid var(--line) }
-header .wrap { display:flex; align-items:center; gap:10px; height:56px }
-.brand { display:flex; align-items:center; gap:8px; color:var(--ink); text-decoration:none; font-weight:600; font-size:1.1rem; letter-spacing:-.03em }
-.brand svg { width:22px; height:22px }
-header nav { margin-left:auto; display:flex; gap:18px; font-size:.85rem }
-header nav a, footer a { color:var(--muted); text-decoration:none } header nav a:hover, footer a:hover { color:var(--ink) }
-h1 { font-size:clamp(2rem,5vw,2.8rem); letter-spacing:-.04em; line-height:1.1; margin:56px 0 8px }
-.updated { color:var(--muted); font-size:.9rem; margin:0 0 40px }
-section { padding:28px 0; border-top:1px solid var(--line); scroll-margin-top:20px }
-h2 { font-size:1.4rem; letter-spacing:-.03em; margin:0 0 12px }
-p, li { color:var(--muted) } p b, li b { color:var(--ink); font-weight:600 }
-ul { padding-left:20px } li { margin:6px 0 }
-a { color:var(--accent) }
-.card { background:var(--raise); border-radius:16px; padding:18px 22px; margin:14px 0 }
-footer { border-top:1px solid var(--line); margin-top:40px; padding:22px 0 46px; font-size:.8rem; color:var(--muted) }
+.legal{max-width:820px;padding-bottom:var(--sp-7)}
+.legal h1{font-size:var(--fs-h1);letter-spacing:var(--tracking-display);line-height:1.05;margin:clamp(40px,7vw,80px) 0 var(--sp-3)}
+.legal .updated{color:var(--muted);margin:0 0 var(--sp-7)}
+.legal section{padding:var(--sp-6) 0;border-top:1px solid var(--line);scroll-margin-top:84px}
+.legal [id]{scroll-margin-top:84px}
+.legal h2{font-size:var(--fs-h3);margin:0 0 var(--sp-3)}
+.legal p,.legal li{color:var(--ink-2);margin:0 0 var(--sp-3)}
+.legal p b,.legal li b{color:var(--ink);font-weight:800}
+.legal ul{padding-left:20px;margin:0 0 var(--sp-3)}.legal li{margin:6px 0}
+.lcard{background:var(--bg-soft);border-radius:var(--r-lg);padding:var(--sp-5) var(--sp-5) var(--sp-2);margin:var(--sp-4) 0;box-shadow:inset 0 0 0 1px var(--line)}
+.lnav{display:flex;gap:2px;margin-left:auto}
+.lnav a{display:inline-flex;align-items:center;min-height:44px;padding:0 12px;border-radius:var(--r-pill);color:var(--ink-2);text-decoration:none;font-size:15px}
+.lnav a:hover{background:var(--surface-2);color:var(--ink)}
+@media (max-width:640px){.lnav a{padding:0 7px;font-size:14px}.lnav a.hide-sm{display:none}}
 </style>
 </head>
 <body>
-<header><div class="wrap">
-  <a class="brand" href="./"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="9" y="8" width="10.5" height="48" rx="5.25" fill="#39c9be"/><path d="M27 28.5 44 11.5" stroke="currentColor" stroke-width="10" stroke-linecap="round" opacity=".42"/><path d="M27 35.5 40 48.5" stroke="currentColor" stroke-width="10" stroke-linecap="round"/><path d="M51 50.2l6.3 6.3-6.3 6.3-6.3-6.3z" fill="#f5a524"/></svg>Keelson</a>
-  <nav><a href="#licence">Licence</a><a href="#refunds">Refunds</a><a href="#privacy">Privacy</a><a href="#contact">Contact</a></nav>
+<a class="skip" href="#main">Skip to content</a>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><symbol id="k-mark" viewBox="0 0 64 64"><rect x="9" y="8" width="10.5" height="48" rx="5.25" fill="#39c9be"/><path d="M27 28.5 44 11.5" stroke="currentColor" stroke-width="10" stroke-linecap="round" opacity=".42" fill="none"/><path d="M27 35.5 40 48.5" stroke="currentColor" stroke-width="10" stroke-linecap="round" fill="none"/><path d="M51 50.2l6.3 6.3-6.3 6.3-6.3-6.3z" fill="#f5a524"/></symbol></svg>
+<header class="nav"><div class="wrap">
+  <a class="logo" href="./" aria-label="Keelson home"><svg aria-hidden="true"><use href="#k-mark"/></svg>Keelson</a>
+  <nav class="lnav" aria-label="On this page"><a href="#licence">Licence</a><a href="#refunds">Refunds</a><a href="#privacy">Privacy</a><a class="hide-sm" href="#contact">Contact</a></nav>
 </div></header>
 
-<main class="wrap">
+<main class="wrap legal" id="main" tabindex="-1">
   <h1>Terms, privacy and refunds</h1>
-  <p class="updated">Last updated 23 October 2026</p>
+  <p class="updated">Last updated 24 October 2026</p>
 
   <section id="contact">
     <h2>Contact</h2>
@@ -48,7 +49,7 @@ footer { border-top:1px solid var(--line); margin-top:40px; padding:22px 0 46px;
   <section id="licence">
     <h2>Licence and terms of use</h2>
     <p>Keelson sells downloadable spreadsheet templates. Buying (or downloading a free template) gives you a personal licence:</p>
-    <div class="card">
+    <div class="lcard">
       <p><b>You may</b></p>
       <ul>
         <li>use the templates on any number of your own and your clients' projects;</li>
@@ -76,7 +77,9 @@ footer { border-top:1px solid var(--line); margin-top:40px; padding:22px 0 46px;
   <section id="privacy">
     <h2>Privacy policy</h2>
     <p><b>This website and the Keelson Pro app</b> use no cookies, no analytics and no tracking. Your project plan is read and turned into reports inside your browser tab; it is never uploaded to us or anyone else.</p>
-    <p><b>What the app keeps in your browser</b> (localStorage on this device only, never sent to us): your theme choice; your brand colour, logo, client and "prepared by" names; your Pro licence key and when it was last checked; and, each time you download a report, a snapshot of that report's figures (project name, task and phase names, finish dates and % complete) so the next report can show what changed (the 12 most recent per project). The runbook tool remembers your go/no-go ticks. Anyone using this browser profile can see this data. To remove it, use "Clear saved data" in the app, or clear this site's data in your browser settings.</p>
+    <p><b>What the app keeps in your browser</b> (localStorage on this device only, never sent to us): your theme choice; your brand colour, logo, client and "prepared by" names; your Pro licence key and when it was last checked; your status rules and re-baseline notes per project; your status call and its reason, milestone keywords and the milestones you left out (keelson-projects), per project; and, when a version is saved, a snapshot of that report's figures (project name, task and phase names, finish dates and % complete) so the next report can show what changed (the 12 most recent per project). The runbook tool remembers your go/no-go ticks. Commentary you are still editing is kept in sessionStorage for this tab only and is gone when the tab closes.</p>
+    <p><b>Version history</b> (IndexedDB on this device only, never sent to us): when you download a Word report or press Save version, and each time you add an older file, the app saves a version of the plan for that project and status date, so it can show what changed, the slip trend and finish-date confidence. A version holds the project name; each task's name, ID, phase and owner (often people's names); its start, finish, baseline and actual dates, % complete and done/milestone flags; cancelled tasks; the overall status (Red/Amber/Green) and summary figures; and the file and sheet name it came from and when it was saved. A .keelson.json export contains all of this, so anyone you give the file to can read it. Up to 52 versions are kept per project; older ones are dropped. You can export a project's history as a .keelson.json file and import it on another computer; that file stays wherever you save it. Sample projects are kept in memory only, unless you download a report from one. Anyone using this browser profile can see this data. To remove it, use "Clear saved data" in the app (it also deletes every project's version history), or clear this site's data in your browser settings.</p>
+    <p id="hosting"><b>Hosting.</b> This site is hosted on GitHub Pages. Like any web host, GitHub receives your IP address and browser type when you load a page, and may keep them in its server logs under GitHub's privacy statement. Your plan is never part of those requests.</p>
     <p><b>Licence checks.</b> When you enter a Pro key, and about once a week after that, your browser sends the key (and, as with any web request, your IP address and browser type) to our reseller Lemon Squeezy (USA) to confirm it is valid. No plan data is included. Lemon Squeezy's privacy policy applies to that check.</p>
     <p><b>The templates</b> run entirely inside Excel or Google Sheets on your device or account. Your project plans are never uploaded to us.</p>
     <p><b>When you buy or download</b>, our reseller collects what it needs to complete the order: your name, email address, country and payment details (we never see your card details). We receive your name, email address, country and order details so we can deliver the files, provide support and handle refunds.</p>
@@ -85,6 +88,10 @@ footer { border-top:1px solid var(--line); margin-top:40px; padding:22px 0 46px;
   </section>
 </main>
 
-<footer><div class="wrap">© 2026 Keelson · <a href="./">Home</a></div></footer>
+<footer class="foot" style="margin-top:0">
+  <div class="wrap">
+    <div class="foot-base" style="margin-top:0;padding-top:0;border-top:0"><span>© 2026 Keelson · <a href="./">Home</a> · <a href="app.html">Reports app</a> · <a href="templates.html">Templates</a> · <a href="tools.html">Free tools</a></span><span>No cookies. No trackers. No third-party requests. Hosted on GitHub Pages (<a href="#hosting">see Hosting</a>).</span></div>
+  </div>
+</footer>
 </body>
 </html>

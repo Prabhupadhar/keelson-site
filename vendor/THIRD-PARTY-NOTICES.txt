@@ -138,3 +138,17 @@ it and redistribute it freely, subject to the following restrictions:
 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original
    software.
 3. This notice may not be removed or altered from any source distribution.
+
+
+Fonts in site/fonts/
+====================
+
+plus-jakarta-sans-500.woff2 and plus-jakarta-sans-800.woff2 are Plus Jakarta Sans (weights 500 and 800), served from our own
+origin (no font CDN).
+
+Font                 Licence                      Copyright
+-------------------  ---------------------------  ------------------------------------------------------------------
+Plus Jakarta Sans    SIL Open Font License 1.1    Copyright 2020 The Plus Jakarta Sans Project Authors
+                                                  (https://github.com/tokotype/PlusJakartaSans)
+
+The full licence text is in site/fonts/OFL-PlusJakartaSans.txt, published alongside the fonts.

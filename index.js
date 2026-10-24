@@ -1,59 +1,71 @@
-// day/night: follow the device until the visitor chooses; remember the choice when storage is available
+// day/night: light by default, follows the device until the visitor chooses; remember the choice when storage is available
 const root = document.documentElement, themeBtn = document.getElementById("theme");
-const SUN = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="10" cy="10" r="3.6"/><path d="M10 1.8v2.1M10 16.1v2.1M1.8 10h2.1M16.1 10h2.1M4.2 4.2l1.5 1.5M14.3 14.3l1.5 1.5M4.2 15.8l1.5-1.5M14.3 5.7l1.5-1.5"/></svg>';
-const MOON = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M16.5 12.6A7 7 0 017.4 3.5a7 7 0 109.1 9.1z"/></svg>';
-try { const saved = localStorage.getItem("keelson-theme"); if (saved === "light" || saved === "dark") root.dataset.theme = saved; } catch (e) {}
-const current = () => root.dataset.theme || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
-const paintBtn = () => { const dark = current() === "dark"; themeBtn.innerHTML = dark ? SUN : MOON; themeBtn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode"); };
+const current = () => root.dataset.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+const paintBtn = () => themeBtn.setAttribute("aria-label", current() === "dark" ? "Switch to light theme" : "Switch to dark theme");
 themeBtn.addEventListener("click", () => {
   const next = current() === "dark" ? "light" : "dark";
   root.dataset.theme = next;
   try { localStorage.setItem("keelson-theme", next); } catch (e) {}
   paintBtn();
 });
-matchMedia("(prefers-color-scheme: light)").addEventListener?.("change", paintBtn);
+matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", paintBtn);
 paintBtn();
 
-// Lemon Squeezy product links: paste each product's share URL before launch
-// Until the Lemon Squeezy store is activated, the free dashboard downloads straight from this site.
-// Live checkout (swap back when activated): https://keelson.lemonsqueezy.com/checkout/buy/99b08dcc-8db5-4229-930b-4e66e53696e5
-const STORE = { dashboard: "downloads/Keelson-dashboard-v1.0.0.zip", software: "", bundle: "" };
-const msg = document.getElementById("store-msg");
-document.querySelectorAll("[data-store]").forEach(a => {
-  const url = STORE[a.dataset.store];
-  if (url && url.endsWith(".zip")) { a.href = url; a.setAttribute("download", ""); return; }
-  if (url) { a.href = url; a.target = "_blank"; a.rel = "noopener"; return; }
-  a.addEventListener("click", () => { msg.hidden = false; });
+// The free dashboard downloads straight from this site. Pro and the template packs aren't on sale yet: their buttons are
+// mailto waitlists in the HTML. When checkout opens, put the Lemon Squeezy share URLs back on those buttons
+// (live checkout: https://keelson.lemonsqueezy.com/checkout/buy/99b08dcc-8db5-4229-930b-4e66e53696e5).
+document.querySelectorAll('[data-store="dashboard"]').forEach(a => { a.href = "downloads/Keelson-dashboard-v1.0.0.zip"; a.setAttribute("download", ""); });
+
+// popovers: product menu and the small-screen menu. Escape or a click outside closes and returns focus.
+function popover(btn, pop) {
+  const set = open => { btn.setAttribute("aria-expanded", open); pop.hidden = !open; };
+  btn.addEventListener("click", () => set(btn.getAttribute("aria-expanded") !== "true"));
+  pop.addEventListener("click", e => { if (e.target.closest("a")) set(false); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && !pop.hidden) { set(false); btn.focus(); } });
+  document.addEventListener("click", e => { if (!pop.hidden && !pop.contains(e.target) && !btn.contains(e.target)) set(false); });
+  btn.parentElement.addEventListener("focusout", e => { if (e.relatedTarget && !btn.parentElement.contains(e.relatedTarget) && !pop.contains(e.relatedTarget)) set(false); });
+  pop.addEventListener("keydown", e => { // arrow keys move between the menu's links
+    if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
+    const ls = [...pop.querySelectorAll("a")], i = ls.indexOf(document.activeElement);
+    e.preventDefault(); ls[(i + (e.key === "ArrowDown" ? 1 : -1) + ls.length) % ls.length].focus();
+  });
+  btn.addEventListener("keydown", e => { if (e.key === "ArrowDown") { e.preventDefault(); set(true); pop.querySelector("a").focus(); } });
+}
+popover(document.getElementById("prodbtn"), document.getElementById("prodmenu"));
+popover(document.getElementById("menubtn"), document.getElementById("mnav"));
+
+// WAI-ARIA tabs with roving tabindex and automatic activation, for every tablist on the page
+document.querySelectorAll('[role="tablist"]').forEach(list => {
+  const tabs = [...list.querySelectorAll('[role="tab"]')];
+  const sel = t => tabs.forEach(x => { const on = x === t; x.setAttribute("aria-selected", on); x.tabIndex = on ? 0 : -1; document.getElementById(x.getAttribute("aria-controls")).hidden = !on; });
+  tabs.forEach((t, i) => {
+    t.addEventListener("click", () => sel(t));
+    t.addEventListener("keydown", e => {
+      const j = e.key === "ArrowRight" ? i + 1 : e.key === "ArrowLeft" ? i - 1 : e.key === "Home" ? 0 : e.key === "End" ? tabs.length - 1 : null;
+      if (j === null) return; e.preventDefault(); const n = tabs[(j + tabs.length) % tabs.length]; sel(n); n.focus(); n.scrollIntoView({ block: "nearest", inline: "nearest" });
+    });
+  });
 });
 
-// laptop tabs
-const tabs = [...document.querySelectorAll('.app .seg [role="tab"]')];
-tabs.forEach(t => t.addEventListener("click", () => tabs.forEach(o => {
-  o.setAttribute("aria-selected", o === t); document.getElementById(o.getAttribute("aria-controls")).hidden = o !== t;
-})));
+// the sections below live on one page each (index, templates, tools): each block runs only where its markup is
+const $ = id => document.getElementById(id);
 
-// rail
-const rail = document.getElementById("rail");
-const step = () => rail.querySelector(".stop").getBoundingClientRect().width + 18;
-document.getElementById("prev").addEventListener("click", () => rail.scrollBy({ left: -step(), behavior: "smooth" }));
-document.getElementById("next").addEventListener("click", () => rail.scrollBy({ left: step(), behavior: "smooth" }));
+// billing toggle
+const bills = [...document.querySelectorAll("[data-bill]")];
+bills.forEach(b => b.addEventListener("click", () => {
+  const k = b.dataset.bill; bills.forEach(x => x.setAttribute("aria-pressed", x === b));
+  document.querySelectorAll("[data-m][data-y]").forEach(el => { el.textContent = el.dataset[k]; });
+}));
 
-// pinned story
-const views = [...document.querySelectorAll(".view")], steps = [...document.querySelectorAll(".step")];
-if ("IntersectionObserver" in window) {
-  const io = new IntersectionObserver(es => es.forEach(e => {
-    if (!e.isIntersecting) return;
-    steps.forEach(x => x.classList.toggle("on", x === e.target));
-    views.forEach(v => v.classList.toggle("on", v.dataset.v === e.target.dataset.s));
-  }), { rootMargin: "-45% 0px -45% 0px" });
-  steps.forEach(s => io.observe(s));
-} else steps.forEach(s => s.classList.add("on"));
+// the CSV picker is a label: make Enter and Space open it like a button
+$("pg-file-l")?.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); document.getElementById("pg-file").click(); } });
 
 // slider demo: every value precomputed by the Keelson scheduler on the sample plan
 const SCHED = {"6":{"rows":[[5.7,11.4,"22 Jan–29 Jan"],[35.7,1.4,"Fri 12 Feb"],[41.4,20,"16 Feb–1 Mar"],[61.4,20,"2 Mar–15 Mar"],[80,1.4,"Mon 15 Mar"],[84.3,1.4,"Thu 18 Mar"]],"golive":"Thu 18 Mar","var":0},"7":{"rows":[[5.7,15.7,"22 Jan–1 Feb"],[41.4,1.4,"Tue 16 Feb"],[42.9,20,"17 Feb–2 Mar"],[62.9,20,"3 Mar–16 Mar"],[81.4,1.4,"Tue 16 Mar"],[85.7,1.4,"Fri 19 Mar"]],"golive":"Fri 19 Mar","var":1},"8":{"rows":[[5.7,17.1,"22 Jan–2 Feb"],[42.9,1.4,"Wed 17 Feb"],[44.3,20,"18 Feb–3 Mar"],[64.3,20,"4 Mar–17 Mar"],[82.9,1.4,"Wed 17 Mar"],[90,1.4,"Mon 22 Mar"]],"golive":"Mon 22 Mar","var":2},"9":{"rows":[[5.7,18.6,"22 Jan–3 Feb"],[44.3,1.4,"Thu 18 Feb"],[45.7,20,"19 Feb–4 Mar"],[65.7,20,"5 Mar–18 Mar"],[84.3,1.4,"Thu 18 Mar"],[91.4,1.4,"Tue 23 Mar"]],"golive":"Tue 23 Mar","var":3},"10":{"rows":[[5.7,20,"22 Jan–4 Feb"],[45.7,1.4,"Fri 19 Feb"],[50,17.1,"22 Feb–5 Mar"],[70,17.1,"8 Mar–19 Mar"],[85.7,1.4,"Fri 19 Mar"],[92.9,1.4,"Wed 24 Mar"]],"golive":"Wed 24 Mar","var":4},"11":{"rows":[[5.7,21.4,"22 Jan–5 Feb"],[50,1.4,"Mon 22 Feb"],[51.4,20,"23 Feb–8 Mar"],[71.4,20,"9 Mar–22 Mar"],[90,1.4,"Mon 22 Mar"],[94.3,1.4,"Thu 25 Mar"]],"golive":"Thu 25 Mar","var":5},"12":{"rows":[[5.7,25.7,"22 Jan–8 Feb"],[51.4,1.4,"Tue 23 Feb"],[52.9,20,"24 Feb–9 Mar"],[72.9,20,"10 Mar–23 Mar"],[91.4,1.4,"Tue 23 Mar"],[95.7,1.4,"Fri 26 Mar"]],"golive":"Fri 26 Mar","var":6}};
 const NAMES = ["Customer portal build", "Build complete", "System testing", "User acceptance testing", "Go / No-Go", "Go-live"];
 const MS = [0, 1, 0, 0, 1, 1];
-const host = document.getElementById("rows"), slider = document.getElementById("slider");
+const host = $("rows"), slider = $("slider");
+if (slider) {
 host.innerHTML = NAMES.map((n, i) => `<div class="dr"><div class="n"><span>${n}</span><time></time></div><div class="dt"><i class="${MS[i] ? "ms" : ""}"></i></div></div>`).join("");
 const render = () => {
   const v = Number(slider.value), r = SCHED[v], base = SCHED[6];
@@ -70,20 +82,9 @@ const render = () => {
 };
 slider.addEventListener("input", render);
 render();
-
-// nav: reading progress, current section, close the small-screen menu after a pick
-const navLinks = [...document.querySelectorAll(".links a")], menu = document.querySelector(".menu");
-const nav = document.querySelector(".nav");
-addEventListener("scroll", () => { const h = document.documentElement; nav.style.setProperty("--read", (h.scrollTop / Math.max(1, h.scrollHeight - h.clientHeight)).toFixed(4)); }, { passive: true });
-menu.querySelectorAll("a").forEach(a => a.addEventListener("click", () => menu.open = false));
-if ("IntersectionObserver" in window) {
-  const spy = new IntersectionObserver(es => es.forEach(e => {
-    if (e.isIntersecting) navLinks.forEach(a => a.setAttribute("aria-current", a.hash === "#" + e.target.id));
-  }), { rootMargin: "-40% 0px -55% 0px" });
-  navLinks.forEach(a => { const t = document.querySelector(a.hash); if (t) spy.observe(t); });
 }
 
-const E = window.KeelsonEngine, $ = id => document.getElementById(id);
+const E = window.KeelsonEngine;
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const today = () => Math.floor((Date.now() - new Date().getTimezoneOffset() * 6e4) / E.DAY);
 const fromInput = v => { const p = (v || "").split("-").map(Number); return p.length === 3 && p.every(Number.isFinite) ? E.fromYMD(...p) : null; };
@@ -94,20 +95,23 @@ async function copy(text, out) {
   out.textContent = "Copied. Paste it into email, Teams or Slack."; setTimeout(() => out.textContent = "", 3000);
 }
 
-// live demo: samples or the visitor's own plan, recalculated on every change, never sent anywhere
-const SAMPLES = window.KEELSON_SAMPLES, OWN = "own";
+// Quick check: samples or the visitor's own plan, recalculated on every change, never sent anywhere.
+// It opens on the latest weekly export of the FieldFlow sample, the same plan every mockup on the page and the app's sample use.
+if ($("pg")) {
+const SAMPLES = window.KEELSON_SAMPLES, OWN = "own", HIST = window.KEELSON_SAMPLE_HISTORY, LATEST = HIST.versions[HIST.versions.length - 1];
+SAMPLES.plans.unshift({ id: "weekly", label: "Weekly export", note: "FieldFlow, exported " + E.fmt(fromInput(LATEST.asOf), true), text: LATEST.text, msKeys: HIST.msKeys });
 const pg = { src: SAMPLES.plans[0].id, text: {}, cols: {}, sd: {}, title: {}, ms: {}, range: [0, 1], last: null, sliding: false };
 SAMPLES.plans.forEach(p => { pg.text[p.id] = p.text; pg.sd[p.id] = fromInput(SAMPLES.statusDate); pg.title[p.id] = "FieldFlow rollout (sample)"; pg.ms[p.id] = p.msKeys.join(""); });
 pg.text[OWN] = ""; pg.sd[OWN] = today(); pg.title[OWN] = "My project"; pg.ms[OWN] = "";
 const txt = $("pg-text"), sheet = $("sheet"), slide = $("pg-slide");
-$("pg-src").innerHTML = SAMPLES.plans.map(p => `<button role="tab" type="button" data-src="${p.id}">${esc(p.label)} sample</button>`).join("") +
-  `<button role="tab" type="button" data-src="${OWN}">Your plan</button>`;
+$("pg-src").innerHTML = SAMPLES.plans.map(p => `<button type="button" aria-pressed="false" data-src="${p.id}">${esc(p.label)} sample</button>`).join("") +
+  `<button type="button" aria-pressed="false" data-src="${OWN}">Your plan</button>`;
 const srcTabs = [...$("pg-src").children];
 srcTabs.forEach(b => b.addEventListener("click", () => use(b.dataset.src)));
 
 function use(src) {
   pg.src = src; pg.last = null;
-  srcTabs.forEach(b => b.setAttribute("aria-selected", b.dataset.src === src));
+  srcTabs.forEach(b => b.setAttribute("aria-pressed", b.dataset.src === src));
   const s = SAMPLES.plans.find(p => p.id === src);
   $("pg-note").textContent = s ? s.note + " · fictional" : "Paste or open a file";
   txt.value = pg.text[src]; $("pg-title").value = pg.title[src]; $("pg-mskey").value = pg.ms[src];
@@ -150,7 +154,7 @@ playBtn.addEventListener("click", () => {
 });
 
 const pctTxt = v => Math.round(v * 100) + "%";
-const chip = s => `<span class="chip ${/^\+/.test(s) ? "Slip" : s.replace(" ", "-")}">${esc(s)}</span>`;
+const chip = s => `<span class="sc ${/^\+/.test(s) ? "Slip" : s.replace(" ", "-")}">${esc(s)}</span>`;
 function run(newPlan) {
   const k = E.compute(pg.text[pg.src], { statusDate: pg.sd[pg.src], cols: pg.cols[pg.src], msKeys: [pg.ms[pg.src]] });
   if (newPlan) { // timeline range for the date slider: project start to the later of forecast and baseline finish
@@ -203,7 +207,7 @@ function draw(k) {
     <div class="sh-t"><span>Overdue tasks</span><b>${k.overT}</b><small>${k.overMs ? `${k.overMs} overdue milestone${k.overMs > 1 ? "s" : ""} · ` : ""}of ${k.nTask - k.nTaskDone} open tasks</small></div></div>`;
   const phNote = !k.nPhases ? "No phases found: add a Phase column, WBS numbers or outline levels."
     : [k.phOff ? `${k.phOff} earlier completed phase${k.phOff > 1 ? "s" : ""} not shown` : "", k.nPhases - k.phOff > 8 ? `+${k.nPhases - k.phOff - 8} more phases not shown` : ""].filter(Boolean).join(" · ");
-  const phases = `<div><h4>Progress by phase</h4><table class="sh-tb"><colgroup><col style="width:38%"><col><col class="hide-sm" style="width:62px"><col style="width:70px"></colgroup>
+  const phases = `<div><h4>Progress by phase</h4><table class="sh-tb"><colgroup><col style="width:38%"><col><col class="hide-sm" style="width:62px"><col style="width:84px"></colgroup>
     <thead><tr><th>Phase</th><th>Progress</th><th class="c hide-sm">Finish</th><th class="c">Status</th></tr></thead><tbody>${k.phases.map(p =>
       `<tr><td title="${esc(p.name)}">${esc(p.name)}</td><td><div style="display:flex;gap:8px;align-items:center"><div class="pbar" style="flex:1"><i style="width:${(p.pct * 100).toFixed(1)}%"></i></div><span class="r" style="width:34px">${pctTxt(p.pct)}</span></div></td><td class="c hide-sm">${f(p.finish)}</td><td class="c">${chip(p.status)}</td></tr>`).join("")}</tbody></table>
     ${phNote ? `<p class="sh-note">${phNote}</p>` : ""}</div>`;
@@ -217,7 +221,7 @@ function draw(k) {
   const rows = k.phases.length ? k.phases : [{ name: "Whole plan", start: k.start, finish: k.finish, status: k.overT ? "Late" : "On track", ms: k.msList.map(m => m.finish) }];
   const months = []; if (t0 != null) { const [y, m] = E.iso(t0).split("-").map(Number); for (let i = 1; i < 60; i++) { const v = E.fromYMD(y, m + i, 1); if (v > t1) break; months.push(v); } }
   const every = Math.ceil(months.length / 8);
-  const tl = t0 == null ? "" : `<div><h4>Timeline <span class="tl-leg">${["Done", "On track", "Planned", "At risk", "Late"].map(chip).join("")}<span class="now-key">Status date</span></span></h4><div class="tl-wrap"><div class="tl">
+  const tl = t0 == null ? "" : `<div class="sh-tl"><h4>Timeline <span class="tl-leg">${["Done", "On track", "Planned", "At risk", "Late"].map(chip).join("")}<span class="now-key">Status date</span></span></h4><div class="tl-wrap"><div class="tl">
     <div class="tl-r tl-ax"><span></span><div class="tl-t">${months.filter((_, i) => i % every === 0).map(v => `<b style="left:${pos(v)}%">${E.fmt(v).split(" ")[1]}</b>`).join("")}</div></div>
     ${rows.map(p => { const a = p.start ?? p.finish, b = p.finish ?? a; return a == null ? "" :
       `<div class="tl-r"><span title="${esc(p.name)}">${esc(p.name)}</span><div class="tl-t"><i class="${p.status.replace(" ", "-")}" style="left:${pos(a)}%;width:${Math.max(.8, (b - a + 1) / L * 100).toFixed(2)}%"></i>${p.ms.map(v => `<em style="left:${pos(v + .5)}%"></em>`).join("")}${sd >= t0 && sd <= t1 ? `<span class="tl-now" style="left:${pos(sd)}%"></span>` : ""}</div></div>`; }).join("")}
@@ -256,8 +260,10 @@ $("pg-copy").addEventListener("click", () => {
   copy(lines.filter((l, i) => l || i === lines.length - 2).join("\n"), $("pg-copied"));
 });
 use(pg.src);
+}
 
 // working-day calculator: Monday to Friday minus the holidays typed in
+if ($("wd")) {
 const wdState = { m: "add" };
 const holidays = () => { const ls = $("wd-h").value.split(/[\n,;]+/).map(s => s.trim()).filter(Boolean), df = ls.some(s => /^\d{1,2}[\/.\-]/.test(s) && +s.split(/[\/.\-]/)[0] > 12);
   return new Set(ls.map(s => E.parseDate(s, df)).filter(v => v != null)); };
@@ -286,13 +292,15 @@ function wdRun() {
 }
 document.querySelectorAll("#wd [data-m]").forEach(b => b.addEventListener("click", () => {
   wdState.m = b.dataset.m;
-  document.querySelectorAll("#wd [data-m]").forEach(o => o.setAttribute("aria-selected", o === b));
+  document.querySelectorAll("#wd [data-m]").forEach(o => o.setAttribute("aria-pressed", o === b));
   $("wd-n-l").hidden = wdState.m !== "add"; $("wd-b-l").hidden = wdState.m === "add"; wdRun();
 }));
 ["wd-a", "wd-n", "wd-b", "wd-h"].forEach(id => $(id).addEventListener("input", wdRun));
 $("wd-a").value = E.iso(today()); $("wd-b").value = E.iso(today() + 30); wdRun();
+}
 
 // Go / No-Go: the runbook's criteria and verdict rules; marks are remembered in this browser only
+if ($("gng")) {
 const GNG = [["Testing", "SIT complete with no open Severity 1/2 defects", 1], ["Testing", "UAT signed off by business process owners", 1],
   ["Testing", "Performance test passed at expected peak load", 1], ["Testing", "Penetration test: no open critical or high findings", 1],
   ["Data", "Dress rehearsal completed inside the cutover window", 1], ["Data", "Reconciliation within agreed tolerance", 1], ["Data", "Data owners signed off cleansed data", 1],
@@ -319,3 +327,4 @@ $("gng-list").addEventListener("click", e => { const b = e.target.closest("[data
 $("gng-reset").addEventListener("click", () => { marks = {}; gngRun(); });
 $("gng-copy").addEventListener("click", () => copy(gngRun.text, $("gng-copied")));
 gngRun();
+}

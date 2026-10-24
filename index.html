@@ -2,939 +2,776 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'; worker-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'; worker-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Keelson</title>
+<title>Keelson · What changed, is it getting worse, when will it really finish</title>
+<meta name="description" content="Keelson tells your sponsor what changed, whether it's getting worse, and when it will really finish, from the plan exports you already have. Client-ready PDF and Word reports. Your file never leaves your browser.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preload" href="fonts/plus-jakarta-sans-800.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/plus-jakarta-sans-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="design/tokens.css">
+<link rel="stylesheet" href="site.css">
+<script src="theme.js"></script>
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Keelson">
-<meta property="og:title" content="Keelson · Paste any plan. Get the dashboard.">
-<meta property="og:description" content="Free one-page dashboard for any project plan, plus self-scheduling plans, RAID logs and go-live runbooks for Excel and Google Sheets.">
+<meta property="og:title" content="Keelson · What changed, is it getting worse, when will it really finish">
+<meta property="og:description" content="Week-on-week changes, slip trend and honest finish dates from the plan exports you already have. Client-ready reports. Nothing uploaded.">
 <meta property="og:url" content="https://keelson.co.in/">
 <meta property="og:image" content="https://keelson.co.in/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="627">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="claude:viewport-fit-sides" content="cover">
-<meta name="description" content="Self-scheduling project plans, RAID logs and go-live runbooks in Excel, handed over in your client's template, MS Project, Google Sheets, CSV or PDF.">
-<style>
-/* Layout: a product launch page. One lit object (the laptop) on a dark stage, then one idea per screen.
-   Type does the work: system SF/Segoe, heavy weights, a muted second line instead of gradients.
-   One accent (teal) for actions; amber/red/green only for status. Dark-first with a light theme and a toggle. */
-:root {
-  --bg: #000000; --raise: #111113; --raise-2: #1a1a1d; --ink: #f5f5f7; --muted: #9a9aa0; --faint: #828288;
-  --line: rgba(255, 255, 255, .1); --nav: rgba(16, 16, 18, .72); --spot: rgba(255, 255, 255, .085);
-  --accent: #39c9be; --on-accent: #021c1a;
-  --ok: #4fd18f; --ok-bg: rgba(79, 209, 143, .13); --warn: #f6ad3b; --warn-bg: rgba(246, 173, 59, .14); --bad: #ff6b61; --bad-bg: rgba(255, 107, 97, .14);
-  --bar: rgba(57, 201, 190, .22); --bar-done: #39c9be;
-  --shadow: 0 60px 120px -50px rgba(0, 0, 0, .95);
-  --sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI Variable Display", "Segoe UI", system-ui, "Helvetica Neue", Arial, sans-serif;
-  --mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
-  --ease: cubic-bezier(.22, .8, .2, 1);
-  color-scheme: dark;
-}
-@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) {
-  --bg: #ffffff; --raise: #f5f5f7; --raise-2: #e9e9ed; --ink: #1d1d1f; --muted: #56565b; --faint: #68686d;
-  --line: rgba(0, 0, 0, .09); --nav: rgba(255, 255, 255, .78); --spot: rgba(0, 0, 0, .045);
-  --accent: #087b83; --on-accent: #ffffff;
-  --ok: #0d7040; --ok-bg: rgba(19, 138, 79, .1); --warn: #955500; --warn-bg: rgba(246, 173, 59, .2); --bad: #b4281f; --bad-bg: rgba(201, 49, 39, .09);
-  --bar: rgba(8, 123, 131, .17); --bar-done: #087b83;
-  --shadow: 0 60px 110px -55px rgba(20, 30, 50, .5); color-scheme: light } }
-:root[data-theme="light"] {
-  --bg: #ffffff; --raise: #f5f5f7; --raise-2: #e9e9ed; --ink: #1d1d1f; --muted: #56565b; --faint: #68686d;
-  --line: rgba(0, 0, 0, .09); --nav: rgba(255, 255, 255, .78); --spot: rgba(0, 0, 0, .045);
-  --accent: #087b83; --on-accent: #ffffff;
-  --ok: #0d7040; --ok-bg: rgba(19, 138, 79, .1); --warn: #955500; --warn-bg: rgba(246, 173, 59, .2); --bad: #b4281f; --bad-bg: rgba(201, 49, 39, .09);
-  --bar: rgba(8, 123, 131, .17); --bar-done: #087b83;
-  --shadow: 0 60px 110px -55px rgba(20, 30, 50, .5); color-scheme: light }
-
-* { box-sizing: border-box }
-[hidden] { display: none !important }
-html { scroll-behavior: smooth }
-body { margin: 0; background: var(--bg); color: var(--ink); font: 400 17px/1.47 var(--sans); letter-spacing: -.021em; -webkit-font-smoothing: antialiased;
-  overflow-x: hidden; transition: background-color .4s, color .4s }
-.wrap { max-width: 1024px; margin: 0 auto; padding-left: max(22px, env(safe-area-inset-left, 0px)); padding-right: max(22px, env(safe-area-inset-right, 0px)) }
-.wide { max-width: 1240px }
-h1, h2, h3 { margin: 0; font-weight: 700; text-wrap: balance }
-h1 { font-size: clamp(3rem, 8.6vw, 6.2rem); line-height: 1.02; letter-spacing: -.048em }
-h2 { font-size: clamp(2.2rem, 5.4vw, 3.9rem); line-height: 1.06; letter-spacing: -.042em }
-h3 { font-size: clamp(1.25rem, 2.2vw, 1.6rem); line-height: 1.14; letter-spacing: -.03em }
-p { margin: 0 }
-a { color: var(--accent) }
-.dim { color: var(--muted) }
-sup { font-size: .55em; color: var(--muted); margin-left: 1px } sup a { color: inherit; text-decoration: none }
-:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 8px }
-.lede { font-size: clamp(1.1rem, 1.85vw, 1.42rem); line-height: 1.38; color: var(--muted); font-weight: 500; letter-spacing: -.022em }
-.lede b { color: var(--ink); font-weight: 600 }
-.kicker { font-size: clamp(1rem, 1.5vw, 1.2rem); font-weight: 600; color: var(--accent); letter-spacing: -.015em }
-section { padding-block: clamp(96px, 13vw, 168px) }
-.head { display: grid; gap: 16px; justify-items: center; text-align: center; margin-bottom: clamp(44px, 6vw, 72px) }
-.head .lede { max-width: 38ch }
-
-/* nav */
-body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 40; background: var(--bg) }
-.nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30; background: var(--nav); border-bottom: 1px solid var(--line);
-  -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px) }
-.nav .wrap { display: flex; align-items: center; gap: 24px; height: 52px }
-.brand { display: flex; align-items: center; gap: 8px; color: var(--ink); text-decoration: none; font-weight: 600; font-size: 1.12rem; letter-spacing: -.03em }
-.brand svg { width: 22px; height: 22px }
-.links { display: flex; gap: 24px; margin-left: auto }
-.links a { color: var(--muted); text-decoration: none; font-size: .78rem; transition: color .25s }
-.links a:hover { color: var(--ink) }
-.theme { width: 32px; height: 32px; border-radius: 50%; border: 0; background: transparent; color: var(--muted); display: grid; place-items: center; cursor: pointer; transition: color .25s, background .25s }
-.theme:hover { color: var(--ink); background: var(--raise-2) }
-.theme svg { width: 17px; height: 17px }
-@media (max-width: 800px) { .links { display: none } .theme { margin-left: auto } }
-
-.btn { display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: 980px; padding: 12px 22px; font: 400 1.05rem/1.1 var(--sans);
-  letter-spacing: -.02em; text-decoration: none; cursor: pointer; transition: background .25s, transform .35s var(--ease), filter .25s }
-.btn.fill { background: var(--accent); color: var(--on-accent) }
-.btn.fill:hover { filter: brightness(1.08) }
-.btn.fill:active { transform: scale(.97) }
-.btn.line { color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); background: transparent }
-.btn.line:hover { background: color-mix(in srgb, var(--accent) 10%, transparent) }
-.btn.sm { padding: 5px 12px; font-size: .78rem }
-.more { color: var(--accent); text-decoration: none; font-size: 1.05rem; letter-spacing: -.02em }
-.more::after { content: " ›" } .more:hover { text-decoration: underline }
-
-/* motion: resting state is always fully visible; supporting browsers ease things in as they arrive */
-@supports (animation-timeline: view()) {
-  .rise { animation: rise linear both; animation-timeline: view(); animation-range: entry 5% entry 55% }
-  @keyframes rise { from { opacity: .4; transform: translateY(32px) } to { opacity: 1; transform: none } }
-  .open { animation: open linear both; animation-timeline: view(); animation-range: entry 0% cover 32%; transform-origin: 50% 100% }
-  @keyframes open { from { transform: perspective(1600px) rotateX(16deg) scale(.93) } to { transform: none } }
-}
-.in { animation: in 1s var(--ease) both } .in.d2 { animation-delay: .1s } .in.d3 { animation-delay: .2s } .in.d4 { animation-delay: .32s }
-@keyframes in { from { opacity: .45; transform: translateY(14px) } to { opacity: 1; transform: none } }
-@media (prefers-reduced-motion: reduce) { .rise, .open, .in, .live::before { animation: none !important } html { scroll-behavior: auto } * { transition: none !important } }
-
-/* hero with a single spotlight behind the product */
-.hero { position: relative; padding-block: clamp(64px, 9vw, 112px) 24px; text-align: center; overflow: hidden }
-.hero::before { content: ""; position: absolute; left: 50%; top: 52%; width: 1300px; height: 900px; transform: translateX(-50%); pointer-events: none;
-  background: radial-gradient(closest-side, var(--spot), transparent) }
-.hero .wrap { position: relative; display: grid; justify-items: center; gap: 22px }
-.hero .lede { max-width: 34ch }
-.ctas { display: flex; flex-wrap: wrap; gap: 14px 26px; align-items: center; justify-content: center }
-.avail { font-size: .84rem; color: var(--muted) } .avail b { color: var(--ink); font-weight: 600 }
-
-/* laptop */
-.mac { width: min(100%, 1020px); margin: 40px auto 0 }
-.lid { background: linear-gradient(#2a2a2d, #121214); border-radius: 20px 20px 6px 6px; padding: clamp(7px, 1.2vw, 13px); position: relative;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, .09), var(--shadow) }
-.lid::before { content: ""; position: absolute; top: 0; left: 50%; width: 11%; height: clamp(5px, .9vw, 9px); transform: translateX(-50%);
-  background: #0b0b0c; border-radius: 0 0 8px 8px; z-index: 2 }
-.deck { height: clamp(9px, 1.4vw, 16px); margin: 0 -6%; border-radius: 2px 2px 14px 14px; position: relative;
-  background: linear-gradient(#d9dadd, #a3a5aa 55%, #6f7176) }
-.deck::before { content: ""; position: absolute; left: 50%; top: 0; width: 14%; height: 45%; transform: translateX(-50%); border-radius: 0 0 9px 9px; background: linear-gradient(#a8aaae, #c6c7cb) }
-.app { border-radius: 9px; overflow: hidden; background: var(--raise); color: var(--ink); text-align: left }
-.bar { display: flex; align-items: center; gap: 12px; padding: 9px 12px; background: var(--raise-2); border-bottom: 1px solid var(--line); flex-wrap: wrap }
-.dots { display: flex; gap: 7px } .dots i { width: 11px; height: 11px; border-radius: 50% }
-.dots i:nth-child(1) { background: #ff5f57 } .dots i:nth-child(2) { background: #febc2e } .dots i:nth-child(3) { background: #28c840 }
-.seg { display: flex; padding: 2px; gap: 2px; border-radius: 8px; background: color-mix(in srgb, var(--ink) 6%, transparent) }
-.seg button { border: 0; background: transparent; color: var(--muted); font: 500 .78rem/1 var(--sans); padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: .2s }
-.seg button[aria-selected="true"] { background: var(--raise); color: var(--ink); box-shadow: 0 1px 2px rgba(0, 0, 0, .25) }
-.fname { margin-left: auto; font: .72rem/1 var(--mono); color: var(--faint) }
-@media (max-width: 640px) { .fname { display: none } }
-.panel { padding: clamp(14px, 2vw, 22px); display: grid; gap: 16px } .panel > * { min-width: 0 }
-.kpis { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 9px }
-@media (max-width: 900px) { .kpis { grid-template-columns: repeat(3, minmax(0, 1fr)) } }
-.kpi { padding: 11px 12px; border-radius: 10px; background: var(--raise-2); display: grid; gap: 3px; min-width: 0 }
-.kpi span { font-size: .68rem; color: var(--muted) }
-.kpi b { font-size: clamp(1.05rem, 1.9vw, 1.45rem); letter-spacing: -.035em; white-space: nowrap; font-variant-numeric: tabular-nums }
-.kpi small { font-size: .66rem; color: var(--faint) }
-.kpi.amber { background: var(--warn-bg) } .kpi.amber b { color: var(--warn) }
-.why { font-size: .82rem; color: var(--muted) } .why b { color: var(--ink); font-weight: 600 }
-.gantt { overflow-x: auto }
-.g { min-width: 540px; position: relative }
-.gr { display: grid; grid-template-columns: 160px minmax(0, 1fr) 38px; gap: 12px; align-items: center; height: 22px; font-size: .75rem }
-.gr .n { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--muted) }
-.gr .p { font: .68rem/1 var(--mono); color: var(--faint); text-align: right }
-.gr.h { font: .64rem/1 var(--mono); color: var(--faint); height: 18px }
-.tk { position: relative; height: 8px }
-.tk i { position: absolute; top: 0; height: 8px; border-radius: 4px; background: var(--bar); overflow: hidden }
-.tk i b { position: absolute; inset: 0 auto 0 0; background: var(--bar-done); border-radius: 4px }
-.tk i.late { box-shadow: 0 0 0 1.5px var(--bad) }
-.tk span { position: absolute; top: 1px }
-.now-line { position: absolute; top: 18px; bottom: 0; border-left: 1.5px dashed var(--warn); left: calc(172px + (100% - 222px) * .689) }
-.raid { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 20px; align-items: start }
-@media (max-width: 760px) { .raid { grid-template-columns: minmax(0, 1fr) } }
-.heat { display: grid; grid-template-columns: 18px repeat(5, minmax(0, 1fr)); gap: 4px; max-width: 290px; font: .66rem/1 var(--mono); color: var(--faint) }
-.heat span { display: grid; place-items: center }
-.heat .c { aspect-ratio: 1.3; border-radius: 6px; color: #fff; font: 600 .86rem/1 var(--sans) }
-.lo { background: rgba(79, 209, 143, .5) } .md { background: rgba(246, 173, 59, .75) } .hi { background: rgba(255, 99, 88, .85) }
-.list { display: grid; gap: 6px }
-.li { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 9px 11px; border-radius: 9px; background: var(--raise-2); font-size: .8rem }
-.li .id { font: .7rem/1 var(--mono); color: var(--faint) }
-.tag { font: 600 .66rem/1 var(--mono); padding: 5px 7px; border-radius: 5px; white-space: nowrap; letter-spacing: 0 }
-.tag.bad { background: var(--bad-bg); color: var(--bad) } .tag.warn { background: var(--warn-bg); color: var(--warn) }
-.tag.ok { background: var(--ok-bg); color: var(--ok) } .tag.mute { background: color-mix(in srgb, var(--ink) 7%, transparent); color: var(--muted) }
-.rb { display: grid; grid-template-columns: 26px minmax(0, 1fr) 92px auto; gap: 10px; align-items: center; padding: 9px 11px; border-radius: 9px; background: var(--raise-2); font-size: .82rem }
-.rb .no { font: .7rem/1 var(--mono); color: var(--faint) } .rb time { font: .7rem/1 var(--mono); color: var(--muted); text-align: right }
-.rb.now { box-shadow: inset 0 0 0 1.5px var(--accent) }
-@media (max-width: 520px) { .rb { grid-template-columns: 22px minmax(0, 1fr) auto } .rb time { display: none } }
-.live::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 7px; background: var(--accent); vertical-align: 1px; animation: pulse 1.6s ease-in-out infinite }
-@keyframes pulse { 50% { opacity: .2 } }
-.trio { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px }
-@media (max-width: 520px) { .trio { grid-template-columns: minmax(0, 1fr) } }
-.trio div { padding: 12px 13px; border-radius: 10px; background: var(--raise-2); display: grid; gap: 3px }
-.trio span { font-size: .7rem; color: var(--muted) } .trio b { font-size: 1rem; letter-spacing: -.02em }
-
-/* "things you'll stop doing" rail */
-.rail { display: grid; grid-auto-flow: column; grid-auto-columns: min(82vw, 340px); gap: 18px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none;
-  padding: 6px max(22px, calc((100vw - 1024px) / 2 + 22px)) 12px; scroll-padding-inline: max(22px, calc((100vw - 1024px) / 2 + 22px)) }
-.rail::-webkit-scrollbar { display: none }
-.stop { scroll-snap-align: start; background: var(--raise); border-radius: 26px; padding: 28px 26px; min-height: 420px; display: grid; grid-template-rows: auto auto 1fr; gap: 12px; color: var(--ink); text-decoration: none; transition: transform .45s var(--ease) }
-.stop:hover { transform: translateY(-4px) }
-.stop .x { font: 600 .74rem/1 var(--mono); color: var(--bad); text-decoration: line-through; text-decoration-thickness: 1.5px }
-.stop p { font-size: 1.28rem; font-weight: 600; line-height: 1.2; letter-spacing: -.028em } .stop p span { color: var(--muted) }
-.stop .vis { align-self: end; display: grid; gap: 8px }
-.mb { height: 10px; border-radius: 5px; background: var(--bar-done) }
-.rail-nav { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px }
-.round { width: 36px; height: 36px; border-radius: 50%; border: 0; background: var(--raise); color: var(--ink); font-size: 1.15rem; cursor: pointer; transition: background .25s }
-.round:hover { background: var(--raise-2) }
-
-/* pinned story */
-.story { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: clamp(30px, 5vw, 70px) }
-.stage { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 84px); height: min(580px, calc(100vh - 120px)); display: grid; place-items: center }
-.views { position: relative; width: 100%; height: 100% }
-.view { position: absolute; inset: 0; display: grid; place-items: center; opacity: 0; transform: translateY(18px) scale(.95); transition: opacity .6s var(--ease), transform .75s var(--ease); pointer-events: none }
-.view.on { opacity: 1; transform: none }
-.doc { width: 100%; max-width: 560px; border-radius: 16px; overflow: hidden; background: var(--raise); box-shadow: var(--shadow); border: 1px solid var(--line) }
-.doc-h { display: flex; align-items: center; gap: 10px; padding: 11px 14px; font: 600 .78rem/1 var(--sans) }
-.doc-h i { width: 22px; height: 22px; border-radius: 6px; display: grid; place-items: center; font: 700 .58rem/1 var(--mono); color: #fff; font-style: normal }
-.doc-h span { margin-left: auto; color: var(--muted); font-weight: 400; font-size: .7rem }
-.scroll { overflow-x: auto }
-.tb { width: 100%; border-collapse: collapse; font-size: .74rem }
-.tb th, .tb td { padding: 7px 9px; text-align: left; white-space: nowrap; border-top: 1px solid var(--line) }
-.tb th { font-weight: 600 } .tb td { color: var(--muted) } .tb .s td { color: var(--ink); font-weight: 600 } .tb .in2 { padding-left: 22px }
-.tb .num { font-variant-numeric: tabular-nums; font-family: var(--mono); font-size: .72rem }
-.t-ours th { background: var(--accent); color: var(--on-accent) }
-.t-client th { background: #1f3a5f; color: #fff }
-.t-msp th { background: #2b579a; color: #fff }
-.t-gs th { background: var(--raise-2); color: var(--faint); text-align: center; font-weight: 500 } .t-gs .rn { color: var(--faint); background: var(--raise-2); text-align: center }
-.paper { width: 72%; max-width: 360px; aspect-ratio: 1 / 1.414; background: #fff; border-radius: 6px; box-shadow: var(--shadow); padding: 7% 8%; display: grid; align-content: start; gap: 14px; color: #1d1d1f }
-.paper .ph { height: 30px; background: #1f3a5f; border-radius: 3px; display: flex; align-items: center; padding-left: 4%; color: #fff; font: 700 clamp(.5rem, 1.2vw, .76rem)/1 var(--sans) }
-.paper .ts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 6px }
-.paper .ts div { aspect-ratio: 1.6; border-radius: 4px; background: #f2f4f7; display: grid; place-items: center; font: 700 clamp(.5rem, 1.25vw, .88rem)/1 var(--sans) }
-.paper .ts .a { background: #f79009; color: #fff }
-.paper .ln { height: 10px; border-radius: 2px; background: #e4e7ec } .paper .ln.t { background: #a8d5d8 }
-.steps { display: grid }
-.step { min-height: 76vh; display: grid; align-content: center; gap: 14px; opacity: .28; transition: opacity .5s var(--ease) }
-.step.on { opacity: 1 } .step:first-child { min-height: 58vh } .step:last-child { min-height: 68vh }
-.step h3 { font-size: clamp(1.7rem, 3.3vw, 2.5rem); letter-spacing: -.04em }
-.step p { color: var(--muted); font-size: 1.08rem; max-width: 30ch }
-.step small { font: 600 .72rem/1 var(--mono); color: var(--accent); letter-spacing: .05em; text-transform: uppercase }
-@media (max-width: 900px) {
-  .story { grid-template-columns: minmax(0, 1fr); gap: 0 }
-  .stage { top: calc(env(safe-area-inset-top, 0px) + 56px); height: 46vh; z-index: 2; background: var(--bg); padding-block: 8px }
-  .step { min-height: 60vh; align-content: end; padding-bottom: 8vh; opacity: 0 } .step.on { opacity: 1 } .step p { max-width: none }
-}
-
-/* feature rows */
-.feature { display: grid; grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr); gap: clamp(32px, 6vw, 80px); align-items: center }
-.feature.flip { grid-template-columns: minmax(0, 1.18fr) minmax(0, .82fr) } .feature.flip > .copy { order: 2 }
-@media (max-width: 900px) { .feature, .feature.flip { grid-template-columns: minmax(0, 1fr) } .feature.flip > .copy { order: 0 } }
-.copy { display: grid; gap: 18px; min-width: 0 } .copy .lede { max-width: 30ch }
-.card { background: var(--raise); border-radius: 26px; padding: clamp(22px, 3vw, 32px); display: grid; gap: 18px; min-width: 0 }
-.card > * { min-width: 0 }
-
-/* slider demo */
-.dur { display: grid; gap: 10px }
-.dur-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap }
-.dur-top label { font-weight: 600 }
-.dur-top output { font: 600 1.05rem/1 var(--sans); color: var(--accent); font-variant-numeric: tabular-nums }
-input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 28px; background: transparent; cursor: pointer }
-input[type=range]::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: linear-gradient(90deg, var(--accent) var(--p, 0%), var(--raise-2) var(--p, 0%)) }
-input[type=range]::-moz-range-track { height: 4px; border-radius: 2px; background: var(--raise-2) }
-input[type=range]::-moz-range-progress { height: 4px; border-radius: 2px; background: var(--accent) }
-input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; margin-top: -10px; border-radius: 50%; background: #fff; box-shadow: 0 1px 4px rgba(0, 0, 0, .35), 0 0 0 .5px rgba(0, 0, 0, .1) }
-input[type=range]::-moz-range-thumb { width: 24px; height: 24px; border: 0; border-radius: 50%; background: #fff; box-shadow: 0 1px 4px rgba(0, 0, 0, .35) }
-.ticks { display: flex; justify-content: space-between; font: .68rem/1 var(--mono); color: var(--faint); padding-inline: 8px }
-.dr { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 14px; align-items: center; font-size: .82rem; margin-block: 8px }
-@media (max-width: 480px) { .dr, .daxis { grid-template-columns: 112px minmax(0, 1fr) !important } }
-.dr .n { display: grid; min-width: 0 } .dr .n span { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
-.dr time { font: .68rem/1.3 var(--mono); color: var(--faint); transition: color .3s }
-.dt { position: relative; height: 12px; border-radius: 6px; background: var(--raise-2) }
-.dt i { position: absolute; top: 0; height: 12px; border-radius: 6px; background: var(--bar-done); transition: left .6s var(--ease), width .6s var(--ease), background .3s }
-.dt i.ms { width: 12px !important; transform: rotate(45deg) scale(.78); border-radius: 2px; background: var(--ink) }
-.dr.moved time { color: var(--bad) } .dr.moved .dt i, .dr.moved .dt i.ms { background: var(--bad) }
-.daxis { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 14px; font: .64rem/1 var(--mono); color: var(--faint) }
-.daxis div { position: relative; height: 12px } .daxis div span { position: absolute }
-.out { display: flex; flex-wrap: wrap; gap: 6px 18px; align-items: baseline; padding-top: 14px; border-top: 1px solid var(--line) }
-.out b { font-size: 1.75rem; letter-spacing: -.04em; transition: color .3s; font-variant-numeric: tabular-nums } .out b.bad { color: var(--bad) }
-.out span { color: var(--muted); font-size: .88rem }
-
-/* status */
-.ragrow { display: flex; align-items: center; gap: 18px }
-.ragcell { width: 92px; height: 64px; border-radius: 14px; background: var(--warn); color: #2b1700; display: grid; place-items: center; font-weight: 800; font-size: 1.05rem; letter-spacing: -.02em; flex: none }
-.ragrow b { display: block; font-size: 1.15rem; letter-spacing: -.02em } .ragrow span { color: var(--muted); font-size: .88rem }
-.rule { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 12px 14px; border-radius: 12px; background: var(--raise-2); font-size: .92rem }
-.mk { width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font-size: .72rem; font-weight: 700 }
-.mk.y { background: var(--ok-bg); color: var(--ok) } .mk.n { background: var(--warn-bg); color: var(--warn) }
-.rule .v { font: .8rem/1 var(--mono); color: var(--muted) }
-.note { font-size: .84rem; color: var(--muted) }
-
-/* frameworks + specs */
-.fw { width: 100%; border-collapse: collapse; font-size: .9rem; min-width: 620px }
-.fw th { text-align: left; font-size: .74rem; font-weight: 500; color: var(--faint); padding: 0 16px 10px }
-.fw td { padding: 13px 16px; border-top: 1px solid var(--line); vertical-align: top }
-.fw td:first-child { font-weight: 600; white-space: nowrap } .fw td:nth-child(2) { color: var(--muted) }
-.fw td.where { font: .78rem/1.4 var(--mono); color: var(--accent); white-space: nowrap }
-.fw tr.grp td { border-top: 0; padding: 26px 16px 8px; font-size: .8rem; font-weight: 700; color: var(--ink); letter-spacing: -.01em }
-.fw tr.grp:first-child td { padding-top: 6px }
-.specs { border-top: 1px solid var(--line) }
-.spec { display: grid; grid-template-columns: minmax(150px, .32fr) minmax(0, 1fr); gap: 24px; padding-block: 26px; border-bottom: 1px solid var(--line) }
-@media (max-width: 640px) { .spec { grid-template-columns: minmax(0, 1fr); gap: 8px } }
-.spec h3 { font-size: 1.15rem } .spec div { color: var(--muted); display: grid; gap: 6px } .spec div b { color: var(--ink); font-weight: 600 }
-
-/* compare */
-.compare { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px }
-@media (max-width: 900px) { .compare { grid-template-columns: minmax(0, 1fr) } }
-.plan { background: var(--raise); border-radius: 26px; padding: 34px 26px; display: grid; gap: 22px; align-content: start; justify-items: center; text-align: center; position: relative }
-.plan.best { box-shadow: inset 0 0 0 2px var(--accent) }
-.plan .flag { position: absolute; top: 16px; right: 18px; font-size: .72rem; font-weight: 600; color: var(--warn) }
-.plan .price { font-size: 3.1rem; font-weight: 700; letter-spacing: -.05em; line-height: 1 }
-.plan .price small { display: block; margin-top: 8px; font-size: .82rem; font-weight: 400; letter-spacing: -.01em; color: var(--muted) }
-.plan ul { list-style: none; margin: 0; padding: 22px 0 0; display: grid; gap: 15px; border-top: 1px solid var(--line); width: 100% }
-.plan li { display: grid; gap: 2px; font-size: .92rem } .plan li span { color: var(--muted); font-size: .8rem } .plan li.no { color: var(--faint) }
-.fine { font-size: .8rem; color: var(--muted) }
-.store-msg { margin: 22px auto 0; max-width: 560px; padding: 12px 18px; border-radius: 14px; background: var(--warn-bg); font-size: .9rem; text-align: center }
-
-/* faq + notes */
-.faq { max-width: 800px; margin: 0 auto }
-details { border-bottom: 1px solid var(--line); padding-block: 22px }
-summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: 18px; font-size: 1.14rem; font-weight: 600; letter-spacing: -.025em }
-summary::-webkit-details-marker { display: none }
-summary::after { content: "+"; color: var(--muted); font-weight: 300; font-size: 1.6rem; line-height: .8; transition: transform .35s var(--ease) }
-details[open] summary::after { transform: rotate(45deg) }
-details p { margin-top: 12px; color: var(--muted); max-width: 62ch }
-.notes { border-top: 1px solid var(--line); padding-block: 26px; font-size: .74rem; color: var(--muted); line-height: 1.5 }
-.notes ol { margin: 0; padding-left: 18px; display: grid; gap: 6px }
-footer { padding-block: 0 46px; font-size: .74rem; color: var(--faint) }
-footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px 30px; border-top: 1px solid var(--line); padding-top: 18px }
-footer a { color: var(--muted); text-decoration: none } footer a:hover { color: var(--ink) }
-/* dashboard before/after */
-.pill { display: inline-flex; gap: 8px; align-items: center; padding: 6px 14px; border-radius: 980px; background: var(--raise); color: var(--ink); text-decoration: none; font-size: .86rem; letter-spacing: -.01em }
-.pill b { color: var(--accent); font-weight: 600 } .pill:hover { background: var(--raise-2) }
-.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(20px, 4vw, 48px); margin-top: clamp(44px, 6vw, 72px) }
-.three h3 { margin: 0 0 6px; font-size: 1.12rem; letter-spacing: -.02em }
-.three p { margin: 0; color: var(--muted); font-size: .95rem }
-.three code { font: .8rem var(--mono); color: var(--ink) }
-@media (max-width: 760px) { .three { grid-template-columns: minmax(0, 1fr) } }
-/* works with: product names in text with our own neutral icons (no third-party logos) */
-.works { padding-block: clamp(40px, 6vw, 64px) 0; text-align: center }
-.works .kicker { font-size: .95rem; color: var(--muted); font-weight: 500 }
-.wlist { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin: 18px auto 0; padding: 0; list-style: none; max-width: 900px }
-.wlist li { display: flex; align-items: center; gap: 10px; padding: 10px 16px 10px 12px; border-radius: 14px; background: var(--raise); text-align: left }
-.wlist svg { width: 26px; height: 26px; flex: none; color: var(--muted) }
-.wlist b { display: block; font-size: .9rem; font-weight: 600; letter-spacing: -.01em }
-.wlist span { display: block; font-size: .74rem; color: var(--muted) }
-.works .fine { font-size: .72rem; color: var(--faint); margin-top: 14px }
-/* interaction polish: pointer, 200ms hover states, visible focus everywhere */
-a, button, summary, [role="tab"], label[for] { cursor: pointer }
-.plan, .wlist li, .stop, .proof div { transition: transform .25s var(--ease), box-shadow .25s var(--ease), background .25s }
-@media (hover: hover) { .plan:hover, .wlist li:hover { transform: translateY(-3px); box-shadow: 0 18px 40px rgba(0, 0, 0, .18) } }
-summary:focus-visible, .plan a:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px }
-/* proof: true numbers, not testimonials */
-.proof { padding-block: clamp(56px, 8vw, 96px) 0 }
-.proof .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--line); border-radius: 22px; overflow: hidden; border: 1px solid var(--line) }
-.proof .grid div { background: var(--bg); padding: 28px 24px; text-align: center }
-.proof b { display: block; font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 700; letter-spacing: -.045em; line-height: 1 }
-.proof span { display: block; margin-top: 10px; font-size: .86rem; color: var(--muted); line-height: 1.35 }
-@media (max-width: 760px) { .proof .grid { grid-template-columns: repeat(2, minmax(0, 1fr)) } }
-/* trust row under pricing */
-.trust { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 28px; margin: 30px auto 0; padding: 0; list-style: none; font-size: .88rem; color: var(--muted) }
-.trust li { display: flex; align-items: center; gap: 8px }
-.trust svg { width: 18px; height: 18px; flex: none; color: var(--accent) }
-
-/* nav: reading progress, current section, small-screen menu */
-.progress { position: absolute; left: 0; bottom: -1px; height: 2px; width: 100%; background: var(--accent); transform-origin: 0 50%; transform: scaleX(var(--read, 0)) }
-.links a[aria-current="true"] { color: var(--ink) }
-.app-link { margin-left: 0; color: var(--accent) !important; font-size: .78rem; text-decoration: none; white-space: nowrap }
-.menu { display: none; position: relative; margin-left: auto; padding: 0; border: 0 }
-.menu summary { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; color: var(--muted); font-size: 0 }
-.menu summary::after { display: none }
-.menu summary svg { width: 20px; height: 20px }
-.menu nav { position: absolute; right: 0; top: 44px; min-width: 200px; padding: 8px; border-radius: 16px; background: var(--raise); border: 1px solid var(--line); box-shadow: 0 24px 60px rgba(0, 0, 0, .35); display: grid }
-.menu nav a { padding: 12px 14px; border-radius: 10px; color: var(--ink); text-decoration: none; font-size: 1rem }
-.menu nav a:hover { background: var(--raise-2) }
-@media (max-width: 800px) { .menu { display: block } .menu + .theme { margin-left: 0 } }
-
-/* live demo */
-.pg { background: var(--raise); border-radius: 28px; border: 1px solid var(--line); overflow: hidden }
-.pg-top { display: flex; flex-wrap: wrap; gap: 12px 18px; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 1px solid var(--line) }
-.pg-top .seg { flex-wrap: wrap }
-.pg-top .seg button { font-size: .86rem; padding: 9px 14px; min-height: 36px }
-.privacy { display: inline-flex; align-items: center; gap: 7px; font-size: .8rem; color: var(--muted) }
-.privacy svg { width: 15px; height: 15px; color: var(--ok); flex: none }
-.pg-grid { display: grid; grid-template-columns: 300px minmax(0, 1fr) }
-@media (max-width: 980px) { .pg-grid { grid-template-columns: minmax(0, 1fr) } }
-.pg-side { padding: 18px; display: grid; gap: 16px; align-content: start; border-right: 1px solid var(--line) }
-@media (max-width: 980px) { .pg-side { border-right: 0; border-bottom: 1px solid var(--line) } }
-.pg-l { display: flex; justify-content: space-between; gap: 8px; font-size: .8rem; font-weight: 600 } .pg-l span { color: var(--faint); font-weight: 400; text-align: right }
-.pg-side textarea { width: 100%; height: 150px; resize: vertical; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); padding: 10px 12px; font: .72rem/1.5 var(--mono); white-space: pre; overflow: auto }
-.pg-side textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px }
-.pg-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center }
-.pg-hint { font-size: .76rem; color: var(--muted) }
-.pg-field { display: grid; gap: 6px }
-.pg-field > label { font-size: .8rem; font-weight: 600 }
-.pg-field input[type=text], .pg-field input[type=date], .pg-field input[type=number], .pg-cols select, .pg-cols input, .tool input, .tool textarea {
-  width: 100%; min-height: 40px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); padding: 8px 10px; font: 400 .9rem/1.2 var(--sans) }
-.pg-time { display: flex; gap: 10px; align-items: center }
-.pg-time input[type=range] { flex: 1 }
-.pg-time small { font: .72rem/1 var(--mono); color: var(--faint); white-space: nowrap }
-.play { width: 40px; height: 40px; flex: none; border-radius: 50%; border: 0; background: var(--accent); color: var(--on-accent); display: grid; place-items: center; cursor: pointer }
-.play svg { width: 16px; height: 16px }
-.pg-cols { border: 1px solid var(--line); border-radius: 12px; padding: 0 12px }
-.pg-cols summary { font-size: .86rem; padding: 12px 0; letter-spacing: -.01em }
-.pg-cols summary span { color: var(--muted); font-weight: 400 }
-.pg-cols[open] { padding-bottom: 12px }
-.cm { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 6px 10px; align-items: center; font-size: .78rem }
-.cm label { color: var(--muted) } .cm label b { color: var(--ink); font-weight: 600 }
-.cm select { min-height: 34px; padding: 4px 6px; font-size: .78rem }
-.cm .ok::before { content: "✓ "; color: var(--ok) }
-.pg-main { padding: 18px; display: grid; gap: 16px; min-width: 0; align-content: start; background: var(--bg) }
-.pg-act { display: flex; flex-wrap: wrap; gap: 10px; align-items: center }
-.pg-act .copied { font-size: .84rem; color: var(--ok) }
-.pg-say { font-size: .86rem; color: var(--muted) } .pg-say b { color: var(--ink) }
-
-/* the dashboard sheet: always paper-white, like the Excel tab it mirrors */
-.sheet { --s-ink: #1d2939; --s-mut: #667085; --s-line: #eaecf0; --s-soft: #f2f4f7; --s-teal: #1a7f86; --s-navy: #1f3a5f;
-  background: #fff; color: var(--s-ink); border-radius: 14px; padding: clamp(14px, 2.2vw, 26px); display: grid; gap: 18px; box-shadow: 0 30px 60px -30px rgba(0, 0, 0, .45);
-  font-size: .82rem; letter-spacing: -.01em; min-width: 0; color-scheme: light }
-.sh-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; padding-bottom: 10px; border-bottom: 2.5px solid var(--s-teal) }
-.sh-head h3 { font-size: clamp(1.1rem, 2vw, 1.45rem); letter-spacing: -.03em; color: var(--s-ink) }
-.sh-head p { color: var(--s-mut); font-size: .76rem; margin-top: 2px } .sh-head .asof { font-weight: 700; color: var(--s-ink); font-size: .84rem; text-align: right; white-space: nowrap }
-.sh-tiles { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px }
-@media (max-width: 760px) { .sh-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)) } .sh-tiles .t-rag { grid-column: 1 / -1 } }
-.sh-t { background: var(--s-soft); border-radius: 10px; padding: 12px 10px; text-align: center; display: grid; gap: 4px; align-content: start; transition: background .4s, color .4s }
-.sh-t span { font: 700 .62rem/1 var(--sans); letter-spacing: .06em; color: var(--s-mut); text-transform: uppercase }
-.sh-t b { font-size: clamp(1.15rem, 2.1vw, 1.6rem); letter-spacing: -.04em; font-variant-numeric: tabular-nums; line-height: 1.1 }
-.sh-t small { font-size: .68rem; color: var(--s-mut); line-height: 1.35 }
-.t-rag.Red { background: #d92d20; color: #fff } .t-rag.Amber { background: #f79009; color: #2b1700 } .t-rag.Green { background: #067647; color: #fff }
-.t-rag.Red span, .t-rag.Red small, .t-rag.Green span, .t-rag.Green small { color: rgba(255, 255, 255, .88) } .t-rag.Amber span, .t-rag.Amber small { color: #4a2a00 }
-.sh-two { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 22px }
-@media (max-width: 760px) { .sh-two { grid-template-columns: minmax(0, 1fr) } }
-.sh h4, .sheet h4 { font-size: .92rem; letter-spacing: -.02em; margin: 0 0 8px; display: flex; justify-content: space-between; gap: 8px; color: var(--s-ink) }
-.sheet h4 span { color: var(--s-mut); font-weight: 500 }
-.sh-tb { width: 100%; border-collapse: collapse; table-layout: fixed }
-.sh-tb th { font: 700 .62rem/1 var(--sans); letter-spacing: .05em; text-transform: uppercase; color: var(--s-mut); text-align: left; padding: 0 6px 6px; border-bottom: 1px solid #d0d5dd }
-.sh-tb td { padding: 6px; border-bottom: 1px solid var(--s-line); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: middle }
-.sh-tb .r { text-align: right; font-variant-numeric: tabular-nums } .sh-tb .c { text-align: center }
-.sh-tb .late { color: #b42318; font-weight: 700 }
-.pbar { height: 7px; border-radius: 4px; background: #e4f1f2; overflow: hidden } .pbar i { display: block; height: 100%; background: var(--s-teal); border-radius: 4px; transition: width .5s var(--ease) }
-.chip { display: inline-block; font: 700 .64rem/1 var(--sans); padding: 4px 7px; border-radius: 5px; white-space: nowrap }
-.chip.Done { background: #f2f4f7; color: #475467 } .chip.On-track { background: #d5f0f1; color: #0f5e63 } .chip.Planned { background: #eef4ff; color: #3538cd }
-.chip.At-risk { background: #fef0c7; color: #93370d } .chip.Late { background: #fee4e2; color: #b42318 } .chip.Slip { background: #fef0c7; color: #93370d }
-.sh-note { font-size: .72rem; color: var(--s-mut); font-style: italic; margin-top: 6px }
-.tl { display: grid; gap: 5px }
-.tl-r { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 10px; align-items: center; font-size: .74rem }
-@media (max-width: 560px) { .tl-r { grid-template-columns: 92px minmax(0, 1fr) } }
-.tl-r > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
-.tl-t { position: relative; height: 14px; background: repeating-linear-gradient(90deg, transparent 0 calc(6.25% - 1px), var(--s-line) calc(6.25% - 1px) 6.25%) }
-.tl-t i { position: absolute; top: 2px; height: 10px; border-radius: 3px; transition: left .5s var(--ease), width .5s var(--ease), background .4s }
-.tl-t i.Done { background: #98a2b3 } .tl-t i.On-track { background: var(--s-teal) } .tl-t i.Planned { background: #9ccfd3 } .tl-t i.At-risk { background: #f79009 } .tl-t i.Late { background: #d92d20 }
-.tl-t em { position: absolute; top: 2px; width: 9px; height: 9px; margin-left: -4.5px; background: var(--s-navy); transform: rotate(45deg); border: 1.5px solid #fff }
-.tl-ax { font: .64rem/1 var(--mono); color: var(--s-mut) } .tl-ax .tl-t { background: none; height: 12px } .tl-ax .tl-t b { position: absolute; font-weight: 400; white-space: nowrap }
-.tl-now { position: absolute; top: -4px; bottom: -4px; border-left: 2px solid #d92d20; transition: left .3s linear }
-.now-key { display: inline-flex; align-items: center; gap: 5px; font: 600 .64rem/1 var(--sans); color: #b42318 } .now-key::before { content: ""; width: 2px; height: 11px; background: #d92d20 }
-.tl-wrap { position: relative }
-@media (max-width: 560px) { .sh-tb .hide-sm { display: none } }
-.tl-leg { display: flex; flex-wrap: wrap; gap: 6px; font-weight: 400 } .tl-leg .chip { font-weight: 600 }
-.sh-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px; padding-top: 10px; border-top: 1px solid var(--s-line); font-size: .72rem; color: var(--s-mut) }
-.sh-foot .warn { color: #b54708; font-weight: 600 }
-.sh-empty { padding: 56px 16px; text-align: center; color: var(--s-mut); display: grid; gap: 8px; justify-items: center }
-.sh-empty b { color: var(--s-ink); font-size: 1.1rem }
-.flash { animation: flash .7s var(--ease) }
-@keyframes flash { from { transform: scale(1.06) } to { transform: none } }
-
-/* free tools */
-.tools { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 18px; align-items: start }
-@media (min-width: 901px) { #wd { position: sticky; top: 76px } }
-@media (max-width: 900px) { .tools { grid-template-columns: minmax(0, 1fr) } }
-.tool { background: var(--raise); border-radius: 26px; padding: clamp(22px, 3vw, 30px); display: grid; gap: 16px; align-content: start; min-width: 0 }
-.tool h3 { font-size: 1.3rem } .tool > p { color: var(--muted); font-size: .92rem }
-.tool .two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px }
-.tool label { display: grid; gap: 6px; font-size: .8rem; font-weight: 600 }
-.tool textarea { min-height: 64px; resize: vertical; font: .8rem/1.4 var(--mono) }
-.answer { padding: 16px 18px; border-radius: 16px; background: var(--raise-2); display: grid; gap: 4px }
-.answer b { font-size: clamp(1.5rem, 3vw, 2rem); letter-spacing: -.04em; font-variant-numeric: tabular-nums }
-.answer span { font-size: .84rem; color: var(--muted) } .answer code { font: .78rem var(--mono); color: var(--ink) }
-.gng { display: grid; gap: 6px }
-.gng-g { font: 700 .68rem/1 var(--sans); letter-spacing: .06em; text-transform: uppercase; color: var(--faint); margin-top: 8px }
-.gng-r { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 12px; background: var(--raise-2); font-size: .84rem }
-.gng-r .m { font: 600 .64rem/1 var(--mono); color: var(--faint); margin-left: 6px }
-.st4 { display: flex; gap: 2px; padding: 2px; border-radius: 8px; background: color-mix(in srgb, var(--ink) 6%, transparent) }
-.st4 button { border: 0; background: transparent; color: var(--muted); font: 600 .7rem/1 var(--sans); padding: 7px 8px; border-radius: 6px; cursor: pointer; min-width: 44px; min-height: 30px }
-.st4 button[aria-pressed="true"][data-v="Met"] { background: var(--ok-bg); color: var(--ok) }
-.st4 button[aria-pressed="true"][data-v="Waived"] { background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent) }
-.st4 button[aria-pressed="true"][data-v="Pending"] { background: var(--warn-bg); color: var(--warn) }
-.st4 button[aria-pressed="true"][data-v="Not met"] { background: var(--bad-bg); color: var(--bad) }
-@media (max-width: 520px) { .gng-r { grid-template-columns: minmax(0, 1fr) } }
-.verdict { padding: 18px; border-radius: 16px; display: grid; gap: 4px; background: var(--raise-2); transition: background .3s }
-.verdict b { font-size: 1.6rem; letter-spacing: -.035em } .verdict span { font-size: .86rem; color: var(--muted) }
-.verdict.go { background: var(--ok-bg) } .verdict.go b { color: var(--ok) }
-.verdict.cond { background: var(--warn-bg) } .verdict.cond b { color: var(--warn) }
-.verdict.nogo { background: var(--bad-bg) } .verdict.nogo b { color: var(--bad) }
-
-@media print {
-  @page { size: A4 landscape; margin: 10mm }
-  body { background: #fff !important }
-  body.printing > :not(#print-sheet) { display: none !important }
-  #print-sheet { box-shadow: none; border-radius: 0; padding: 0; font-size: 9pt; zoom: .68; break-inside: avoid }
-  #print-sheet .sh-tiles { grid-template-columns: repeat(5, minmax(0, 1fr)) } #print-sheet .sh-two { grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr) }
-  #print-sheet .sh-tb .hide-sm { display: table-cell }
-  .tl-now, .pbar i, .tl-t i { transition: none }
-  * { -webkit-print-color-adjust: exact; print-color-adjust: exact }
-}
-</style>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 
-<header class="nav">
-  <div class="wrap wide">
-    <a class="brand" href="#top" aria-label="Keelson home">
-      <svg viewBox="0 0 64 64" aria-hidden="true"><rect x="9" y="8" width="10.5" height="48" rx="5.25" fill="#39c9be"/><path d="M27 28.5 44 11.5" stroke="currentColor" stroke-width="10" stroke-linecap="round" opacity=".42"/><path d="M27 35.5 40 48.5" stroke="currentColor" stroke-width="10" stroke-linecap="round"/><path d="M51 50.2l6.3 6.3-6.3 6.3-6.3-6.3z" fill="#f5a524"/>
+<!-- Icon set: 24px grid, 1.75 stroke, round caps/joins. Drawn for Keelson (docs/DESIGN-SYSTEM.md §6). -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15V4m0 0L7.5 8.5M12 4l4.5 4.5"/><path d="M4 14v3a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-3"/></symbol>
+  <symbol id="i-report" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 17v-3m3 3v-5m3 5v-2"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/><path d="M12 14.5v2"/></symbol>
+  <symbol id="i-columns" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><path d="M3.5 9.5h17M9.5 9.5v10"/></symbol>
+  <symbol id="i-gauge" viewBox="0 0 24 24"><path d="M4.5 17a8 8 0 1 1 15 0"/><path d="M12 14l4-4"/><circle cx="12" cy="14" r="1.2"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4m8-4v4"/><path d="M8 14h2m4 0h2m-8 3h2"/></symbol>
+  <symbol id="i-gantt" viewBox="0 0 24 24"><path d="M4 4v16h16"/><path d="M8 8h6M10 12h7M8 16h4"/></symbol>
+  <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5.5 21V4"/><path d="M5.5 4.5h11l-2 4 2 4h-11"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></symbol>
+  <symbol id="i-brush" viewBox="0 0 24 24"><path d="M14.5 4.5l5 5L11 18l-5-5z"/><path d="M6 13l-2 6 6-2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2m0 15v2M2.5 12h2m15 0h2M5.3 5.3l1.4 1.4m10.6 10.6 1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M19.5 14.5A8 8 0 0 1 9.5 4.5a8 8 0 1 0 10 10z"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8.5" r="3.5"/><path d="M3 19.5a6 6 0 0 1 12 0"/><path d="M15.5 5.2a3.5 3.5 0 0 1 0 6.6M18 14.5a6 6 0 0 1 3 5"/></symbol>
+  <symbol id="i-box" viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></symbol>
+  <symbol id="i-tool" viewBox="0 0 24 24"><rect x="4" y="3.5" width="16" height="17" rx="2.5"/><path d="M8 8h8M8 12.5h2m2 0h4M8 16.5h2m2 0h4"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5.5c0 4.5-3 8-7 9.5-4-1.5-7-5-7-9.5V6z"/><path d="M9 12l2 2 4-4"/></symbol>
+  <symbol id="i-swap" viewBox="0 0 24 24"><path d="M4 8h13m-3-3 3 3-3 3M20 16H7m3-3-3 3 3 3"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 4 2.8 19.5h18.4z"/><path d="M12 10v4.5m0 2.5v.01"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5"/><path d="M4 16v1a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-1"/></symbol>
+  <symbol id="i-trend" viewBox="0 0 24 24"><path d="M4 19.5h16"/><path d="M4.5 15.5l5-5 3.5 3.5 6.5-7"/><path d="M15 7h4.5v4.5"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".8"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11m0-11-11 11"/></symbol>
+  <symbol id="k-mark" viewBox="0 0 64 64"><rect x="9" y="8" width="10.5" height="48" rx="5.25" fill="#39c9be"/><path d="M27 28.5 44 11.5" stroke="currentColor" stroke-width="10" stroke-linecap="round" opacity=".42" fill="none"/><path d="M27 35.5 40 48.5" stroke="currentColor" stroke-width="10" stroke-linecap="round" fill="none"/><path d="M51 50.2l6.3 6.3-6.3 6.3-6.3-6.3z" fill="#f5a524"/></symbol>
 </svg>
-      Keelson
-    </a>
-    <nav class="links" aria-label="Sections">
-      <a href="#try">Try it live</a><a href="#tools">Free tools</a><a href="#formats">Formats</a><a href="#schedule">Scheduling</a><a href="#golive">Go-live</a><a href="#compare">Pricing</a><a href="#faq">FAQ</a>
+
+<!-- ============ NAV ============ -->
+<header class="nav">
+  <div class="wrap">
+    <a class="logo" href="#main" aria-label="Keelson home"><svg aria-hidden="true"><use href="#k-mark"/></svg>Keelson</a>
+    <nav aria-label="Main">
+      <ul class="nav-links">
+        <li><button type="button" aria-expanded="false" aria-controls="prodmenu" id="prodbtn">Product <svg class="ic sm" aria-hidden="true"><use href="#i-chev"/></svg></button>
+          <div class="nav-pop" id="prodmenu" hidden>
+            <div class="mega">
+              <div class="mega-col">
+                <a class="mega-item" href="app.html"><span class="mi-ic t-violet"><svg class="ic" aria-hidden="true"><use href="#i-report"/></svg></span><span><b>Reports app</b><span>Seven reports, from one-pager to finish forecast, as PDF or Word</span></span></a>
+                <a class="mega-item" href="#changes"><span class="mi-ic t-teal"><svg class="ic" aria-hidden="true"><use href="#i-swap"/></svg></span><span><b>What changed <span class="chip chip-new">New</span></b><span>Last week's export vs this week's, on one page</span></span></a>
+                <a class="mega-item" href="#trend"><span class="mi-ic t-rose"><svg class="ic" aria-hidden="true"><use href="#i-trend"/></svg></span><span><b>Slip trend <span class="chip chip-new">New</span></b><span>Every slipped milestone and re-baseline, on record</span></span></a>
+                <a class="mega-item" href="#forecast"><span class="mi-ic t-blue"><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg></span><span><b>Finish forecast <span class="chip chip-new">New</span></b><span>P50 and P80 from your plan's own track record</span></span></a>
+              </div>
+              <div class="mega-side">
+                <h4>Free</h4>
+                <a href="#try"><svg class="ic sm" aria-hidden="true"><use href="#i-gauge"/></svg>Quick check</a>
+                <a href="templates.html"><svg class="ic sm" aria-hidden="true"><use href="#i-box"/></svg>Template packs</a>
+                <a href="tools.html"><svg class="ic sm" aria-hidden="true"><use href="#i-tool"/></svg>Free tools</a>
+                <h4 style="margin-top:10px">Works with</h4>
+                <p>Excel, CSV and MS Project XML exports from MS Project, Jira, Smartsheet and client trackers.</p>
+              </div>
+            </div>
+          </div>
+        </li>
+        <li><a href="templates.html">Templates</a></li>
+        <li><a href="tools.html">Free tools</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
     </nav>
-    <a class="links app-link" href="app.html">Reports app</a>
-    <details class="menu"><summary aria-label="Menu"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14"/></svg></summary>
-      <nav aria-label="Sections"><a href="#try">Try it live</a><a href="#tools">Free tools</a><a href="#formats">Formats</a><a href="#schedule">Scheduling</a><a href="#golive">Go-live</a><a href="#compare">Pricing</a><a href="#faq">FAQ</a><a href="app.html">Reports app</a></nav></details>
-    <button class="theme" id="theme" type="button" aria-label="Switch to light mode"></button>
-    <a class="btn fill sm" href="#compare" data-store="dashboard">Get it free</a>
+    <div class="nav-right">
+      <button class="icon-btn" type="button" id="theme" aria-label="Switch to dark theme"><svg class="ic theme-light" aria-hidden="true"><use href="#i-moon"/></svg><svg class="ic theme-dark" aria-hidden="true"><use href="#i-sun"/></svg></button>
+      <a class="btn btn-primary btn-sm" href="app.html"><span class="hide-sm">Try it with a sample plan</span><span class="show-sm">Try a sample</span></a>
+      <button class="icon-btn menu-btn" type="button" id="menubtn" aria-label="Open menu" aria-expanded="false" aria-controls="mnav"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg></button>
+    </div>
+    <nav class="mnav" id="mnav" aria-label="Menu" hidden>
+      <h4>Product</h4>
+      <a href="app.html">Reports app</a>
+      <a href="#changes">What changed</a>
+      <a href="#trend">Slip trend</a>
+      <a href="#forecast">Finish forecast</a>
+      <a href="#try">Quick check</a>
+      <a href="templates.html">Template packs</a>
+      <a href="tools.html">Free tools</a>
+      <h4>Keelson</h4>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+    </nav>
   </div>
-  <div class="progress" aria-hidden="true"></div>
 </header>
 
-<main id="top">
-  <!-- HERO -->
-  <div class="hero">
-    <div class="wrap wide">
-      <a class="pill in" href="#try"><b>New</b> Try the dashboard live on your own plan ›</a>
-      <h1 class="in d2">Plan once.<br><span class="dim">Deliver anywhere.</span></h1>
-      <p class="lede in d3">The project plan that schedules itself, reports its own status and runs your go-live. Then hands it over in <b>your client's template</b>, MS Project, Google Sheets, CSV or PDF.</p>
-      <div class="ctas in d4">
-        <a class="btn fill" href="#try">Try it on your plan</a>
-        <a class="btn line" href="#compare" data-store="dashboard">Download free</a>
-        <a class="more" href="#compare">Packs from $9</a>
-      </div>
-      <p class="avail in d4">Now available: <b>Software / SaaS Implementation pack</b> · Excel 2021+ and Google Sheets · No macros</p>
+<main id="main" tabindex="-1">
+<!-- ============ HERO ============ -->
+<section class="hero" aria-labelledby="h-hero">
+  <div class="wrap">
+    <a class="hero-pill rise" href="#changes"><span class="chip chip-new">New</span> <span>What changed, slip trend <span class="hide-sm">and finish forecast</span></span> <svg class="ic sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+    <h1 id="h-hero" class="rise d1">Tell your sponsor <span class="grad-text nb">what changed</span><br class="hide-sm"> and when it will really finish.</h1>
+    <p class="lead rise d2">Drop in this week's export from MS Project, Jira, Smartsheet or the client's Excel tracker. Keelson shows what changed, whether it's getting worse and when it will really finish, then writes the client-ready report. The file never leaves your browser.</p>
+    <div class="hero-ctas rise d3">
+      <a class="btn btn-primary btn-lg" href="app.html">Try it with a sample plan <svg class="ic arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+      <a class="btn btn-secondary btn-lg" href="#try">Quick check on this page</a>
+    </div>
+    <ul class="hero-trust rise d3">
+      <li><svg class="ic sm" aria-hidden="true"><use href="#i-lock"/></svg>Your plan never leaves this device</li>
+      <li><svg class="ic sm" aria-hidden="true"><use href="#i-check"/></svg>Free to try, no sign-up</li>
+      <li><svg class="ic sm" aria-hidden="true"><use href="#i-check"/></svg>Excel, CSV, MS Project XML</li>
+    </ul>
+  </div>
 
-      <div class="mac open">
-        <div class="lid">
-          <figure class="app" style="margin:0" aria-label="Keelson workbook with fictional sample data">
-            <div class="bar">
-              <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
-              <div class="seg" role="tablist" aria-label="Workbook views">
-                <button role="tab" id="t-dash" aria-controls="p-dash" aria-selected="true">Dashboard</button>
-                <button role="tab" id="t-raid" aria-controls="p-raid" aria-selected="false">RAID</button>
-                <button role="tab" id="t-run" aria-controls="p-run" aria-selected="false">Runbook</button>
-              </div>
-              <span class="fname">Keelson-Project-Plan-SAMPLE.xlsx</span>
-            </div>
-            <div class="panel" role="tabpanel" id="p-dash" aria-labelledby="t-dash">
-              <div class="kpis">
-                <div class="kpi amber"><span>Overall status</span><b>Amber</b><small>Calculated by rules</small></div>
-                <div class="kpi"><span>Forecast finish</span><b>14 Apr</b><small>Baseline 12 Apr</small></div>
-                <div class="kpi"><span>Variance</span><b>+2 days</b><small>working days</small></div>
-                <div class="kpi"><span>Complete</span><b>72%</b><small>Planned 75%</small></div>
-                <div class="kpi"><span>Schedule (SPI)</span><b>0.95</b><small>earned ÷ planned</small></div>
-                <div class="kpi"><span>Overdue tasks</span><b>2</b><small>0 milestones</small></div>
-              </div>
-              <p class="why"><b>Why Amber:</b> forecast finish is 2 working days behind baseline. Status date 23 Feb 2027.</p>
-              <div class="gantt"><div class="g">
-                <div class="gr h"><span></span><span class="tk"><span style="left:0">Nov</span><span style="left:17.7%">Dec</span><span style="left:36.6%">Jan</span><span style="left:55.5%">Feb</span><span style="left:72.6%">Mar</span><span style="left:91.5%">Apr</span></span><span></span></div>
-                <div class="gr"><span class="n">Initiation</span><span class="tk"><i style="left:0;width:2.4%"><b style="width:100%"></b></i></span><span class="p">100%</span></div>
-                <div class="gr"><span class="n">Discovery &amp; Requirements</span><span class="tk"><i style="left:2.4%;width:11.6%"><b style="width:100%"></b></i></span><span class="p">100%</span></div>
-                <div class="gr"><span class="n">Solution Design</span><span class="tk"><i style="left:14%;width:10.4%"><b style="width:100%"></b></i></span><span class="p">100%</span></div>
-                <div class="gr"><span class="n">Data Migration</span><span class="tk"><i style="left:19.5%;width:28.7%"><b style="width:100%"></b></i></span><span class="p">100%</span></div>
-                <div class="gr"><span class="n">Build &amp; Configure</span><span class="tk"><i class="late" style="left:40.2%;width:25.6%"><b style="width:98%"></b></i></span><span class="p">98%</span></div>
-                <div class="gr"><span class="n">Integrations</span><span class="tk"><i class="late" style="left:43.3%;width:15.2%"><b style="width:97%"></b></i></span><span class="p">97%</span></div>
-                <div class="gr"><span class="n">Testing</span><span class="tk"><i style="left:25.6%;width:57.3%"><b style="width:20%"></b></i></span><span class="p">20%</span></div>
-                <div class="gr"><span class="n">Deployment &amp; Cutover</span><span class="tk"><i style="left:48.2%;width:37.8%"><b style="width:40%"></b></i></span><span class="p">40%</span></div>
-                <div class="gr"><span class="n">Hypercare &amp; Closure</span><span class="tk"><i style="left:86%;width:14%"><b style="width:0"></b></i></span><span class="p">0%</span></div>
-                <div class="now-line" aria-hidden="true"></div>
-              </div></div>
-            </div>
-            <div class="panel" role="tabpanel" id="p-raid" aria-labelledby="t-raid" hidden>
-              <div class="raid">
-                <div class="heat" aria-label="Open risks by probability and impact">
-                  <span>5</span><span class="c lo"></span><span class="c md"></span><span class="c hi"></span><span class="c hi"></span><span class="c hi"></span>
-                  <span>4</span><span class="c lo"></span><span class="c md"></span><span class="c md">1</span><span class="c hi">1</span><span class="c hi">1</span>
-                  <span>3</span><span class="c lo"></span><span class="c md"></span><span class="c md">1</span><span class="c md">2</span><span class="c hi">1</span>
-                  <span>2</span><span class="c lo"></span><span class="c lo"></span><span class="c lo">1</span><span class="c md">1</span><span class="c md">1</span>
-                  <span>1</span><span class="c lo"></span><span class="c lo"></span><span class="c lo"></span><span class="c lo"></span><span class="c lo"></span>
-                  <span></span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
-                </div>
-                <div class="list">
-                  <div class="li"><span class="id">R-02</span><span>Legacy data quality worse than profiled</span><span class="tag bad">20 · overdue</span></div>
-                  <div class="li"><span class="id">R-01</span><span>ERP vendor delivers v3 API late</span><span class="tag bad">16 High</span></div>
-                  <div class="li"><span class="id">R-08</span><span>Cutover window too short for full load</span><span class="tag bad">15 High</span></div>
-                  <div class="li"><span class="id">CR-04</span><span>ERP payload rework, awaiting decision</span><span class="tag warn">+4 days</span></div>
-                </div>
-              </div>
-            </div>
-            <div class="panel" role="tabpanel" id="p-run" aria-labelledby="t-run" hidden>
-              <div class="list">
-                <div class="rb"><span class="no">8</span><span>Load work orders and 24 months of history</span><time>ended 07:20</time><span class="tag warn">+35 min</span></div>
-                <div class="rb"><span class="no">9</span><span>Reconcile counts and totals · Go/No-Go point</span><time>ended 08:20</time><span class="tag ok">Done</span></div>
-                <div class="rb now"><span class="no">14</span><span class="live">Smoke test a work order</span><time>due 11:30</time><span class="tag mute">Running</span></div>
-                <div class="rb"><span class="no">15</span><span>Business verification · final Go/No-Go</span><time>due 13:30</time><span class="tag mute">Next</span></div>
-              </div>
-              <div class="trio">
-                <div><span>Go / No-Go</span><b style="color:var(--warn)">GO WITH CONDITIONS</b></div>
-                <div><span>Forecast vs plan</span><b style="color:var(--bad)">+70 min</b></div>
-                <div><span>Hypercare SLA met</span><b>78%</b></div>
-              </div>
-            </div>
-          </figure>
+  <div class="stage rise d3" role="img" aria-label="Keelson app preview with the fictional FieldFlow sample: what changed since 16 February, plan finish 3 June, 13 working days behind baseline, P80 finish 23 July, and a one-page changes report ready as PDF or Word.">
+    <div class="stage-bg"></div>
+    <span class="spark s1"></span><span class="spark s2"></span>
+    <div class="float f1" aria-hidden="true"><span class="mi-ic t-teal"><svg class="ic sm"><use href="#i-swap"/></svg></span><div><b>plan-23Feb.xlsx vs plan-16Feb.xlsx</b><span>Compared in this tab. 0 bytes uploaded.</span></div></div>
+    <div class="float f2" aria-hidden="true"><span class="mi-ic t-blue"><svg class="ic sm"><use href="#i-target"/></svg></span><div><b>P80 finish: 23 Jul</b><span>8 in 10 replays finish by then</span></div></div>
+    <div class="mock" aria-hidden="true">
+      <div class="mock-top">
+        <span class="logo"><svg><use href="#k-mark"/></svg>Keelson</span>
+        <span class="crumb">FieldFlow rollout / <b>What changed</b></span>
+        <span class="steps"><span class="done">✓ Upload</span><span class="done">✓ Check</span><span class="on">3 Reports</span></span>
+      </div>
+      <div class="mock-body">
+        <div class="side">
+          <h5>Reports</h5>
+          <span class="si"><svg class="ic"><use href="#i-doc"/></svg>One-pager</span>
+          <span class="si"><svg class="ic"><use href="#i-report"/></svg>Weekly status</span>
+          <span class="si"><svg class="ic"><use href="#i-gantt"/></svg>Roadmap</span>
+          <span class="si"><svg class="ic"><use href="#i-columns"/></svg>Variance</span>
+          <h5 style="margin-top:14px">Over time</h5>
+          <span class="si on"><svg class="ic"><use href="#i-swap"/></svg>What changed<i>New</i></span>
+          <span class="si"><svg class="ic"><use href="#i-trend"/></svg>Slip trend<i>New</i></span>
+          <span class="si"><svg class="ic"><use href="#i-target"/></svg>Forecast<i>New</i></span>
+          <div class="file"><b>plan-23Feb.xlsx</b>34 tasks · 7 milestones · 6 weekly versions on this device</div>
         </div>
-        <div class="deck" aria-hidden="true"></div>
+        <div class="main">
+          <div class="kpis">
+            <div class="kpi"><small>Overall status</small><span class="chip chip-warn"><span class="dot"></span>Amber</span><em>by your rules</em></div>
+            <div class="kpi"><small>Plan finish</small><b>3 Jun</b><em class="bad">13 wd late</em></div>
+            <div class="kpi"><small>P80 finish</small><b>23 Jul</b><em>P50 9 Jul</em></div>
+            <div class="kpi"><small>Since 16 Feb</small><b>28</b><em>changes</em></div>
+          </div>
+          <div class="panel">
+            <div class="panel-h">What changed since 16 Feb <span>23 Feb export</span></div>
+            <div class="chg">
+              <div><span class="chip chip-bad">Later</span><span>Go-live (milestone)</span><b class="bad">+2 wd · 20 May</b></div>
+              <div><span class="chip chip-bad">Later</span><span>UAT sign-off</span><b class="bad">+2 wd · 13 May</b></div>
+              <div><span class="chip chip-bad">Later</span><span>User acceptance testing</span><b class="bad">+2 wd · 7 May</b></div>
+              <div><span class="chip chip-brand">Added</span><span>Extra regression cycle</span><b>Testing</b></div>
+              <div><span class="chip chip-mute">Removed</span><span>Archive legacy reports</span><b>Data migration</b></div>
+              <div><span class="chip chip-warn">Owner</span><span>Telematics feed</span><b>→ Grace Okafor</b></div>
+            </div>
+          </div>
+          <div class="why"><svg class="ic"><use href="#i-alert"/></svg><span><b>Why Amber:</b> the plan finishes 3 Jun, 13 working days after its baseline of 17 May. Go-live moved 2 working days to 20 May. Nothing overdue.</span></div>
+        </div>
+        <div class="paperwrap">
+          <div class="paper">
+            <div class="paper-h"><b>Changes since 16 Feb</b><span>23 Feb 2027</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center"><span>FieldFlow rollout</span><span class="p-rag">AMBER</span></div>
+            <div class="p-sec"><h6>Headline</h6><p>Finish 1 → 3 Jun (+2 wd); Go-live 18 → 20 May (+2 wd), driven by Testing. 1 task added, 1 removed; 18 finish later.</p></div>
+            <div class="p-sec"><h6>Finish dates moved</h6><table class="p-tbl"><tr><td>Go-live</td><td class="late">+2</td></tr><tr><td>UAT sign-off</td><td class="late">+2</td></tr><tr><td>Hypercare exit</td><td class="late">+2</td></tr></table></div>
+            <div class="p-sec"><h6>Slip by phase</h6><div class="p-bars"><i style="height:100%"></i><i style="height:46%"></i><i style="height:30%"></i><i style="height:15%"></i></div></div>
+          </div>
+          <div class="dl"><span class="btn btn-primary"><svg class="ic sm"><use href="#i-download"/></svg>PDF</span><span class="btn btn-secondary">Word</span></div>
+        </div>
       </div>
     </div>
   </div>
+</section>
 
-  <!-- WORKS WITH -->
-  <section class="works" aria-label="Works with">
-    <div class="wrap"><p class="kicker rise">Works with the tools your plans already live in</p>
-      <ul class="wlist rise"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="M3.5 9h17M3.5 14.5h17M9.5 3.5v17"/></svg><div><b>Microsoft Excel</b><span>2021 or later, and Microsoft 365</span></div></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="M3.5 9h17M3.5 14.5h17M9.5 3.5v17"/></svg><div><b>Google Sheets</b><span>Upload the .xlsx; formulas stay live</span></div></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 6h8M8 12h9M12 18h8"/><path d="M3.5 3.5v17"/></svg><div><b>Microsoft Project</b><span>XML export · paste plans into the dashboard</span></div></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3.5" y="4" width="5" height="16" rx="1.5"/><rect x="9.5" y="4" width="5" height="11" rx="1.5"/><rect x="15.5" y="4" width="5" height="7" rx="1.5"/></svg><div><b>Jira, Smartsheet, Asana</b><span>Paste or CSV into the dashboard</span></div></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M6 3.5h8l4.5 4.5v12.5H6z"/><path d="M14 3.5V8h4.5M9 13h6M9 16.5h6"/></svg><div><b>CSV and PDF</b><span>For any other tool, and for printing</span></div></li></ul>
-      <p class="fine">Product names are trademarks of their owners. Keelson is independent and not affiliated with them.<sup><a href="#n6">6</a></sup></p></div>
-  </section>
+<!-- ============ WORKS WITH + PROOF ============ -->
+<section class="works" aria-labelledby="h-works">
+  <div class="wrap">
+    <p class="lbl" id="h-works">Works with the exports your plans already live in</p>
+    <ul class="fmt">
+      <li><span class="ext t-blue">.xml</span>MS Project</li>
+      <li><span class="ext t-violet">.csv</span>Jira</li>
+      <li><span class="ext t-amber">.xlsx</span>Smartsheet</li>
+      <li><span class="ext t-teal">.xlsx</span>Excel trackers</li>
+      <li><span class="ext t-rose">.csv</span>Asana</li>
+      <li><span class="ext t-teal">.xlsx</span>Google Sheets</li>
+      <li><span class="ext t-blue">paste</span>Any table</li>
+    </ul>
+    <p class="fine">Product names are trademarks of their owners. Keelson is independent and not affiliated with them.</p>
+    <div class="proof">
+      <div><b class="grad-text">7</b><span>client-ready reports from one export</span></div>
+      <div><b class="grad-text">100+</b><span>column names recognised</span></div>
+      <div><b class="grad-text">5</b><span>real-world plan formats tested<sup><a href="#n2" aria-label="Note 2">2</a></sup></span></div>
+      <div><b class="grad-text">0</b><span>bytes of your plan uploaded</span></div>
+    </div>
+  </div>
+</section>
 
-  <!-- PROOF: true numbers -->
-  <section class="proof" aria-label="Quality">
-    <div class="wrap"><div class="grid rise">
-      <div><b>169</b><span>automated checks on every release</span></div>
-      <div><b>5</b><span>real-world plan formats tested</span></div>
-      <div><b>100+</b><span>column names recognised</span></div>
-      <div><b>0</b><span>macros, add-ins or uploads</span></div>
-    </div></div>
-  </section>
+<!-- ============ THE NICHE: three questions ============ -->
+<section class="section soft" id="why" aria-labelledby="h-why">
+  <div class="wrap">
+    <div class="head">
+      <span class="eyebrow"><svg class="ic sm" aria-hidden="true"><use href="#i-users"/></svg>For delivery PMs and consultants who report to a sponsor</span>
+      <h2 id="h-why">Every steering meeting asks the same three questions.</h2>
+      <p class="lead">Your plan holds the answers, spread across last week's export, this week's export and the baseline nobody remembers changing. Keelson puts them on one page.</p>
+    </div>
+    <div class="qs">
+      <article class="q">
+        <span class="qn">Question 1</span>
+        <h3>“What changed since last week?”</h3>
+        <p class="before"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg>Two exports side by side, a highlighter and an hour of squinting.</p>
+        <p class="after t-teal"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Drop in both files. Added, removed and moved tasks in one headline sentence, in seconds.</p>
+        <a href="#changes">See What changed <svg class="ic sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+      </article>
+      <article class="q">
+        <span class="qn">Question 2</span>
+        <h3>“Is it getting worse?”</h3>
+        <p class="before"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg>“Still Amber” every week, while go-live quietly creeps and the baseline gets reset.</p>
+        <p class="after t-rose"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>A slip trend for each milestone and a log of every re-baseline. Nobody can quietly reset it.</p>
+        <a href="#trend">See Slip trend <svg class="ic sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+      </article>
+      <article class="q">
+        <span class="qn">Question 3</span>
+        <h3>“When will it really finish?”</h3>
+        <p class="before"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg>The plan date, which assumes everything left goes better than everything so far.</p>
+        <p class="after t-blue"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>A P50 and a P80 from how this plan's own tasks actually ran, in one sentence. It refuses when the data is thin.</p>
+        <a href="#forecast">See Finish forecast <svg class="ic sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+      </article>
+    </div>
+  </div>
+</section>
 
-  <!-- LIVE DEMO: the real dashboard rules, run in this tab -->
-  <section id="try" style="padding-top:clamp(72px,10vw,120px)">
-    <div class="wrap wide">
-      <div class="head rise"><p class="kicker">Try it live · Free · Nothing uploaded</p>
-        <h2>Paste any plan.<br><span class="dim">Watch the dashboard build itself.</span></h2>
-        <p class="lede">From MS Project, Jira, Smartsheet or the client's own Excel. Your plan stays in this browser tab, and the same rules run inside the free Excel file.</p></div>
-      <div class="pg rise" id="pg">
-        <div class="pg-top">
-          <div class="seg" role="tablist" aria-label="Plan to use" id="pg-src"></div>
-          <span class="privacy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>Runs in this tab. Nothing leaves your device.</span>
+<!-- ============ PRODUCT TOUR (tabs) ============ -->
+<section class="section" id="tour" aria-labelledby="h-tour">
+  <div class="wrap">
+    <div class="head">
+      <span class="eyebrow"><svg class="ic sm" aria-hidden="true"><use href="#i-report"/></svg>One export in, every report out</span>
+      <h2 id="h-tour">From messy export to steering-committee pack.</h2>
+      <p class="lead">Keelson reads the plan you already maintain, checks it, compares it with last week, and writes the reports your sponsor expects.</p>
+    </div>
+    <div class="tablist" role="tablist" aria-label="Product tour">
+      <button class="tab" type="button" role="tab" id="t1" aria-controls="p1" aria-selected="true"><svg class="ic sm" aria-hidden="true"><use href="#i-columns"/></svg>Map columns</button>
+      <button class="tab" type="button" role="tab" id="t2" aria-controls="p2" aria-selected="false" tabindex="-1"><svg class="ic sm" aria-hidden="true"><use href="#i-gauge"/></svg>Check status</button>
+      <button class="tab" type="button" role="tab" id="t3" aria-controls="p3" aria-selected="false" tabindex="-1"><svg class="ic sm" aria-hidden="true"><use href="#i-swap"/></svg>Compare weeks</button>
+      <button class="tab" type="button" role="tab" id="t4" aria-controls="p4" aria-selected="false" tabindex="-1"><svg class="ic sm" aria-hidden="true"><use href="#i-report"/></svg>Weekly report</button>
+      <button class="tab" type="button" role="tab" id="t5" aria-controls="p5" aria-selected="false" tabindex="-1"><svg class="ic sm" aria-hidden="true"><use href="#i-gantt"/></svg>Roadmap</button>
+    </div>
+    <div class="tabpanel" role="tabpanel" id="p1" aria-labelledby="t1" tabindex="0">
+      <div>
+        <h3>It finds your columns, so you don't retype them.</h3>
+        <p class="lead">Finish, End Date, Due Date, Resource Names, Assignee, Epic Link: over 100 header names from the tools PMs actually use. Anything it misses, you pick once.</p>
+        <ul class="ticks">
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Reads <code>Mon 3/17/27</code>, <code>17/03/2027</code>, <code>17-Mar-27</code> and real Excel dates</span></li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Works out day-first or month-first from your own data</span></li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Flags missing dates before your sponsor does</span></li>
+        </ul>
+      </div>
+      <div class="tp-visual t-teal" aria-hidden="true">
+        <div class="map">
+          <div class="map-row"><span>Task Name</span><svg class="ic"><use href="#i-arrow"/></svg><span>Task</span></div>
+          <div class="map-row"><span>Finish · dd/mm/yyyy</span><svg class="ic"><use href="#i-arrow"/></svg><span>Finish</span></div>
+          <div class="map-row"><span>Resource Names</span><svg class="ic"><use href="#i-arrow"/></svg><span>Owner</span></div>
+          <div class="map-row"><span>% Complete</span><svg class="ic"><use href="#i-arrow"/></svg><span>Progress</span></div>
+          <div class="map-row"><span>Baseline Finish</span><svg class="ic"><use href="#i-arrow"/></svg><span>Baseline</span></div>
+          <div class="map-row"><span>Unique ID</span><svg class="ic"><use href="#i-arrow"/></svg><span>Task ID</span></div>
         </div>
-        <div class="pg-grid">
-          <div class="pg-side">
-            <div class="pg-field"><label class="pg-l" for="pg-text">Plan <span id="pg-note"></span></label>
-              <textarea id="pg-text" spellcheck="false" autocomplete="off" placeholder="In Excel, MS Project, Smartsheet or Jira: select the whole table, headers included. Copy, then paste here.&#10;&#10;Or open a CSV file below."></textarea>
-              <div class="pg-row"><label class="btn line sm" for="pg-file">Open a CSV file</label><input type="file" id="pg-file" accept=".csv,.tsv,.txt,text/csv" hidden><button class="btn line sm" type="button" id="pg-clear">Clear</button></div></div>
-            <div class="pg-field"><label for="pg-title">Project name</label><input type="text" id="pg-title" autocomplete="off"></div>
-            <div class="pg-field"><label for="pg-date">Status date</label><input type="date" id="pg-date"></div>
-            <div class="pg-field"><label for="pg-slide">Move the status date through the project</label>
-              <div class="pg-time"><button class="play" type="button" id="pg-play" aria-label="Play the project from start to finish"></button><input type="range" id="pg-slide" min="0" max="100" value="0"><small id="pg-slide-out"></small></div></div>
-            <details class="pg-cols"><summary>Columns found <span id="pg-colsum"></span></summary>
-              <p class="pg-hint" id="pg-colinfo" style="margin-bottom:10px"></p><div class="cm" id="pg-colmap"></div>
-              <div class="pg-field" style="margin-top:12px"><label for="pg-mskey">Also a milestone if the name contains</label><input type="text" id="pg-mskey" placeholder="e.g. sign-off" autocomplete="off"></div></details>
+      </div>
+    </div>
+    <div class="tabpanel" role="tabpanel" id="p2" aria-labelledby="t2" tabindex="0" hidden>
+      <div>
+        <h3>A status colour you can defend.</h3>
+        <p class="lead">Finish slip, overdue milestones, overdue tasks and progress against plan decide it, against tolerances you set once. Override it if you must; your reason prints right beside it.</p>
+        <ul class="ticks">
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Every Green, Amber or Red comes with the rule that set it</span></li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Readers see both the calculated colour and yours</span></li>
+        </ul>
+      </div>
+      <div class="tp-visual t-amber" aria-hidden="true"><div class="rules">
+        <div><span><span class="mk n"><svg class="ic"><use href="#i-alert"/></svg></span>Finish within 5 wd of baseline</span><b>+13 wd</b></div>
+        <div><span><span class="mk y"><svg class="ic"><use href="#i-check"/></svg></span>Fewer than 2 overdue milestones</span><b>0</b></div>
+        <div><span><span class="mk y"><svg class="ic"><use href="#i-check"/></svg></span>Fewer than 3 overdue tasks</span><b>0</b></div>
+        <div><span><span class="mk y"><svg class="ic"><use href="#i-check"/></svg></span>Progress within 10 points of plan</span><b>48% vs 48%</b></div>
+        <div><span>Result</span><span class="chip chip-warn"><span class="dot"></span>Amber</span></div>
+      </div></div>
+    </div>
+    <div class="tabpanel" role="tabpanel" id="p3" aria-labelledby="t3" tabindex="0" hidden>
+      <div>
+        <h3>This week against last week, task by task.</h3>
+        <p class="lead">Rows are matched on Unique ID or Issue key, so MS Project renumbering and re-sorted Jira exports don't fake a change. Probable renames wait for you to confirm.</p>
+        <ul class="ticks">
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Moves under one working day go to an appendix</span></li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Untick anything you'd rather not show the client</span></li>
+        </ul>
+      </div>
+      <div class="tp-visual t-violet" aria-hidden="true"><div class="map">
+        <div class="cstrip"><span class="on"><b>28</b> All</span><span><b>1</b> Added</span><span><b>1</b> Removed</span><span><b>18</b> Later</span><span><b>6</b> Earlier</span><span><b>1</b> Owner</span></div>
+        <div class="chg">
+          <div><span class="chip chip-bad">Later</span><span>UAT sign-off</span><b class="bad">+2 wd</b></div>
+          <div><span class="chip chip-bad">Later</span><span>User acceptance testing</span><b class="bad">+2 wd</b></div>
+          <div><span class="chip chip-warn">Owner</span><span>Telematics feed</span><b>→ Grace Okafor</b></div>
+          <div><span class="chip chip-brand">Rename?</span><span>Configure field service mobile app → … offline</span><b>Confirm</b></div>
+        </div>
+      </div></div>
+    </div>
+    <div class="tabpanel" role="tabpanel" id="p4" aria-labelledby="t4" tabindex="0" hidden>
+      <div>
+        <h3>The weekly status, written for you.</h3>
+        <p class="lead">Narrative, milestones, overdue work and what changed since last week. Click any sentence to rewrite it, then download PDF or editable Word.</p>
+      </div>
+      <div class="tp-visual t-blue" aria-hidden="true"><div class="mini-kpis">
+        <div class="kpi"><small>Status</small><span class="chip chip-warn"><span class="dot"></span>Amber</span></div>
+        <div class="kpi"><small>Complete</small><b>48%</b><em>expected 48% by now</em></div>
+        <div class="kpi"><small>Milestones met</small><b>3 of 7</b><em>next: SIT exit</em></div>
+        <div class="kpi"><small>Plan finish</small><b>3 Jun</b><em>baseline 17 May</em></div>
+      </div></div>
+    </div>
+    <div class="tabpanel" role="tabpanel" id="p5" aria-labelledby="t5" tabindex="0" hidden>
+      <div>
+        <h3>A roadmap the client can read in ten seconds.</h3>
+        <p class="lead">Phases, milestones and today's line on one landscape page, in your brand colour.</p>
+      </div>
+      <div class="tp-visual t-rose" aria-hidden="true"><div class="map gantt">
+        <div class="g-row"><span>Discovery</span><div><i class="c1" style="left:0;width:20%;--p:100%"></i></div></div>
+        <div class="g-row"><span>Build &amp; configure</span><div><i class="c2" style="left:18%;width:40%;--p:100%"></i></div></div>
+        <div class="g-row"><span>Data migration</span><div><i class="c2" style="left:56%;width:22%;--p:15%"></i></div></div>
+        <div class="g-row"><span>Testing</span><div><i class="c3" style="left:70%;width:18%;--p:0%"></i></div></div>
+        <div class="g-row"><span>Cutover &amp; go-live</span><div><i class="c4" style="left:86%;width:6%"></i><span class="ms" style="left:91%"></span></div></div>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LIVE DEMO: the real dashboard rules, run in this tab ============ -->
+<section class="section soft" id="try" aria-labelledby="h-try">
+  <div class="wrap">
+    <div class="head">
+      <span class="eyebrow"><svg class="ic sm" aria-hidden="true"><use href="#i-lock"/></svg>Quick check · Free · Nothing uploaded</span>
+      <h2 id="h-try">Quick check: paste any plan, get its status.</h2>
+      <p class="lead">From MS Project, Jira, Smartsheet or the client's own Excel. It opens on the FieldFlow sample's latest export. Your plan stays in this browser tab, and the same rules run inside the free Excel dashboard.</p>
+    </div>
+    <div class="pg" id="pg">
+      <div class="pg-top">
+        <div class="seg" role="group" aria-label="Plan to use" id="pg-src"></div>
+        <span class="privacy"><svg class="ic sm" aria-hidden="true"><use href="#i-lock"/></svg>Runs in this tab. Nothing leaves your device.</span>
+      </div>
+      <div class="pg-grid">
+        <div class="pg-side">
+          <div class="pg-field"><label class="pg-l" for="pg-text">Plan <span id="pg-note"></span></label>
+            <textarea id="pg-text" spellcheck="false" autocomplete="off" placeholder="In Excel, MS Project, Smartsheet or Jira: select the whole table, headers included. Copy, then paste here.&#10;&#10;Or open a CSV file below."></textarea>
+            <div class="pg-row"><label class="btn btn-secondary btn-sm" for="pg-file" tabindex="0" id="pg-file-l">Open a CSV file</label><input type="file" id="pg-file" accept=".csv,.tsv,.txt,text/csv" hidden><button class="btn btn-ghost btn-sm" type="button" id="pg-clear">Clear</button></div></div>
+          <div class="pg-field"><label for="pg-title">Project name</label><input type="text" id="pg-title" autocomplete="off"></div>
+          <div class="pg-field"><label for="pg-date">Status date</label><input type="date" id="pg-date"></div>
+          <div class="pg-field"><label for="pg-slide">Move the status date through the project</label>
+            <div class="pg-time"><button class="play" type="button" id="pg-play" aria-label="Play the project from start to finish"></button><input type="range" id="pg-slide" min="0" max="100" value="0"><small id="pg-slide-out"></small></div></div>
+          <details class="pg-cols"><summary>Columns found <span id="pg-colsum"></span></summary>
+            <p class="pg-hint" id="pg-colinfo" style="margin-bottom:10px"></p><div class="cm" id="pg-colmap"></div>
+            <div class="pg-field" style="margin-top:12px"><label for="pg-mskey">Also a milestone if the name contains</label><input type="text" id="pg-mskey" placeholder="e.g. sign-off" autocomplete="off"></div></details>
+        </div>
+        <div class="pg-main">
+          <p class="pg-say" id="pg-say" aria-live="polite"></p>
+          <div class="sheet" id="sheet"></div>
+          <div class="pg-act">
+            <button class="btn btn-primary" type="button" id="pg-copy">Copy status update</button>
+            <button class="btn btn-secondary" type="button" id="pg-print">Print or save as PDF</button>
+            <a class="btn btn-secondary" href="app.html">All seven reports in the app</a>
+            <a class="btn btn-ghost" href="#pricing" data-store="dashboard"><svg class="ic sm" aria-hidden="true"><use href="#i-download"/></svg>Get the Excel version free</a>
+            <span class="copied" id="pg-copied" role="status"></span>
           </div>
-          <div class="pg-main">
-            <p class="pg-say" id="pg-say" aria-live="polite"></p>
-            <div class="sheet" id="sheet"></div>
-            <div class="pg-act">
-              <button class="btn fill" type="button" id="pg-copy">Copy status update</button>
-              <button class="btn line" type="button" id="pg-print">Print or save as PDF</button>
-              <a class="btn line" href="app.html">Upload a file for every report</a>
-              <a class="btn line" href="#compare" data-store="dashboard">Get the Excel version free</a>
-              <span class="copied" id="pg-copied" role="status"></span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="three">
-        <div class="rise"><h3>Finds your columns.</h3><p>Finish, End Date, Due Date, Resource Names, Assignee, Epic Link… over 100 header names from the tools PMs actually use. Anything it misses, you pick once from a dropdown.</p></div>
-        <div class="rise"><h3>Reads messy dates.</h3><p><code>Mon 3/17/27</code>, <code>17/03/2027</code>, <code>17-Mar-27</code> or real Excel dates. It works out day-or-month-first from your own data.</p></div>
-        <div class="rise"><h3>Shows its working.</h3><p>Green, Amber or Red from rules you can change, or your own call with a reason. A data check flags missing dates before your sponsor does.</p></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- THINGS YOU'LL STOP DOING -->
-  <section id="stop" style="padding-top:clamp(72px,10vw,120px)">
-    <div class="wrap"><h2 class="rise">Things you'll stop doing<br><span class="dim">on Monday.</span></h2></div>
-    <div class="rail" id="rail" tabindex="0" aria-label="Things you'll stop doing" style="margin-top:44px">
-      <a class="stop" href="#formats"><span class="x">Retyping the plan</span><p>Into the client's template, every week. <span>Map their columns once; paste the result.</span></p>
-        <div class="vis"><span class="tag ok" style="justify-self:start">Ref ← WBS</span><span class="tag ok" style="justify-self:start">Activity ← Task name</span><span class="tag ok" style="justify-self:start">End Date ← Finish · dd/mm/yyyy</span></div></a>
-      <a class="stop" href="#schedule"><span class="x">Moving dates by hand</span><p>When one task slips. <span>Every successor reschedules around weekends and holidays.</span></p>
-        <div class="vis"><div class="mb" style="width:46%"></div><div class="mb" style="width:58%;margin-left:32%"></div><div class="mb" style="width:38%;margin-left:58%;background:var(--bad)"></div></div></a>
-      <a class="stop" href="#status"><span class="x">Defending a colour</span><p>You picked in a meeting. <span>The RAG comes from rules, and shows its working.</span></p>
-        <div class="vis"><div class="rule" style="padding:9px 11px"><span class="mk n">!</span><span style="font-size:.84rem">Finish vs baseline</span><span class="v">+2 days</span></div><div class="rule" style="padding:9px 11px"><span class="mk y">✓</span><span style="font-size:.84rem">Overdue milestones</span><span class="v">0</span></div></div></a>
-      <a class="stop" href="#golive"><span class="x">Running cutover from chat</span><p>At three in the morning. <span>A runbook that re-forecasts as each step finishes.</span></p>
-        <div class="vis"><div class="rb now"><span class="no">14</span><span class="live">Smoke test</span><time>11:30</time><span class="tag mute">Running</span></div><div class="trio" style="grid-template-columns:1fr 1fr"><div><span>Go / No-Go</span><b style="color:var(--warn);font-size:.8rem">GO WITH CONDITIONS</b></div><div><span>Forecast</span><b style="color:var(--bad)">+70 min</b></div></div></div></a>
-      <a class="stop" href="#specs"><span class="x">Asking IT about macros</span><p>Before you can open a template. <span>Plain .xlsx, nothing locked, nothing to approve.</span></p>
-        <div class="vis"><span style="font-size:4.4rem;font-weight:700;letter-spacing:-.06em;line-height:1">0</span><span class="note">macros, add-ins or passwords</span></div></a>
-    </div>
-    <div class="wrap rail-nav"><button class="round" id="prev" aria-label="Previous">‹</button><button class="round" id="next" aria-label="Next">›</button></div>
-  </section>
-
-  <!-- PINNED STORY -->
-  <section id="formats">
-    <div class="wrap">
-      <div class="head rise"><p class="kicker">One plan. Every format.</p><h2>Hand it over the way<br><span class="dim">they asked for it.</span></h2></div>
-      <div class="story">
-        <div class="stage"><div class="views">
-          <div class="view on" data-v="0"><div class="doc"><div class="doc-h"><i style="background:#1e8f5a">X</i>Your plan<span>Keelson-Project-Plan.xlsx</span></div>
-            <div class="scroll"><table class="tb t-ours"><thead><tr><th>ID</th><th>WBS</th><th>Task</th><th>Start</th><th>Finish</th><th>%</th></tr></thead><tbody>
-              <tr class="s"><td class="num">54</td><td>8</td><td>Testing</td><td>14-Dec-26</td><td>17-Mar-27</td><td class="num">20%</td></tr>
-              <tr><td class="num">55</td><td>8.1</td><td class="in2">Test strategy &amp; UAT scripts</td><td>14-Dec-26</td><td>18-Dec-26</td><td class="num">100%</td></tr>
-              <tr><td class="num">56</td><td>8.2</td><td class="in2">System integration testing</td><td>18-Feb-27</td><td>03-Mar-27</td><td class="num">30%</td></tr>
-              <tr><td class="num">59</td><td>8.5</td><td class="in2">User acceptance testing</td><td>04-Mar-27</td><td>17-Mar-27</td><td class="num">0%</td></tr>
-              <tr><td class="num">61</td><td>8.7</td><td class="in2">UAT sign-off</td><td>17-Mar-27</td><td>17-Mar-27</td><td class="num">0%</td></tr></tbody></table></div></div></div>
-          <div class="view" data-v="1"><div class="doc"><div class="doc-h"><i style="background:#0f8f86">C</i>Client's template<span>Brightwater PMO standard (fictional)</span></div>
-            <div class="scroll"><table class="tb t-client"><thead><tr><th>Ref</th><th>Activity</th><th>Responsible</th><th>End Date</th><th>RAG Status</th><th>Project</th></tr></thead><tbody>
-              <tr class="s"><td>8</td><td>Testing</td><td></td><td>17/03/2027</td><td>In Progress</td><td>FF-2026</td></tr>
-              <tr><td>8.1</td><td class="in2">Test strategy &amp; UAT scripts</td><td>Morgan Brooks</td><td>18/12/2026</td><td>Complete</td><td>FF-2026</td></tr>
-              <tr><td>8.2</td><td class="in2">System integration testing</td><td>Morgan Brooks</td><td>03/03/2027</td><td>In Progress</td><td>FF-2026</td></tr>
-              <tr><td>8.5</td><td class="in2">User acceptance testing</td><td>Avery Singh</td><td>17/03/2027</td><td>Not Started</td><td>FF-2026</td></tr>
-              <tr><td>8.7</td><td class="in2">UAT sign-off</td><td>Avery Singh</td><td>17/03/2027</td><td>Not Started</td><td>FF-2026</td></tr></tbody></table></div></div></div>
-          <div class="view" data-v="2"><div class="doc"><div class="doc-h"><i style="background:#2b579a">P</i>MS Project<span>Keelson-Project-Plan-MSProject.xml</span></div>
-            <div class="scroll"><table class="tb t-msp"><thead><tr><th>ID</th><th>Task Name</th><th>Duration</th><th>Predecessors</th></tr></thead><tbody>
-              <tr class="s"><td class="num">54</td><td>Testing</td><td>62 days</td><td></td></tr>
-              <tr><td class="num">55</td><td class="in2">Test strategy &amp; UAT scripts</td><td>5 days</td><td>21</td></tr>
-              <tr><td class="num">56</td><td class="in2">System integration testing (SIT)</td><td>10 days</td><td>42,47,55</td></tr>
-              <tr><td class="num">57</td><td class="in2">Performance &amp; load testing</td><td>4 days</td><td>56SS+5 days</td></tr>
-              <tr><td class="num">59</td><td class="in2">User acceptance testing (UAT)</td><td>10 days</td><td>56,52</td></tr></tbody></table></div></div></div>
-          <div class="view" data-v="3"><div class="doc"><div class="doc-h"><i style="background:#1fa463">S</i>Google Sheets<span>Uploaded .xlsx, formulas live</span></div>
-            <div class="scroll"><table class="tb t-gs"><thead><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th></tr></thead><tbody>
-              <tr class="s"><td class="rn">58</td><td class="num">54</td><td>8</td><td>Testing</td><td>14-Dec-26</td><td>17-Mar-27</td></tr>
-              <tr><td class="rn">59</td><td class="num">55</td><td>8.1</td><td class="in2">Test strategy &amp; UAT scripts</td><td>14-Dec-26</td><td>18-Dec-26</td></tr>
-              <tr><td class="rn">60</td><td class="num">56</td><td>8.2</td><td class="in2">System integration testing</td><td>18-Feb-27</td><td>03-Mar-27</td></tr>
-              <tr><td class="rn">63</td><td class="num">59</td><td>8.5</td><td class="in2">User acceptance testing</td><td>04-Mar-27</td><td>17-Mar-27</td></tr>
-              <tr><td class="rn">65</td><td class="num">61</td><td>8.7</td><td class="in2">UAT sign-off</td><td>17-Mar-27</td><td>17-Mar-27</td></tr></tbody></table></div></div></div>
-          <div class="view" data-v="4"><div class="paper" aria-label="Printed dashboard page"><div class="ph">Project Dashboard</div>
-            <div class="ts"><div class="a">Amber</div><div>14 Apr</div><div>+2 days</div><div>72%</div><div>0.95</div><div>2</div></div>
-            <div class="ln t" style="width:90%"></div><div class="ln" style="width:70%"></div><div class="ln t" style="width:80%"></div><div class="ln" style="width:60%"></div><div class="ln t" style="width:85%"></div><div class="ln" style="width:50%"></div></div></div>
-        </div></div>
-        <div class="steps">
-          <div class="step on" data-s="0"><small>The source</small><h3>One plan you actually maintain.</h3><p>Dates, roll-ups and status all calculate from the tasks you type. This is the only place you update.</p></div>
-          <div class="step" data-s="1"><small>Client's own Excel</small><h3>Their columns, their order, their dates.</h3><p>Describe the client's template once. Every week, copy the Client Format tab into their file.<sup><a href="#n4">4</a></sup></p></div>
-          <div class="step" data-s="2"><small>MS Project</small><h3>Ready for Project, links intact.</h3><p>Hierarchy, durations, baselines and dependencies, renumbered for Project's own task IDs.<sup><a href="#n2">2</a></sup></p></div>
-          <div class="step" data-s="3"><small>Google Sheets</small><h3>Upload it. It still calculates.</h3><p>No macros means nothing to convert. The plan keeps scheduling in the browser.<sup><a href="#n1">1</a></sup></p></div>
-          <div class="step" data-s="4"><small>PDF and CSV</small><h3>Print it, or pipe it anywhere.</h3><p>Print-ready layouts for the steering committee, and CSV for Jira, Power BI or your own database.</p></div>
         </div>
       </div>
     </div>
-  </section>
-
-  <!-- SCHEDULE -->
-  <section id="schedule">
-    <div class="wrap feature">
-      <div class="copy rise">
-        <p class="kicker">It schedules itself</p>
-        <h2>Drag one duration.<br><span class="dim">Watch go‑live move.</span></h2>
-        <p class="lede">Successors, phases, the Gantt and the dashboard recalculate around weekends and your holidays.</p>
-        <p class="fine">Every position below comes from the Keelson scheduler run on the sample plan. Presidents' Day (15 Feb) is in its holiday list, which is why some days of slip cost more than others.</p>
-      </div>
-      <div class="card rise" id="demo">
-        <div class="dur">
-          <div class="dur-top"><label for="slider">Customer portal build</label><output id="slv" for="slider">6 days</output></div>
-          <input type="range" id="slider" min="6" max="12" step="1" value="6" aria-describedby="slv">
-          <div class="ticks" aria-hidden="true"><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span></div>
-        </div>
-        <div class="daxis" aria-hidden="true"><span></span><div><span style="left:0">18 Jan</span><span style="left:20%">Feb</span><span style="left:60%">Mar</span></div></div>
-        <div id="rows"></div>
-        <div class="out" aria-live="polite"><b id="gl">Go‑live Thu 18 Mar</b><span id="gv">On baseline</span></div>
-      </div>
+    <div class="pg-3">
+      <div><h3><span class="mi-ic t-teal"><svg class="ic sm" aria-hidden="true"><use href="#i-columns"/></svg></span>Finds your columns.</h3><p>Over 100 header names from the tools PMs actually use. Anything it misses, you pick once from a dropdown.</p></div>
+      <div><h3><span class="mi-ic t-violet"><svg class="ic sm" aria-hidden="true"><use href="#i-calendar"/></svg></span>Reads messy dates.</h3><p><code>Mon 3/17/27</code>, <code>17/03/2027</code>, <code>17-Mar-27</code> or real Excel dates. It works out day-or-month-first from your own data.</p></div>
+      <div><h3><span class="mi-ic t-amber"><svg class="ic sm" aria-hidden="true"><use href="#i-gauge"/></svg></span>Shows its working.</h3><p>Green, Amber or Red from rules you can change, or your own call with a reason. A data check flags missing dates first.</p></div>
     </div>
-  </section>
+    <p class="fine center" style="margin-top:var(--sp-5)">Sample company, people and project are fictional.<sup><a href="#n1" aria-label="Note 1">1</a></sup> The demo reads pasted text and CSV; the reports app also opens .xlsx and MS Project XML.</p>
+  </div>
+</section>
 
-  <!-- STATUS -->
-  <section id="status">
-    <div class="wrap feature flip">
-      <div class="copy rise">
-        <p class="kicker">A status you can defend</p>
-        <h2>The colour shows<br><span class="dim">its working.</span></h2>
-        <p class="lede">Slip, overdue milestones, overdue tasks and schedule performance decide it, against tolerances you set once. Override it if you must; your reason prints right beside it.</p>
-      </div>
-      <div class="card rise">
-        <div class="ragrow"><div class="ragcell" aria-hidden="true">Amber</div><div><b>Calculated by rules</b><span>Status date 23 Feb 2027</span></div></div>
-        <div class="rule"><span class="mk n">!</span><span>Forecast finish no later than baseline</span><span class="v">+2 days</span></div>
-        <div class="rule"><span class="mk y">✓</span><span>No overdue milestones</span><span class="v">0</span></div>
-        <div class="rule"><span class="mk y">✓</span><span>No more than 2 overdue tasks</span><span class="v">2</span></div>
-        <div class="rule"><span class="mk y">✓</span><span>Schedule performance at least 0.95<sup><a href="#n5">5</a></sup></span><span class="v">0.95</span></div>
-        <p class="note">PM override: none. Change the colour and readers see both values, and why.</p>
-      </div>
+<!-- ============ A. WHAT CHANGED ============ -->
+<section class="section" id="changes" aria-labelledby="h-changes">
+  <div class="wrap split">
+    <div class="copy">
+      <span class="eyebrow"><span class="chip chip-new">New</span>What changed</span>
+      <h2 id="h-changes">Two weekly exports in. <span class="grad-text">What changed</span> out.</h2>
+      <p class="lead">Drop in both files, or compare against the version Keelson saved last time. Get the sentence your sponsor actually reads, and the table behind it, in seconds.</p>
+      <ul class="ticks">
+        <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Added, removed, moved later or earlier, owner changed, progress gone backwards, renamed</span></li>
+        <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Baseline edits flagged in red, every time</span></li>
+        <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Works across MS Project, Jira, Smartsheet and Excel trackers, even when the columns are re-ordered or the date format changes</span></li>
+      </ul>
+      <div class="row"><a class="btn btn-primary" href="app.html">Compare two exports <svg class="ic sm arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a></div>
     </div>
-  </section>
-
-  <!-- GO-LIVE -->
-  <section id="golive">
-    <div class="wrap feature">
-      <div class="copy rise">
-        <p class="kicker">Go-live, under control</p>
-        <h2>The cutover weekend,<br><span class="dim">minute by minute.</span></h2>
-        <p class="lede">Enter actual times as steps finish. Every later step re-forecasts, the Go/No-Go answers from your criteria, and hypercare tracks SLAs from the first ticket.</p>
-      </div>
-      <div class="card rise">
-        <div class="list">
-          <div class="rb"><span class="no">8</span><span>Load work orders and 24 months of history</span><time>ended 07:20</time><span class="tag warn">+35 min</span></div>
-          <div class="rb"><span class="no">9</span><span>Reconcile counts and totals</span><time>ended 08:20</time><span class="tag ok">Done</span></div>
-          <div class="rb now"><span class="no">14</span><span class="live">Smoke test a work order</span><time>due 11:30</time><span class="tag mute">Running</span></div>
-          <div class="rb"><span class="no">15</span><span>Business verification</span><time>due 13:30</time><span class="tag mute">Next</span></div>
-          <div class="rb"><span class="no">101</span><span style="color:var(--muted)">Rollback: restore legacy database</span><time>window 12:20</time><span class="tag mute">If needed</span></div>
-        </div>
-        <div class="trio">
-          <div><span>Go / No-Go</span><b style="color:var(--warn)">GO WITH CONDITIONS</b></div>
-          <div><span>Forecast vs plan</span><b style="color:var(--bad)">+70 min</b></div>
-          <div><span>Hypercare SLA met</span><b>78%</b></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- FREE TOOLS: useful on their own, no sign-up -->
-  <section id="tools">
-    <div class="wrap">
-      <div class="head rise"><p class="kicker">Free tools · No sign-up</p><h2>Small tools for<br><span class="dim">everyday project maths.</span></h2>
-        <p class="lede">Bookmark them. They run in your browser, and each one shows the Excel formula behind it.</p></div>
-      <div class="tools">
-        <div class="tool rise" id="wd">
-          <h3>Working-day calculator</h3>
-          <p>When does a 15-day task really finish? Weekends and your holidays skipped.</p>
-          <div class="seg" role="tablist" aria-label="Calculation" style="justify-self:start">
-            <button role="tab" type="button" aria-selected="true" data-m="add">Add working days</button><button role="tab" type="button" aria-selected="false" data-m="count">Count between dates</button></div>
-          <div class="two">
-            <label>Start date<input type="date" id="wd-a"></label>
-            <label id="wd-n-l">Working days<input type="number" id="wd-n" value="15" min="-2000" max="2000" inputmode="numeric"></label>
-            <label id="wd-b-l" hidden>End date<input type="date" id="wd-b"></label>
-          </div>
-          <label>Holidays (optional, one date per line)<textarea id="wd-h" spellcheck="false" placeholder="2026-12-25&#10;2027-01-01"></textarea></label>
-          <div class="answer" aria-live="polite"><b id="wd-out">—</b><span id="wd-sub"></span><span>In Excel: <code id="wd-xl"></code></span></div>
-        </div>
-        <div class="tool rise" id="gng">
-          <h3>Go / No-Go check</h3>
-          <p>The criteria from the Keelson go-live runbook. Mark each one and get a verdict you can paste into the cutover call.</p>
-          <div class="verdict" id="gng-v" aria-live="polite"><b>—</b><span></span></div>
-          <div class="pg-row"><button class="btn fill sm" type="button" id="gng-copy">Copy result</button><button class="btn line sm" type="button" id="gng-reset">Reset</button><span class="copied" id="gng-copied" role="status" style="font-size:.84rem;color:var(--ok)"></span></div>
-          <div class="gng" id="gng-list"></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- FRAMEWORKS -->
-  <section id="frameworks">
-    <div class="wrap">
-      <div class="head rise"><p class="kicker">Fluent in your method</p><h2>PMBOK, PRINCE2, agile and ITIL.<br><span class="dim">Already in the right places.</span></h2>
-        <p class="lede">If you trained for the PMP, PRINCE2, PMI-ACP, ITIL or CISM, you'll recognise every artefact and know where to find it.</p></div>
-      <div class="card rise" style="overflow-x:auto">
-        <table class="fw">
-          <thead><tr><th>You know it as</th><th>In Keelson</th><th>Where</th></tr></thead>
+    <div class="well t-teal">
+      <div class="app-card" role="img" aria-label="Changes report for the fictional FieldFlow sample: since 16 February the finish moved from 1 to 3 June and go-live from 18 to 20 May, driven by Testing; 1 task added, 1 removed, 18 finish later and 6 earlier; no baseline changes.">
+        <div class="app-card-h" aria-hidden="true"><b>Changes since 16 Feb</b><span>FieldFlow rollout · 23 Feb export</span></div>
+        <p class="headline" aria-hidden="true"><b>Since 16 Feb: finish 1 → 3 Jun (+2 wd); Go-live 18 → 20 May (+2 wd)</b>, driven by Testing; 3 other milestones moved. 1 task added (Extra regression cycle), 1 removed (Archive legacy reports). 18 tasks finish later (incl. 3 milestones): the largest move was +2 wd (User acceptance testing); 17 tasks followed; 6 tasks finish earlier (incl. 1 milestone), by up to -2 wd. Also 1 owner change and 1 task renamed (1 to confirm).</p>
+        <div class="cstrip" aria-hidden="true"><span class="on"><b>1</b> Added</span><span><b>1</b> Removed</span><span><b>18</b> Moved later</span><span><b>0</b> Baseline changed</span></div>
+        <table class="ctbl" aria-hidden="true">
+          <colgroup><col style="width:92px"><col><col class="hide-sm" style="width:24%"><col style="width:84px"></colgroup>
+          <thead><tr><th>Change</th><th>Task</th><th class="hide-sm">Phase</th><th class="r">Move</th></tr></thead>
           <tbody>
-            <tr class="grp"><td colspan="3">PMBOK® Guide · PMP®</td></tr>
-            <tr><td>Schedule baseline</td><td>Baseline start and finish per task, variance in working days</td><td class="where">Plan</td></tr>
-            <tr><td>Risk register</td><td>Probability × impact, owner, response, dated action</td><td class="where">RAID › Risks</td></tr>
-            <tr><td>Issue, assumption and decision logs</td><td>A register each, with owners and overdue flags</td><td class="where">RAID</td></tr>
-            <tr><td>Integrated change control</td><td>Schedule and cost impact, approval, baseline-updated check</td><td class="where">RAID › Changes</td></tr>
-            <tr><td>Schedule performance (SPI)</td><td>Duration-weighted earned ÷ planned progress at the status date<sup><a href="#n5">5</a></sup></td><td class="where">Dashboard</td></tr>
-            <tr class="grp"><td colspan="3">PRINCE2®</td></tr>
-            <tr><td>Tolerances</td><td>RAG thresholds set once; breach one and the colour changes</td><td class="where">Settings</td></tr>
-            <tr><td>Highlight report</td><td>Dashboard with the three-line status narrative</td><td class="where">Dashboard</td></tr>
-            <tr class="grp"><td colspan="3">PMI-ACP® · Scrum · hybrid delivery</td></tr>
-            <tr><td>Sprints in a stage-gated plan</td><td>Sprint planning, build and review milestones inside Build</td><td class="where">Plan › 5.1–5.3</td></tr>
-            <tr class="grp"><td colspan="3">ITIL® 4</td></tr>
-            <tr><td>Change enablement, release &amp; deployment</td><td>Approved changes, timed cutover, rollback window</td><td class="where">Runbook</td></tr>
-            <tr><td>Incident management, service transition</td><td>P1–P4 SLAs, breach flags, handover to BAU support</td><td class="where">Hypercare · Plan 11.2</td></tr>
-            <tr class="grp"><td colspan="3">CISM® · ISO/IEC 27001</td></tr>
-            <tr><td>Risk assessment and treatment</td><td>Likelihood × impact heat map; avoid, mitigate, transfer, accept</td><td class="where">RAID › Summary</td></tr>
-            <tr><td>Security workstream</td><td>Security requirements, access model, pen test as a Go/No-Go criterion</td><td class="where">Plan · Go-No-Go</td></tr>
+            <tr><td><span class="chip chip-bad">Later</span></td><td><b>Go-live</b></td><td class="hide-sm">Cutover and go-live</td><td class="r"><b class="late">+2 wd</b></td></tr>
+            <tr><td><span class="chip chip-bad">Later</span></td><td>UAT sign-off</td><td class="hide-sm">Testing</td><td class="r"><b class="late">+2 wd</b></td></tr>
+            <tr><td><span class="chip chip-bad">Later</span></td><td>User acceptance testing</td><td class="hide-sm">Testing</td><td class="r"><b class="late">+2 wd</b></td></tr>
+            <tr><td><span class="chip chip-brand">Added</span></td><td>Extra regression cycle</td><td class="hide-sm">Testing</td><td class="r">new</td></tr>
+            <tr><td><span class="chip chip-mute">Removed</span></td><td>Archive legacy reports</td><td class="hide-sm">Data migration</td><td class="r">removed</td></tr>
           </tbody>
         </table>
-      </div>
-      <p class="fine" style="text-align:center;margin-top:18px">Keelson is independent and not endorsed or certified by any of these bodies.<sup><a href="#n6">6</a></sup></p>
-    </div>
-  </section>
-
-  <!-- SPECS -->
-  <section id="specs" style="padding-top:0">
-    <div class="wrap">
-      <div class="head rise" style="justify-items:start;text-align:left"><h2>The details.</h2></div>
-      <div class="specs rise">
-        <div class="spec"><h3>Workbooks</h3><div><b>Project Plan &amp; Gantt · RAID &amp; Change Log · Go-Live Runbook</b><span>Each one twice: blank for your project, and filled with a worked example.</span></div></div>
-        <div class="spec"><h3>Plan</h3><div><span>500 tasks, up to 3 predecessors each, 52-week Gantt.</span><span>Finish-to-start and start-to-start with leads and lags in working days. FF and SF links are flagged and treated as finish-to-start.</span><span>Monday to Friday plus your own holiday list.</span></div></div>
-        <div class="spec"><h3>Status</h3><div><span>Rule-based RAG against tolerances: finish slip, overdue milestones, overdue tasks, SPI.<sup><a href="#n5">5</a></sup></span><span>PM override with a visible reason. A Data Check column explains every bad input in plain words.</span></div></div>
-        <div class="spec"><h3>Registers</h3><div><span>Risks with heat map and top five, issues, assumptions, dependencies, decisions, change requests with schedule and cost impact.</span></div></div>
-        <div class="spec"><h3>Go-live</h3><div><span>Timed runbook with forecast times, rollback window, Go/No-Go from your criteria, P1–P4 hypercare SLAs and a daily ticket trend.</span></div></div>
-        <div class="spec"><h3>Hand-over</h3><div><span>Client's own template: up to 20 columns, any order, fixed values, five date styles, weekly-grid view.<sup><a href="#n4">4</a></sup></span><span>MS Project XML (beta)<sup><a href="#n2">2</a></sup>, CSV for every register, printable PDF.</span></div></div>
-        <div class="spec"><h3>Requirements</h3><div><span>Excel for Microsoft 365 or Excel 2021 and later, on Windows or Mac. Or Google Sheets.<sup><a href="#n1">1</a></sup></span><span>No macros, add-ins or passwords.</span></div></div>
-        <div class="spec"><h3>Licence</h3><div><span>Unlimited own and client projects. One licence per person. Share filled-in files freely; don't resell the templates.</span></div></div>
+        <p class="excl" aria-hidden="true"><span class="box on"><svg class="ic"><use href="#i-check"/></svg></span>Show in the client version · 27 of 28 changes</p>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- COMPARE -->
-  <section id="compare">
-    <div class="wrap">
-      <div class="head rise"><h2>Which Keelson<br><span class="dim">is right for you?</span></h2></div>
-      <div class="compare rise">
-        <article class="plan"><h3>Free dashboard</h3><p class="price">$0<small>Try it on your real plan</small></p>
-          <a class="btn line" href="#compare" data-store="dashboard">Download</a>
-          <ul><li>Dashboard for any plan<span>Paste a plan, get a one-pager</span></li><li>One-page PDF<span>Print or paste into PowerPoint</span></li>
-            <li class="no">Project Plan &amp; Gantt<span>In the packs</span></li><li class="no">RAID &amp; Change Log<span>In the packs</span></li><li class="no">Go-Live Runbook<span>In the packs</span></li></ul></article>
-        <article class="plan"><h3>One pack</h3><p class="price">$9<small>One project type, one time</small></p>
-          <a class="btn fill" href="#compare" data-store="software">Buy Software pack</a>
-          <ul><li>Project Plan &amp; Gantt<span>Blank and filled in</span></li><li>Client-format mapper<span>Your client's own template</span></li>
-            <li>RAID &amp; Change Log<span>Risks, issues, decisions, changes</span></li><li>Go-Live Runbook<span>Cutover, Go/No-Go, hypercare</span></li><li>Dashboard for any plan<span>Plus MS Project XML, CSV, PDF</span></li></ul></article>
-        <article class="plan best"><span class="flag">Best value</span><h3>All five packs</h3><p class="price">$29<small>Software now, four more as released</small></p>
-          <a class="btn fill" href="#compare" data-store="bundle">Buy all five</a>
-          <ul><li>Everything in One pack<span>For every project type</span></li><li>ERP / CRM, IAM, Cloud, General<span>Delivered free as each is finished</span></li>
-            <li>Client-format mapper<span>In every pack</span></li><li>Unlimited client projects<span>One licence per person</span></li><li>Dashboard for any plan<span>Free v1.x updates</span></li></ul></article>
+<!-- ============ B. SLIP TREND ============ -->
+<section class="section soft" id="trend" aria-labelledby="h-trend">
+  <div class="wrap split flip">
+    <div class="copy">
+      <span class="eyebrow"><span class="chip chip-new">New</span>Slip trend and audit trail</span>
+      <h2 id="h-trend">An audit trail <span class="grad-text">no one can quietly reset.</span></h2>
+      <p class="lead">Each weekly export is saved as a version on your machine. Keelson plots where every key milestone was forecast, week by week, and logs every re-baseline with its date.</p>
+      <ul class="ticks">
+        <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Milestone trend chart for up to 8 milestones</span></li>
+        <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Phases that keep slipping, ranked, with working days lost</span></li>
+        <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Drift rate in plain words: how many working days the finish slips per week, and where it lands if that continues</span></li>
+        <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Every re-baseline Keelson sees is logged and stays flagged until you record why. Older files can be dropped in to backfill</span></li>
+      </ul>
+      <p class="fine">Needs 3 saved reports for the trend, 2 for the re-baseline log. History stays in this browser and exports to a file you keep.</p>
+    </div>
+    <div class="well t-rose">
+      <div class="app-card trend">
+        <div class="app-card-h" aria-hidden="true"><b>Milestone slip trend</b><span>FieldFlow rollout · 6 weekly reports · 19 Jan to 23 Feb</span></div>
+        <svg viewBox="0 0 672 300" role="img" aria-labelledby="trend-t trend-d">
+          <title id="trend-t">Milestone slip trend, fictional sample</title>
+          <desc id="trend-d">Forecast dates of five milestones in the fictional FieldFlow sample at six weekly reports, 19 January to 23 February 2027. Go-live moved from 10 to 20 May, UAT sign-off from 3 to 13 May, Hypercare exit from 24 May to 3 June, SIT exit from 13 to 19 April and Build complete from 15 to 16 February. The whole-project baseline was reset on 9 February.</desc>
+          <g aria-hidden="true">
+            <line class="grid" x1="60" x2="500" y1="20" y2="20"/>
+            <line class="grid" x1="60" x2="500" y1="68" y2="68"/>
+            <line class="grid" x1="60" x2="500" y1="116" y2="116"/>
+            <line class="grid" x1="60" x2="500" y1="164" y2="164"/>
+            <line class="grid" x1="60" x2="500" y1="212" y2="212"/>
+            <line class="ax" x1="60" x2="500" y1="260" y2="260"/>
+            <text x="52" y="24" text-anchor="end">21 Jun</text><text x="52" y="72" text-anchor="end">24 May</text><text x="52" y="120" text-anchor="end">26 Apr</text><text x="52" y="168" text-anchor="end">29 Mar</text><text x="52" y="216" text-anchor="end">1 Mar</text><text x="52" y="264" text-anchor="end">1 Feb</text>
+            <text x="60" y="286" text-anchor="middle">19 Jan</text><text x="148" y="286" text-anchor="middle">26 Jan</text><text x="236" y="286" text-anchor="middle">2 Feb</text><text x="324" y="286" text-anchor="middle">9 Feb</text><text x="412" y="286" text-anchor="middle">16 Feb</text><text x="500" y="286" text-anchor="middle">23 Feb</text>
+            <line class="diag" x1="324" x2="324" y1="20" y2="260"/>
+            <polyline class="l5" points="60,236.0 148,236.0 236,236.0 324,234.3 412,234.3 500,234.3"/>
+            <g class="p5"><circle cx="60" cy="236.0" r="4"/><circle cx="148" cy="236.0" r="4"/><circle cx="236" cy="236.0" r="4"/><circle cx="324" cy="234.3" r="4"/><circle cx="412" cy="234.3" r="4"/><circle cx="500" cy="234.3" r="4"/></g>
+            <polyline class="l4" points="60,138.3 148,138.3 236,126.3 324,124.6 412,124.6 500,128.0"/>
+            <g class="p4"><circle cx="60" cy="138.3" r="4"/><circle cx="148" cy="138.3" r="4"/><circle cx="236" cy="126.3" r="4"/><circle cx="324" cy="124.6" r="4"/><circle cx="412" cy="124.6" r="4"/><circle cx="500" cy="128.0" r="4"/></g>
+            <polyline class="l2" points="60,104.0 148,104.0 236,92.0 324,90.3 412,90.3 500,86.9"/>
+            <g class="p2"><circle cx="60" cy="104.0" r="4"/><circle cx="148" cy="104.0" r="4"/><circle cx="236" cy="92.0" r="4"/><circle cx="324" cy="90.3" r="4"/><circle cx="412" cy="90.3" r="4"/><circle cx="500" cy="86.9" r="4"/></g>
+            <polyline class="l1" points="60,92.0 148,92.0 236,80.0 324,78.3 412,78.3 500,74.9"/>
+            <g class="p1"><circle cx="60" cy="92.0" r="4"/><circle cx="148" cy="92.0" r="4"/><circle cx="236" cy="80.0" r="4"/><circle cx="324" cy="78.3" r="4"/><circle cx="412" cy="78.3" r="4"/><circle cx="500" cy="74.9" r="4"/></g>
+            <polyline class="l3" points="60,68.0 148,68.0 236,56.0 324,54.3 412,54.3 500,50.9"/>
+            <g class="p3"><circle cx="60" cy="68.0" r="4"/><circle cx="148" cy="68.0" r="4"/><circle cx="236" cy="56.0" r="4"/><circle cx="324" cy="54.3" r="4"/><circle cx="412" cy="54.3" r="4"/><circle cx="500" cy="50.9" r="4"/></g>
+            <text class="lbl" x="512" y="239.3">Build 16 Feb</text>
+            <text class="lbl" x="512" y="133.0">SIT exit 19 Apr</text>
+            <text class="lbl" x="512" y="100.9">UAT 13 May</text>
+            <text class="lbl" x="512" y="76.9">Go-live 20 May</text>
+            <text class="lbl" x="512" y="52.9">Hypercare 3 Jun</text>
+            <rect class="rb" x="317" y="183" width="14" height="14" rx="2" transform="rotate(45 324 190)"/>
+            <text x="338" y="195">Baseline reset 9 Feb</text>
+          </g>
+        </svg>
+        <div class="legend" aria-hidden="true"><span><i class="l5"></i>Build complete</span><span><i class="l4"></i>SIT exit</span><span><i class="l2"></i>UAT sign-off</span><span><i class="l1"></i>Go-live</span><span><i class="l3"></i>Hypercare exit</span><span><i class="d"></i>Re-baseline</span></div>
+        <div class="drift"><b>+1.7 wd/week</b><span>The forecast finish is slipping 1.7 wd per week over the last 6 reports (19 Jan to 23 Feb 2027) (slower than time passes); if that continues it lands around 26 Jul 2027. Latest: 2 wd later than the report before.</span></div>
+        <div class="audit" aria-label="Re-baseline log">
+          <div><time>9 Feb</time><span>Baseline finish 3 → 17 May; 19 task baselines changed</span><span class="chip chip-bad"><span class="dot"></span>No note</span></div>
+          <div><time>23 Feb</time><span>Phase “Testing” later in 3 of 5 reports</span><span class="chip chip-warn"><span class="dot"></span>+8 wd</span></div>
+        </div>
       </div>
-      <ul class="trust"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg><a href="legal.html#refunds" style="color:inherit">14-day money-back guarantee</a></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Instant download</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>Secure checkout, tax and VAT handled</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10"/></svg>Unlimited client projects</li></ul>
-      <p class="fine" style="text-align:center;margin-top:14px">Prices in USD. Checkout by Lemon Squeezy, our merchant of record.</p>
-      <p class="store-msg" id="store-msg" hidden>Paid packs open for checkout very soon. The free dashboard is available now.</p>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- FAQ -->
-  <section id="faq" style="padding-top:0">
-    <div class="wrap">
-      <div class="head rise"><h2>Questions, answered.</h2></div>
-      <div class="faq">
-        <details><summary>When I try it on this site, is my plan uploaded?</summary><p>No. The page reads what you paste with JavaScript inside your browser tab, and there is no server it could send it to. Load the page, switch off Wi-Fi, and it still works. The demo saves nothing: close the tab and it's gone.</p></details>
-        <details><summary>Will the dashboard read my plan?</summary><p>If it has one row per task with a name and a finish or due date, yes. It recognises the usual column names from MS Project, Smartsheet, Jira, Asana, Monday and most client trackers, and title rows above the headers are fine. Phases come from a Phase or Workstream column, or from your outline levels or WBS. Everything happens inside the Excel file: nothing is uploaded.</p></details>
-        <details><summary>Can it really match my client's Excel template?</summary><p>For templates with one row per task, yes: up to 20 columns in any order, fixed values, blank columns and five date styles. Merged cells or several rows per task still need a tidy-up after pasting.</p></details>
-        <details><summary>Is it PMBOK or PRINCE2 compliant?</summary><p>It uses their vocabulary and the artefacts both expect: baselines, tolerances, registers and change control. No standards body certifies templates, and Keelson doesn't claim to be certified or endorsed.</p></details>
-        <details><summary>Can I use it on client projects?</summary><p>Yes, on any number of your own and your clients' projects. Share the filled-in files with anyone; don't resell or give away the templates themselves.</p></details>
-        <details><summary>Do I need to enable macros?</summary><p>No. Every workbook is a plain .xlsx with formulas only, so company security settings won't block it.</p></details>
-        <details><summary>Will I get a native .mpp file?</summary><p>No. You get MS Project XML, which MS Project desktop opens directly, plus an import tab. Microsoft Planner can't import either.</p></details>
-        <details><summary>When do the other packs arrive?</summary><p>As each one is finished. If you bought all five, each new pack lands on your order page and in your inbox at no extra cost.</p></details>
+<!-- ============ C. FINISH FORECAST ============ -->
+<section class="section" id="forecast" aria-labelledby="h-forecast">
+  <div class="wrap split">
+    <div class="copy">
+      <span class="eyebrow"><span class="chip chip-new">New</span>Finish-date confidence</span>
+      <h2 id="h-forecast">Finish dates with <span class="grad-text">honest odds.</span></h2>
+      <p class="lead">Keelson looks at how your completed tasks actually ran against their baselines, and asks what happens if the rest of the plan behaves the same way. You get a P50, a P80 and one sentence a sponsor can repeat.</p>
+      <ul class="ticks">
+        <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>From your plan's own track record: no three-point estimates, no add-ins</span></li>
+        <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Same file, same dates, every time</span></li>
+        <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Refuses when the data is too thin, or when the baseline looks reset to actuals</span></li>
+        <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>You can hide the card, but not edit its numbers</span></li>
+      </ul>
+      <p class="fine">Needs Baseline Start and Baseline Finish columns and at least 10 completed tasks. New scope and named risks aren't modelled, and the report says so. Checked on 1,000 simulated projects; not yet validated on real project histories (<a href="#faq-forecast">how</a>).</p>
+    </div>
+    <div class="well t-blue">
+      <div class="app-card">
+        <div class="app-card-h"><b>When will it really finish?</b><span>FieldFlow rollout · status 23 Feb 2027</span></div>
+        <div class="fc-tiles">
+          <div class="kpi"><small>Plan date</small><b>3 Jun</b><em>72 wd left</em></div>
+          <div class="kpi"><small>P50 · 50/50 date</small><b>9 Jul</b><em>+26 working days</em></div>
+          <div class="kpi"><small>P80 · 8 in 10</small><b>23 Jul</b><em>+36 working days</em></div>
+        </div>
+        <div class="fc-strip" aria-hidden="true">
+          <div class="fc-track"></div>
+          <div class="fc-range" style="left:69.4%;width:24.6%"></div>
+          <div class="fc-m fcp" style="left:6%"><span>Plan</span><b>3 Jun</b><i></i></div>
+          <div class="fc-m bottom" style="left:69.4%"><i></i><span>P50 · 9 Jul</span></div>
+          <div class="fc-m" style="left:94%"><span>P80</span><b>23 Jul</b><i></i></div>
+        </div>
+        <p class="fc-say">13 completed tasks took on average <b>1.23x</b> their baselined time. If the remaining work behaves the same way, and parallel work waits for its slowest path, the 50/50 date is <b>9 Jul (P50)</b>; 8 in 10 replays finish by <b>23 Jul (P80)</b>. The current plan date of 3 Jun is earlier than either. This ignores new scope and risks not yet in the plan.</p>
+        <p class="fc-warn"><svg class="ic" aria-hidden="true"><use href="#i-alert"/></svg><span><b>P80 likely optimistic:</b> the latest phase with enough history (Build and configure, 1.32x) is running slower than the earlier ones, so remaining work may be riskier than the average.</span></p>
+        <p class="refuse"><svg class="ic" aria-hidden="true"><use href="#i-alert"/></svg><span><b>When it won't guess:</b> “Only 6 completed tasks have baseline dates. Needs 10 before a forecast means anything.”</span></p>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <section style="padding-top:0;text-align:center">
-    <div class="wrap rise" style="display:grid;gap:26px;justify-items:center">
-      <h2>Your next plan is<br><span class="dim">already half built.</span></h2>
-      <div class="ctas"><a class="btn fill" href="#compare" data-store="dashboard">Get the free dashboard</a><a class="more" href="#compare">Compare packs</a></div>
+<!-- ============ REPORT GALLERY ============ -->
+<section class="section soft" id="reports" aria-labelledby="h-reports">
+  <div class="wrap">
+    <div class="head">
+      <span class="eyebrow"><svg class="ic sm" aria-hidden="true"><use href="#i-doc"/></svg>Seven client-ready reports</span>
+      <h2 id="h-reports">Everything a delivery PM sends on a Friday.</h2>
+      <p class="lead">Seven reports from the same export, in your logo and colour, as PDF or editable Word. Four from this week's plan, three from its saved history. Reports always print paper-white.</p>
     </div>
-  </section>
+    <div class="gal">
+      <article class="gi">
+        <div class="gwell t-teal" aria-hidden="true"><div class="paper" style="width:100%">
+          <div class="paper-h"><b>One-pager</b><span>23 Feb</span></div>
+          <div class="ptiles"><i class="a"></i><i></i><i></i></div>
+          <div class="p-line"></div><div class="p-line" style="width:80%"></div>
+          <div class="p-sec"><h6>Phases</h6><div class="p-bars" style="height:34px"><i style="height:100%"></i><i style="height:100%"></i><i style="height:96%"></i><i style="height:40%"></i><i style="height:10%"></i></div></div>
+          <div class="p-sec"><h6>Milestones</h6><table class="p-tbl"><tr><td>UAT sign-off</td><td class="late">13 May</td></tr><tr><td>Go-live</td><td class="late">20 May</td></tr></table></div>
+        </div></div>
+        <h3>One-pager</h3><p>The executive summary: status, finish, milestones and what's overdue, on one page.</p>
+      </article>
+      <article class="gi">
+        <div class="gwell t-violet" aria-hidden="true"><div class="paper" style="width:100%">
+          <div class="paper-h"><b>Weekly status</b><span>23 Feb</span></div>
+          <div class="p-sec"><h6>Summary</h6><div class="p-line"></div><div class="p-line" style="width:86%"></div><div class="p-line" style="width:64%"></div></div>
+          <div class="p-sec"><h6>Next milestones</h6><table class="p-tbl"><tr><td>SIT exit</td><td>19 Apr</td></tr><tr><td>UAT sign-off</td><td>13 May</td></tr><tr><td>Go-live</td><td>20 May</td></tr></table></div>
+          <div class="p-sec"><h6>Since last week</h6><div class="p-line"></div><div class="p-line" style="width:72%"></div></div>
+        </div></div>
+        <h3>Weekly status</h3><p>Narrative you can rewrite, milestones, risks and what changed since last week.</p>
+      </article>
+      <article class="gi">
+        <div class="gwell t-amber" aria-hidden="true"><div class="paper" style="width:100%">
+          <div class="paper-h"><b>Roadmap</b><span>Oct to Jun</span></div>
+          <div class="pg-gantt"><i style="width:30%"></i><i style="width:40%;margin-left:18%"></i><i style="width:32%;margin-left:24%"></i><i style="width:30%;margin-left:52%"></i><i style="width:18%;margin-left:74%"></i><i style="width:14%;margin-left:86%"></i><i style="width:22%;margin-left:30%"></i><i style="width:26%;margin-left:60%"></i></div>
+          <div class="p-sec"><h6>Key dates</h6><table class="p-tbl"><tr><td>Build complete</td><td>16 Feb</td></tr><tr><td>Go-live</td><td>20 May</td></tr><tr><td>Hypercare exit</td><td>3 Jun</td></tr></table></div>
+        </div></div>
+        <h3>Roadmap</h3><p>Phases, milestones and today's line on a landscape page the client reads in ten seconds.</p>
+      </article>
+      <article class="gi">
+        <div class="gwell t-blue" aria-hidden="true"><div class="paper" style="width:100%">
+          <div class="paper-h"><b>Variance</b><span>vs baseline</span></div>
+          <div class="pvar"><div><i style="width:100%"></i><b class="late">+21</b></div><div><i style="width:62%"></i><b class="late">+13</b></div><div><i style="width:62%"></i><b class="late">+13</b></div><div><i style="width:62%"></i><b class="late">+13</b></div><div><i style="width:57%"></i><b class="late">+12</b></div><div><i style="width:52%"></i><b class="late">+11</b></div><div><i style="width:52%"></i><b class="late">+11</b></div></div>
+          <div class="p-sec"><h6>Commentary</h6><div class="p-line"></div><div class="p-line" style="width:80%"></div><div class="p-line" style="width:55%"></div></div>
+        </div></div>
+        <h3>Variance</h3><p>Every phase and task against its baseline, in working days, worst first.</p>
+      </article>
+    </div>
+    <p class="center" style="margin-top:var(--sp-6)"><span class="chip chip-new">New</span> <span style="color:var(--ink-2)">Plus <a href="#changes"><b>What changed</b></a>, <a href="#trend"><b>Slip trend</b></a> and <a href="#forecast"><b>Finish-date confidence</b></a>: seven reports in all.</span></p>
+  </div>
+</section>
+
+<!-- ============ THINGS YOU'LL STOP DOING (feature cards) ============ -->
+<section class="section" id="stop" aria-labelledby="h-stop">
+  <div class="wrap">
+    <div class="head">
+      <span class="eyebrow"><svg class="ic sm" aria-hidden="true"><use href="#i-shield"/></svg>Built for client work</span>
+      <h2 id="h-stop">Things you'll stop doing on Monday.</h2>
+    </div>
+    <div class="cards">
+      <article class="card wide t-teal">
+        <span class="badge-ic"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg></span>
+        <span class="x">Explaining a cloud upload to the client's security team</span>
+        <h3>Your client's plan never leaves your laptop.</h3>
+        <p>Everything runs in the browser tab. No account, no upload, no server copy. Version history lives on your machine and exports to a file you keep.</p>
+        <div class="art lockflow" aria-hidden="true"><span><svg class="ic sm"><use href="#i-upload"/></svg>plan.xlsx</span><svg class="ic"><use href="#i-arrow"/></svg><span><svg class="ic sm"><use href="#i-lock"/></svg>This device</span><svg class="ic"><use href="#i-arrow"/></svg><span><svg class="ic sm"><use href="#i-report"/></svg>Report.pdf</span><span class="no">Cloud server</span></div>
+      </article>
+      <article class="card t-violet">
+        <span class="badge-ic"><svg class="ic" aria-hidden="true"><use href="#i-doc"/></svg></span>
+        <span class="x">Retyping the plan into the client's deck</span>
+        <h3>PDF and editable Word</h3>
+        <p>Charts included. Paste into the client's deck or tweak the wording in Word.</p>
+        <div class="art lockflow" aria-hidden="true"><span><svg class="ic sm"><use href="#i-report"/></svg>Status.pdf</span><span><svg class="ic sm"><use href="#i-doc"/></svg>Status.docx</span></div>
+      </article>
+      <article class="card t-amber">
+        <span class="badge-ic"><svg class="ic" aria-hidden="true"><use href="#i-gauge"/></svg></span>
+        <span class="x">Defending a colour you picked in a meeting</span>
+        <h3>The colour shows its working</h3>
+        <p>Every Green, Amber or Red comes with the rule that set it.</p>
+        <div class="art rules" aria-hidden="true"><div><span>Finish vs baseline</span><b>+13 wd</b></div><div><span>Overdue milestones</span><b>0</b></div></div>
+      </article>
+      <article class="card t-blue">
+        <span class="badge-ic"><svg class="ic" aria-hidden="true"><use href="#i-brush"/></svg></span>
+        <span class="x">Re-colouring a template every week</span>
+        <h3>Your logo, your colour</h3>
+        <p>Reports look like they came from your practice, not from a tool.</p>
+        <div class="art swatchrow" aria-hidden="true"><i style="background:#1f3a5f"></i><i style="background:#0e7c66"></i><i style="background:#b42339"></i><i style="background:#5b3ce6"></i><span>Brand colour</span></div>
+      </article>
+      <article class="card t-rose">
+        <span class="badge-ic"><svg class="ic" aria-hidden="true"><use href="#i-tool"/></svg></span>
+        <span class="x">Asking IT about macros</span>
+        <h3>Nothing to install</h3>
+        <p>A web page and plain .xlsx templates. No macros, add-ins or passwords to approve.</p>
+        <div class="art" aria-hidden="true"><span class="bigzero">0</span><p style="font-size:14px">macros, add-ins or passwords</p></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ COMPARISON ============ -->
+<section class="section" id="compare" aria-labelledby="h-compare">
+  <div class="wrap">
+    <div class="head">
+      <span class="eyebrow"><svg class="ic sm" aria-hidden="true"><use href="#i-columns"/></svg>Where Keelson fits</span>
+      <h2 id="h-compare">Built for the person who reports on plans other people keep.</h2>
+      <p class="lead">Keelson doesn't replace your planning tool. It sits on top of the exports, for the weekly question every sponsor asks.</p>
+    </div>
+    <div class="tbl-wrap">
+      <table class="cmp vs">
+        <caption class="sr">Keelson compared with spreadsheets, PM suites' built-in reports and specialist schedule tools</caption>
+        <thead><tr><th scope="col">&nbsp;</th><th scope="col" class="hl">Keelson</th><th scope="col">Spreadsheets<small>by hand</small></th><th scope="col">PM suites<small>built-in reports</small></th><th scope="col">Specialist schedule tools<small>analysis software</small></th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Reads MS Project, Jira, Smartsheet and Excel exports</th><td class="hl"><svg class="ic" role="img" aria-label="Included"><use href="#i-check"/></svg>Yes, side by side</td><td>You copy and paste</td><td>Their own data</td><td>Mainly schedule files</td></tr>
+          <tr><th scope="row">“What changed since last week”</th><td class="hl"><svg class="ic" role="img" aria-label="Included"><use href="#i-check"/></svg>One page, in seconds</td><td>Manual compare</td><td>Activity history, varies</td><td>Often, for schedule files</td></tr>
+          <tr><th scope="row">Slip trend and re-baseline log</th><td class="hl"><svg class="ic" role="img" aria-label="Included"><use href="#i-check"/></svg>From your saved weekly exports</td><td>Only if you keep every copy</td><td>Varies by product</td><td>Often</td></tr>
+          <tr><th scope="row">Finish date with odds</th><td class="hl"><svg class="ic" role="img" aria-label="Included"><use href="#i-check"/></svg>P50 / P80 from the plan's own history</td><td class="no">No</td><td class="no">Rarely</td><td>Usually from three-point estimates you enter</td></tr>
+          <tr><th scope="row">Client-ready PDF and editable Word</th><td class="hl"><svg class="ic" role="img" aria-label="Included"><use href="#i-check"/></svg>Seven reports, your brand</td><td>You build it</td><td>Dashboards; exports vary</td><td>Analyst-style reports</td></tr>
+          <tr><th scope="row">Where your plan goes</th><td class="hl"><svg class="ic" role="img" aria-label="Included"><use href="#i-check"/></svg>Stays in your browser</td><td>Stays on your machine</td><td>The vendor's cloud, usually</td><td>Varies</td></tr>
+          <tr><th scope="row">Set-up</th><td class="hl"><svg class="ic" role="img" aria-label="Included"><use href="#i-check"/></svg>None: open a web page</td><td>Build and maintain a template</td><td>The whole team works in the suite</td><td>Install and training</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="fine center" style="margin-top:var(--sp-4)">General categories, not specific products. Capabilities vary by product and edition; check with the vendor.</p>
+  </div>
+</section>
+
+<!-- ============ PRICING ============ -->
+<section class="section soft" id="pricing" aria-labelledby="h-pricing">
+  <div class="wrap">
+    <div class="head">
+      <span class="eyebrow">Pricing</span>
+      <h2 id="h-pricing">Free to try. Pro when it goes to the client.</h2>
+      <div class="billing" role="group" aria-label="Billing period">
+        <button type="button" aria-pressed="true" data-bill="m">Monthly</button>
+        <button type="button" aria-pressed="false" data-bill="y">Yearly <span class="save">Pro saves 33%</span></button>
+      </div>
+    </div>
+    <div class="plans">
+      <article class="plan">
+        <h3>Free</h3><p class="for">Try it on your real plan</p>
+        <p class="price"><b>$0</b><span>forever</span></p><p class="price-note">&nbsp;</p>
+        <a class="btn btn-secondary" href="app.html">Start free</a>
+        <ul>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Quick check of any plan</span></li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Preview all 7 reports · one-pager as PDF</span></li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Free Excel dashboard download</span></li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Free PM tools</span></li>
+        </ul>
+      </article>
+      <article class="plan pop">
+        <h3>Pro <span class="chip chip-brand">Best for consultants</span></h3><p class="for">For the PM or consultant</p>
+        <p class="price"><b data-m="$12" data-y="$8">$12</b><span>/ month</span></p><p class="price-note" data-m="or $96 billed yearly" data-y="$96 billed yearly">or $96 billed yearly</p>
+        <a class="btn btn-primary" href="mailto:support@keelson.co.in?subject=Keelson%20Pro%20waitlist">Join the Pro waitlist</a>
+        <ul>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>No watermark, no Keelson footer</span></li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>All seven reports, PDF and Word</span></li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Your logo and brand colour</span></li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>What changed, slip trend and finish forecast <span class="chip chip-new" style="padding:1px 7px;font-size:11px">New</span></span></li>
+        </ul>
+      </article>
+      <article class="plan">
+        <h3>Team <span class="chip chip-new">Soon</span></h3><p class="for">For a PMO or practice</p>
+        <p class="price"><b>$39</b><span>/ month</span></p><p class="price-note">per workspace</p>
+        <a class="btn btn-secondary" href="mailto:support@keelson.co.in?subject=Keelson%20Team%20waitlist">Join the waitlist</a>
+        <ul>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Everything in Pro</span></li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Shared brand kit</span></li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Shared status rules</span></li>
+        </ul>
+      </article>
+      <article class="plan">
+        <h3>Template packs</h3><p class="for">Excel and Google Sheets</p>
+        <p class="price"><b>$9</b><span>one-time</span></p><p class="price-note">or all five for $29 · not on sale yet</p>
+        <a class="btn btn-secondary" href="mailto:support@keelson.co.in?subject=Notify%20me%3A%20Keelson%20template%20packs">Notify me</a>
+        <ul>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Plan &amp; Gantt that schedules itself</span></li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>RAID and change log</span></li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Go-live runbook</span></li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Software / SaaS first; ERP / CRM, IAM, Cloud and General free to all-five buyers as released</span></li>
+        </ul>
+        <a class="more" href="templates.html">See what's in the packs <svg class="ic sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+      </article>
+    </div>
+    <ul class="guar">
+      <li><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg><a href="legal.html#refunds">14-day money-back guarantee</a></li>
+      <li><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg>Your plan never uploaded</li>
+      <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Cancel any time</span></li>
+      <li><svg class="ic" aria-hidden="true"><use href="#i-download"/></svg><a href="#pricing" data-store="dashboard">Free Excel dashboard: download</a></li>
+    </ul>
+    <p class="fine center" style="margin-top:var(--sp-4)">Prices in USD. Pro and the template packs aren't on sale yet; the waitlist and Notify me buttons open an email to us. When checkout opens, Lemon Squeezy, our merchant of record, will handle payment, tax and VAT.</p>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="section" id="faq" aria-labelledby="h-faq">
+  <div class="wrap">
+    <div class="head"><h2 id="h-faq">Questions, answered.</h2></div>
+    <div class="faq">
+      <p class="faq-grp">Privacy</p>
+      <details><summary>When I try it on this site, is my plan uploaded?<svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>No. The page reads what you paste with JavaScript inside your browser tab, and there is no server it could send it to. Load the page, switch off Wi-Fi, and it still works. The demo saves nothing: close the tab and it's gone.</p></details>
+      <details><summary>Where is my version history kept?<svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>In your browser's own storage on this device. A version is saved when you download a Word report or press Save version: one per report date, up to 52 per project. You can export it as a .keelson.json file and import it on another machine; anyone you give that file to can read the plan in it. Nothing is sent to us. Clearing this site's data in your browser removes it.</p></details>
+      <details><summary>Does anything go online at all?<svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Only a Pro licence key, checked with our reseller when you enter it and about once a week after. No plan data is included. This website itself makes no network requests after it loads: no cookies, no analytics, no third-party scripts or fonts. Loading the pages does reach our host, GitHub Pages, which sees your IP address and browser type like any web host (<a href="legal.html#hosting">details</a>).</p></details>
+      <p class="faq-grp">The new features</p>
+      <details><summary>How does “What changed” match tasks between two exports?<svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>By ID first (Unique ID from MS Project, Issue key from Jira, or an ID column), then by phase and name. Close name matches within a phase are shown as “probable rename” for you to confirm or split. Column order and date format can differ between the two files.</p></details>
+      <details id="faq-forecast"><summary>Where do the P50 and P80 dates come from?<svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>From your own completed tasks: how long each took against its baselined duration. Keelson replays the remaining work thousands of times, each time drawing task durations from that track record, and parallel work waits for its slowest path. The P50 is the 50/50 date; the P80 is the date 8 in 10 replays finish by. It needs Baseline Start and Baseline Finish columns and at least 10 completed tasks, and it refuses when the baseline looks reset to actuals. It ignores new scope and risks that aren't in the plan yet, and says so.</p><p>Checked on 1,000 simulated projects (P80 held in 81%, P50 in 53%); not yet validated on real project histories. Dependencies are inferred from dates; a Predecessors column, if present, is not used yet.</p></details>
+      <details><summary>How many reports do I need for the slip trend?<svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Three for the milestone trend, two for the re-baseline log. If you have older exports, drop them in: each is placed by its status date, not the order you add them.</p></details>
+      <p class="faq-grp">Your plan</p>
+      <details><summary>Will the dashboard read my plan?<svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>If it has one row per task with a name and a finish or due date, yes. It recognises the usual column names from MS Project, Smartsheet, Jira, Asana, Monday and most client trackers, and title rows above the headers are fine. Phases come from a Phase or Workstream column, or from your outline levels or WBS. Everything happens inside the Excel file: nothing is uploaded.</p></details>
+      <details><summary>Can it really match my client's Excel template?<svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>For templates with one row per task, yes: up to 20 columns in any order, fixed values, blank columns and five date styles. Merged cells or several rows per task still need a tidy-up after pasting.</p></details>
+      <details><summary>Can I change the wording before I send it?<svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Yes. Click any commentary to rewrite it, or download Word and edit there. The forecast's numbers can be hidden but not edited.</p></details>
+      <details><summary>Is it PMBOK or PRINCE2 compliant?<svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>It uses their vocabulary and the artefacts both expect: baselines, tolerances, registers and change control. No standards body certifies templates, and Keelson doesn't claim to be certified or endorsed.</p></details>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA BAND ============ -->
+<section class="wrap" aria-labelledby="h-cta">
+  <div class="cta">
+    <h2 id="h-cta">Your next steering pack is one export away.</h2>
+    <p>Try it on a real plan. Nothing to install, nothing uploaded.</p>
+    <div class="row"><a class="btn btn-light btn-lg" href="#try">Try it free <svg class="ic arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a><a class="btn btn-onbrand btn-lg" href="#pricing">See pricing</a></div>
+  </div>
+</section>
+
+<div class="wrap notes" aria-label="Notes"><ol>
+  <li id="n1">Sample company, people and project are fictional. The figures in the product views on this page are what Keelson calculates from the fictional FieldFlow sample's six weekly exports (19 Jan to 23 Feb 2027), the same sample the app and the Quick check open on.</li>
+  <li id="n2">The dashboard is checked on each build by pasting the same plan in five shapes (MS Project export, MS Project text paste, Jira CSV, a client tracker with title rows and day-first dates, and Keelson's own plan) and comparing every figure with an independent reference calculation. Up to 1,000 rows. Working days are Monday to Friday.</li>
+</ol></div>
 </main>
 
-<div class="wrap notes"><ol>
-  <li id="n1">Every value in every workbook is recalculated on each build and compared with an independent reference calculation, including invalid input and a full 500-task plan. Excel 2019 and earlier are not supported. In Google Sheets, charts and some formatting may look different.</li>
-  <li id="n2">MS Project and Smartsheet import are in beta. The XML is generated and read back with an independent MS Project file reader on each build; check dates after importing. Native .mpp files are not produced.</li>
-  <li id="n3">Sample company, people and project are fictional. Every date and figure on this page comes from the sample workbooks.</li>
-  <li id="n4">Templates with one row per task, up to 20 columns. Merged cells, several rows per task or grouping by person need a manual step after pasting.</li>
-  <li id="n5">Keelson's SPI weights progress by task duration because templates rarely hold cost data. It is a schedule measure in the spirit of earned schedule, not the cost-based EV ÷ PV of earned value management.</li>
-  <li id="n6">PMI, PMP, PMBOK and PMI-ACP are registered marks of the Project Management Institute, Inc. PRINCE2 and ITIL are registered trademarks of AXELOS Limited, part of PeopleCert. CISM is a registered trademark of ISACA. ISO/IEC 27001 is a standard of ISO and IEC. Keelson is not affiliated with, endorsed or certified by any of them.</li>
-  <li id="n7">The dashboard is checked on each build by pasting the same plan in five shapes (MS Project export, MS Project text paste, Jira CSV, a client tracker with title rows and day-first dates, and Keelson's own plan) and comparing every figure with an independent reference calculation. Up to 1,000 rows. Working days are Monday to Friday.</li>
-</ol></div>
-<footer><div class="wrap"><span>© 2026 Keelson · Templates v1.0.0</span><span><a href="legal.html#licence">Licence</a> · <a href="legal.html#refunds">Refunds</a> · <a href="legal.html#privacy">Privacy</a> · <a href="mailto:support@keelson.co.in">Contact</a></span></div></footer>
+<!-- ============ FOOTER ============ -->
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div><a class="logo" href="#main"><svg aria-hidden="true"><use href="#k-mark"/></svg>Keelson</a><p class="tag">What changed, whether it's getting worse, and when it will really finish. Your plan stays on your device.</p></div>
+      <div><h4>Product</h4><ul><li><a href="app.html">Reports app</a></li><li><a href="#changes">What changed</a></li><li><a href="#trend">Slip trend</a></li><li><a href="#forecast">Finish forecast</a></li><li><a href="#pricing">Pricing</a></li></ul></div>
+      <div><h4>Free</h4><ul><li><a href="#try">Quick check</a></li><li><a href="#pricing" data-store="dashboard">Excel dashboard</a></li><li><a href="tools.html#wd">Working days</a></li><li><a href="tools.html#gng">Go / No-Go</a></li></ul></div>
+      <div><h4>Learn</h4><ul><li><a href="templates.html">Template packs</a></li><li><a href="templates.html#frameworks">Methods</a></li><li><a href="#compare">Compare</a></li><li><a href="#faq">FAQ</a></li></ul></div>
+      <div><h4>Company</h4><ul><li><a href="mailto:support@keelson.co.in">Contact</a></li><li><a href="legal.html#licence">Licence</a></li><li><a href="legal.html#refunds">Refunds</a></li><li><a href="legal.html#privacy">Privacy</a></li></ul></div>
+    </div>
+    <p class="foot-tm">Microsoft, Excel and Project are trademarks of Microsoft Corporation; Google Sheets is a trademark of Google LLC; Jira is a trademark of Atlassian; Smartsheet and Asana are trademarks of their owners. Keelson is independent and not affiliated with or endorsed by any of them.</p>
+    <div class="foot-base"><span>© 2026 Keelson · Templates v1.0.0</span><span>No cookies. No trackers. No third-party requests. Hosted on GitHub Pages, which keeps server logs like any web host (<a href="legal.html#hosting">details</a>).</span></div>
+  </div>
+</footer>
 
 <script src="engine.js"></script>
 <script src="samples.js"></script>
+<script src="samples-history.js"></script>
 <script src="index.js"></script>
 </body>
 </html>

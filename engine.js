@@ -15,11 +15,17 @@
     ["dur", "Duration", false, ["Duration", "Duration (days)", "Dur", "Days", "Work Days", "Planned Duration"]],
     ["ms", "Milestone / type", false, ["Milestone", "Is Milestone", "Milestone?", "Milestone Flag", "Type", "Task Type", "Issue Type", "Item Type"]],
     ["sumf", "Summary flag", false, ["Summary", "Is Summary", "Summary Task"]],
+    // v2 (plan diff, history, forecast): last, so they never take a column from the fields above
+    ["uid", "Task ID", false, ["Unique ID", "Unique_ID", "UID", "Issue key", "Issue Key", "Key", "ID"]],
+    ["afin", "Actual finish", false, ["Actual Finish", "Actual_Finish", "Actual End", "Actual Finish Date", "Resolved", "Resolution Date", "Completed Date", "Done Date"]],
+    ["bstart", "Baseline start", false, ["Baseline Start", "Baseline_Start", "Baseline Start Date", "Original Start"]],
   ];
   const DONE = ["Complete", "Completed", "Done", "Closed", "Finished", "Resolved", "Delivered", "Achieved", "Accepted", "Signed off", "Released", "Live"].map(s => s.toLowerCase());
   const CANCEL = ["Cancelled", "Canceled", "Won't Do", "Wont Do", "Won't Fix", "Dropped", "Descoped", "Removed", "Not Required", "Duplicate", "N/A"].map(s => s.toLowerCase());
   const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const WEEKDAYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
+  // milestone keywords the app passes by default (KeelsonReports.DEFAULT_MS_KEYS re-exports this list)
+  const DEFAULT_MS_KEYS = ["go-live", "go live", "sign-off", "signed off", "sign off", "approval", "approved", "decision", "closed", "stage gate", "phase complete"];
   const RULES = { amberVar: 5, redVar: 15, amberOver: 3, redMs: 2, amberBehind: 10, redBehind: 20 };
   const N_PHASE = 8, N_MS = 8, N_LIST = 6, HDR_SCAN = 10, CAP = 1000, DAY = 864e5;
 
@@ -117,7 +123,10 @@
     const sd = opt.statusDate ?? Math.floor(Date.now() / DAY);
     const rules = { ...RULES, ...(opt.rules || {}) };
     const upcoming = opt.upcomingDays ?? 14;
-    const keys = (opt.msKeys || []).map(low).filter(Boolean);
+    // milestone keywords match whole words, any case; the default ones only on rows of at most 1 working day or with no start
+    // (a keyword in a 6-day "Prepare approval pack" is not a milestone), keywords the user adds on any row
+    const keys = [...new Set((opt.msKeys || []).map(low).filter(Boolean))].map(k => ({ def: DEFAULT_MS_KEYS.includes(k),
+      re: new RegExp(`(?:^|[^\\p{L}\\p{N}])${k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?:$|[^\\p{L}\\p{N}])`, "iu") }));
     const body = grid.slice(det.hdr + 1, det.hdr + 1 + CAP);
     const capped = grid.length - det.hdr - 1 > CAP;
     const get = (r, k) => cols[k] >= 0 ? (r[cols[k]] ?? "").trim() : "";
@@ -126,7 +135,7 @@
       const o = {}; FIELDS.forEach(([k]) => o["r_" + k] = get(r, k)); return o;
     });
     let evDay = 0, evMon = 0;
-    for (const o of R) for (const k of ["start", "finish", "bfin"]) {
+    for (const o of R) for (const k of ["start", "finish", "bfin", "afin", "bstart"]) {
       o["p_" + k] = dateParts(o["r_" + k]);
       const e = o["p_" + k]?.ev || 0; if (e > 0) evDay++; if (e < 0) evMon++;
     }
@@ -137,7 +146,7 @@
       o.st = !st ? "" : dateValue(dateParts(st), dayFirst) != null ? "Done" : DONE.includes(low(st)) ? "Done" : CANCEL.includes(low(st)) ? "Cancelled" : "Open";
       o.nm = o.st === "Cancelled" ? "" : o.r_name.trim();
       o.act = o.nm !== "";
-      for (const k of ["start", "finish", "bfin"]) o[k] = dateValue(o["p_" + k], dayFirst);
+      for (const k of ["start", "finish", "bfin", "afin", "bstart"]) o[k] = dateValue(o["p_" + k], dayFirst);
       const pa = o.r_pct === "" ? null : parseFloat(o.r_pct.replace("%", ""));
       o.pa = Number.isFinite(pa) ? pa : null;
       if (o.pa != null) maxPa = Math.max(maxPa, o.pa);
@@ -156,7 +165,8 @@
         : !nx ? false
         : cols.lvl >= 0 ? (o.lv != null && nx.lv != null && nx.lv > o.lv)
         : !!(o.r_wbs && nx.r_wbs && nx.r_wbs.startsWith(o.r_wbs + "."));
-      o.ms = o.act && !o.sum && (truthy(o.r_ms) || msc.includes("milestone") || o.dn === 0 || keys.some(k => low(o.nm).includes(k)));
+      o.ms = o.act && !o.sum && (truthy(o.r_ms) || msc.includes("milestone") || o.dn === 0
+        || keys.some(k => k.re.test(o.nm) && (!k.def || o.start == null || o.finish == null || nwd(o.start, o.finish) <= 1)));
       o.leaf = o.act && !o.sum; o.isms = o.leaf && o.ms; o.istask = o.leaf && !o.ms;
       o.row = i;
     });
@@ -258,7 +268,10 @@
     // every leaf row, for report builders (dates are day numbers; see fromYMD/iso)
     const seen = {};
     k.tasks = leaf.map(o => ({ key: (b => (seen[b] = (seen[b] || 0) + 1) > 1 ? `${b}#${seen[b]}` : b)(o.nm + "|" + o.ph), row: o.row, name: o.nm, owner: o.r_owner, phase: o.ph, start: o.start, finish: o.finish, bfin: o.bfin,
-      pct: o.pct, done: o.done, ms: o.isms, od: o.od, late: o.late, var: o.var, w: o.w }));
+      pct: o.pct, done: o.done, ms: o.isms, od: o.od, late: o.late, var: o.var, w: o.w,
+      uid: o.r_uid, afin: o.afin, bstart: o.bstart }));
+    // rows the status column marks cancelled (not leaves, so not in k.tasks): the plan diff tells cancelled from removed
+    k.cancelled = R.filter(o => o.st === "Cancelled" && o.r_name).map(o => ({ uid: o.r_uid, name: o.r_name, phase: (cols.phase >= 0 && o.r_phase) || o.ph, owner: o.r_owner, row: o.row }));
     k.rules = rules;
     k.checks = {
       noFinish: leaf.filter(o => o.finish == null).length,
@@ -270,6 +283,6 @@
   }
 
   const parseDate = (t, dayFirst) => dateValue(dateParts(t), dayFirst);
-  root.KeelsonEngine = { compute, parseTable, detect, parseDate, FIELDS, RULES, fromYMD, iso, fmt, nwd, wdiff, wd, DAY };
+  root.KeelsonEngine = { compute, parseTable, detect, parseDate, FIELDS, RULES, DEFAULT_MS_KEYS, fromYMD, iso, fmt, nwd, wdiff, wd, DAY };
   if (typeof module !== "undefined") module.exports = root.KeelsonEngine;
 })(typeof window !== "undefined" ? window : globalThis);

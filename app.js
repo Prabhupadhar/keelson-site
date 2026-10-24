@@ -1,10 +1,11 @@
 /* Keelson Pro app: upload -> check -> reports. Plain browser JS, no build step.
    Reads plans with KeelsonXlsx / KeelsonEngine, builds ReportDocs with KeelsonReports, renders with KeelsonRender,
-   exports Word with KeelsonDocx. The only network request it ever makes is the licence check (Lemon Squeezy). */
+   exports Word with KeelsonDocx. v2: version history (KeelsonHistory, IndexedDB), What changed (KeelsonDiff), Slip trend
+   (KeelsonTrend) and Finish-date confidence (KeelsonForecast). The only network request it ever makes is the licence check (Lemon Squeezy). */
 (function () {
   "use strict";
   if (window.top !== window.self) { document.body.hidden = true; return; } // never run inside someone else's frame
-  const CHECKOUT_URL = ""; // Lemon Squeezy checkout link for Keelson Pro; empty shows "coming soon"
+  const CHECKOUT_URL = ""; // Lemon Squeezy checkout link for Keelson Pro; empty shows "Join the Pro waitlist" (an email)
   const LICENCE_API = "https://api.lemonsqueezy.com/v1/licenses/validate";
   // set from Lemon Squeezy > Settings > Store / product IDs; while empty, any valid key from any store is accepted
   const STORE_ID = null, PRODUCT_IDS = [];
@@ -32,17 +33,30 @@
     set(k, v) { try { sessionStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
   };
   const REPORTS = (typeof R?.list === "function" ? R.list() : R?.list || []).map(r => typeof r === "string" ? { id: r, name: r } : r);
-  const missing = ["KeelsonEngine", "KeelsonXlsx", "KeelsonReports", "KeelsonRender"].filter(n => !window[n]);
+  const KH = window.KeelsonHistory, KD = window.KeelsonDiff, KT = window.KeelsonTrend, KF = window.KeelsonForecast;
+  // v2 reports: built from this plan's saved versions, not from k alone
+  const V2 = [
+    { id: "changes", name: "What changed", orientation: "portrait", tint: "teal", icon: "swap", mod: KD,
+      description: "Every task added, removed, moved or re-baselined since the last report, with the one sentence your sponsor needs." },
+    { id: "trend", name: "Slip trend", orientation: "landscape", tint: "rose", icon: "trend", mod: KT,
+      description: "How milestone dates moved report by report, the phases that keep slipping, and every re-baseline on record." },
+    { id: "forecast", name: "Finish-date confidence", orientation: "portrait", tint: "blue", icon: "target", mod: KF,
+      description: "P50 and P80 finish dates from this plan's own track record, explained in one sentence." },
+  ].filter(r => r.mod && KH);
+  const ALL = [...REPORTS, ...V2];
+  const isV2 = id => V2.some(r => r.id === id);
+  const FREE_RULE = `Preview all ${ALL.length} reports · one-pager as PDF free`; // the one free rule, same wording on the website
+  const nWord = n => ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"][n] || String(n);
+  const missing = ["KeelsonEngine", "KeelsonXlsx", "KeelsonReports", "KeelsonRender", "KeelsonHistory", "KeelsonDiff", "KeelsonTrend", "KeelsonForecast"].filter(n => !window[n]);
 
   // ---------- theme (same switch and storage key as index.html) ----------
   const root = document.documentElement, themeBtn = $("theme");
-  const SUN = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="10" cy="10" r="3.6"/><path d="M10 1.8v2.1M10 16.1v2.1M1.8 10h2.1M16.1 10h2.1M4.2 4.2l1.5 1.5M14.3 14.3l1.5 1.5M4.2 15.8l1.5-1.5M14.3 5.7l1.5-1.5"/></svg>';
-  const MOON = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M16.5 12.6A7 7 0 017.4 3.5a7 7 0 109.1 9.1z"/></svg>';
+  const icon = (n, cls = "ic") => `<svg class="${cls}" aria-hidden="true"><use href="#i-${n}"/></svg>`;
   try { const t = localStorage.getItem("keelson-theme"); if (t === "light" || t === "dark") root.dataset.theme = t; } catch (e) {}
-  const theme = () => root.dataset.theme || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
-  const paintTheme = () => { const d = theme() === "dark"; themeBtn.innerHTML = d ? SUN : MOON; themeBtn.setAttribute("aria-label", d ? "Switch to light mode" : "Switch to dark mode"); };
+  const theme = () => root.dataset.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  const paintTheme = () => { const d = theme() === "dark"; themeBtn.innerHTML = icon(d ? "sun" : "moon"); themeBtn.setAttribute("aria-label", d ? "Switch to light mode" : "Switch to dark mode"); };
   themeBtn.addEventListener("click", () => { const n = theme() === "dark" ? "light" : "dark"; root.dataset.theme = n; try { localStorage.setItem("keelson-theme", n); } catch (e) {} paintTheme(); });
-  matchMedia("(prefers-color-scheme: light)").addEventListener?.("change", paintTheme);
+  matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", paintTheme);
   paintTheme();
 
   let toastT = 0;
@@ -56,6 +70,7 @@
     brand: { color: brandSaved.color || "#1a7f86", logo: store.get("keelson-logo", null) },
     edits: {}, compare: true, report: REPORTS[0]?.id, dirty: false,
     rules: null, call: null, msExclude: [], msAll: [], msSupported: null,
+    hist: [], histMem: false, memSnaps: [], cmp: null, diff: { accepted: [], split: [], exclude: [], filter: "all" },
   };
   const saveBrand = () => store.set("keelson-brand", { color: S.brand.color, client: S.client, preparedBy: S.prep });
 
@@ -113,11 +128,10 @@
   proBtn.addEventListener("click", () => openPro());
   $("pro-x").addEventListener("click", () => dlg.close());
   dlg.addEventListener("click", e => { if (e.target === dlg) dlg.close(); });
-  if (CHECKOUT_URL) $("buy").href = CHECKOUT_URL;
-  else { // no checkout yet: say so up front rather than after a click
-    $("buy").setAttribute("aria-disabled", "true"); $("buy").removeAttribute("target"); $("buy").textContent = "Checkout coming soon";
-    $("buy").setAttribute("aria-describedby", "buy-note"); $("buy-note").textContent = "Pro goes on sale shortly. Got a licence key already? Enter it below.";
-    $("buy").addEventListener("click", e => e.preventDefault());
+  if (CHECKOUT_URL) { $("buy").href = CHECKOUT_URL; $("buy").textContent = "Get Keelson Pro"; }
+  else { // no checkout yet: a waitlist email, said up front
+    $("buy").href = `mailto:${/@/.test(SUPPORT) ? SUPPORT : "support@keelson.co.in"}?subject=${encodeURIComponent("Keelson Pro waitlist")}`; $("buy").removeAttribute("target");
+    $("buy").setAttribute("aria-describedby", "buy-note"); $("buy-note").textContent = "Pro isn't on sale yet. Join the waitlist and we'll email you when it is. Got a licence key already? Enter it below.";
   }
   async function activate() {
     const key = $("key").value.trim(), msg = $("key-msg");
@@ -147,34 +161,47 @@
   revalidate();
 
   // ---------- step 1: upload ----------
-  const SAMPLES = (window.KEELSON_SAMPLES || { plans: [] });
-  $("samples").innerHTML = SAMPLES.plans.map((p, i) =>
-    `<button class="sample" type="button" role="listitem" data-sample="${i}"><span class="ic" aria-hidden="true">${esc(p.label.split(" ").map(w => w[0]).join("").slice(0, 2))}</span><span><b>${esc(p.label)}</b><span>${esc(p.note)}</span></span><span class="go" aria-hidden="true">›</span></button>`).join("");
+  const SAMPLES = (window.KEELSON_SAMPLES || { plans: [] }), SH = window.KEELSON_SAMPLE_HISTORY;
+  const TINTS = ["t-teal", "t-amber", "t-blue"];
+  $("samples").innerHTML = (SH && KH ? `<button class="sample feat" type="button" role="listitem" data-sample="history"><span class="tile t-violet">${icon("history", "ic sm")}</span>` +
+      `<span><b>${esc(SH.label)} <span class="chip chip-new">New</span></b><span class="n">${esc(SH.note)}</span></span>${icon("arrow", "ic sm go")}</button>` : "") +
+    SAMPLES.plans.map((p, i) =>
+      `<button class="sample" type="button" role="listitem" data-sample="${i}"><span class="tile ${TINTS[i % 3]}" aria-hidden="true">${esc(p.label.split(" ").map(w => w[0]).join("").slice(0, 2))}</span><span><b>${esc(p.label)}</b><span class="n">${esc(p.note)}</span></span>${icon("arrow", "ic sm go")}</button>`).join("");
   $("samples").addEventListener("click", e => {
     const b = e.target.closest("[data-sample]"); if (!b) return;
+    if (b.dataset.sample === "history") { // the current plan plus five earlier weekly versions, kept in memory
+      const cur = SH.versions[SH.versions.length - 1];
+      return load({ file: cur.file, text: cur.text, title: SH.title, sd: fromIso(cur.asOf), msKey: (SH.msKeys || [])[0] || "", sample: true, history: SH.versions.slice(0, -1) });
+    }
     const p = SAMPLES.plans[+b.dataset.sample];
     load({ file: p.label + " sample", text: p.text, title: "FieldFlow Service Cloud Implementation", sd: fromIso(SAMPLES.statusDate), msKey: (p.msKeys || [])[0] || "", sample: true });
   });
   const upErr = msg => { const el = $("up-err"); el.hidden = !msg; el.textContent = msg || ""; };
   const dropT = $("drop-t").textContent, dropS = $("drop-s").innerHTML;
   const busy = on => { $("drop-t").innerHTML = on ? `<span class="busy"><span class="spin" aria-hidden="true"></span>Reading your plan…</span>` : dropT; $("drop-s").innerHTML = on ? "" : dropS; };
+  // any plan file -> {file, title, sheets} (xlsx) or {file, title, text}; plain errors say what to do
+  async function parsePlan(f) {
+    const name = f.name || "plan", ext = (name.match(/\.([^.]+)$/) || [, ""])[1].toLowerCase();
+    if (f.size > 50 * 1024 * 1024) throw plainErr("That file is over 50 MB, too large to open here. Save the plan sheet as CSV and try that.");
+    if (ext === "xls" || ext === "mpp") throw plainErr(`.${ext} files can't be read in the browser. In ${ext === "mpp" ? "MS Project" : "Excel"}, use Save As › ${ext === "mpp" ? "Excel Workbook (.xlsx) or CSV" : "Excel Workbook (.xlsx)"}, then drop that file here.`);
+    const buf = await f.arrayBuffer(), head = new Uint8Array(buf, 0, Math.min(4, buf.byteLength));
+    const title = clean(name).replace(/\.[^.]+$/, "").replace(/[_-]+/g, " ").replace(/\s+/g, " ").trim();
+    if (head[0] === 0x50 && head[1] === 0x4b) {
+      const sheets = (await X.sheets(buf)).filter(s => s.rows.length);
+      if (!sheets.length) throw plainErr("This workbook has no data in it. Check you saved the plan, then try again.");
+      return { file: name, sheets, title };
+    }
+    if (head[0] === 0xd0 && head[1] === 0xcf) throw plainErr("This looks like an older .xls or a password-protected workbook. Save it as .xlsx (without a password) or CSV, then try again.");
+    return { file: name, text: new TextDecoder().decode(buf).replace(/^\ufeff/, ""), title };
+  }
+  // the plan text of a parsed file: its best sheet for a workbook
+  const planText = p => { if (!p.sheets) return { text: p.text, sheet: "" }; const sc = p.sheets.map(s => score(s.rows)), i = sc.indexOf(Math.max(...sc)); return { text: toText(p.sheets[i].rows), sheet: p.sheets[i].name }; };
   async function readFile(f) {
     upErr("");
     if (!f) return;
-    const name = f.name || "plan", ext = (name.match(/\.([^.]+)$/) || [, ""])[1].toLowerCase();
-    if (f.size > 50 * 1024 * 1024) return upErr("That file is over 50 MB, too large to open here. Save the plan sheet as CSV and try that.");
-    if (ext === "xls" || ext === "mpp") return upErr(`.${ext} files can't be read in the browser. In ${ext === "mpp" ? "MS Project" : "Excel"}, use Save As › ${ext === "mpp" ? "Excel Workbook (.xlsx) or CSV" : "Excel Workbook (.xlsx)"}, then drop that file here.`);
     busy(true);
-    try {
-      const buf = await f.arrayBuffer(), head = new Uint8Array(buf, 0, Math.min(4, buf.byteLength));
-      const base = clean(name).replace(/\.[^.]+$/, "").replace(/[_-]+/g, " ").replace(/\s+/g, " ").trim();
-      if (head[0] === 0x50 && head[1] === 0x4b) {
-        const sheets = (await X.sheets(buf)).filter(s => s.rows.length);
-        if (!sheets.length) throw plainErr("This workbook has no data in it. Check you saved the plan, then try again.");
-        load({ file: name, sheets, title: base });
-      } else if (head[0] === 0xd0 && head[1] === 0xcf) throw plainErr("This looks like an older .xls or a password-protected workbook. Save it as .xlsx (without a password) or CSV, then try again.");
-      else load({ file: name, text: new TextDecoder().decode(buf).replace(/^﻿/, ""), title: base });
-    } catch (e) { console.error("Keelson: could not read", name, e); upErr(e && e.plain ? e.message : READ_FAIL); }
+    try { load(await parsePlan(f)); }
+    catch (e) { console.error("Keelson: could not read", f.name, e); upErr(e && e.plain ? e.message : READ_FAIL); }
     finally { busy(false); }
   }
   $("file").addEventListener("change", e => { readFile(e.target.files[0]); e.target.value = ""; });
@@ -195,6 +222,7 @@
   const toText = rows => { const w = Math.max(0, ...rows.slice(0, 2000).map(r => r.length)); return rows.slice(0, 2000).map(r => Array.from({ length: w }, (_, i) => String(r[i] ?? "").replace(/[\t\r\n]+/g, " ")).join("\t")).join("\n"); };
   function load(o) {
     S.file = o.file; S.sheets = o.sheets || null; S.cols = {}; S.edits = {}; S.msKey = o.msKey || ""; S.sample = !!o.sample;
+    S.cmp = null; S.diff = { accepted: [], split: [], exclude: [], filter: "all" }; S.hist = []; S.memSnaps = [];
     S.sd = o.sd ?? today();
     if (S.sheets) {
       const sc = S.sheets.map(s => score(s.rows));
@@ -208,7 +236,9 @@
     if (!S.title || /^(sheet\d*|plan|export|download|untitled)$/i.test(S.title)) S.title = clean(guessTitle()) || S.title || "Project status";
     loadProject();
     compute();
-    S.edits = sess.get("keelson-edits", {})[projKey()] || {}; S.dirty = false;
+    S.edits = sess.get("keelson-edits", {})[projKey()] || {}; S.dirty = false; withNotes();
+    // a sample's earlier versions live in memory until a report is downloaded; a real plan uses this browser's saved history
+    if (KH) { if (S.histMem) { KH.use(null); S.histMem = false; } if (o.history) memHistory(o.history).then(loadHist); else loadHist(); }
     paintCheck();
     go("check");
   }
@@ -219,6 +249,7 @@
   // milestone keywords: the reports' standard words plus the user's own (comma-separated)
   const msKeys = () => [...(Array.isArray(R?.DEFAULT_MS_KEYS) ? R.DEFAULT_MS_KEYS : []), ...S.msKey.split(",").map(x => x.trim()).filter(Boolean)];
   const msId = m => String(m.key ?? m.name);
+  if (Array.isArray(R?.DEFAULT_MS_KEYS) && R.DEFAULT_MS_KEYS.length) $("mskey-def").textContent = `Already counted: names containing ${R.DEFAULT_MS_KEYS.slice(0, -1).join(", ")} or ${R.DEFAULT_MS_KEYS.at(-1)}.`;
   const callOk = () => !S.call || !!(S.call.reason || "").trim();
   function compute() {
     const base = { statusDate: S.sd, cols: S.cols, msKeys: msKeys(), ...(S.rules ? { rules: { ...S.rules } } : {}) };
@@ -285,7 +316,7 @@
   function paintMs() {
     const all = S.msAll, n = S.k.nMs ?? all.length;
     $("mssum").textContent = `${n} found`;
-    $("ms-info").textContent = !all.length ? "None found yet. 0-day tasks, a Milestone column and the words below all count."
+    $("ms-info").textContent = !all.length ? "None found yet. 0-day tasks, a Milestone column and the words listed below all count."
       : S.msSupported ? "Untick any that aren't really milestones." : "Found from 0-day tasks, a Milestone column and the words below.";
     $("mslist").innerHTML = all.slice(0, 200).map((m, i) => {
       const id = msId(m), out = S.msSupported && S.msExclude.includes(id), d = m.finish != null ? `<span class="d">${esc(F(m.finish))}</span>` : "";
@@ -320,7 +351,7 @@
     if (!ok && S.body) $("cols").open = true;
     const to = $("to-reports");
     to.setAttribute("aria-disabled", String(!ok || !callOk()));
-    $("ready-note").textContent = ok ? `${REPORTS.length} reports ready` : "";
+    $("ready-note").textContent = ok ? `${nWord(ALL.length)} reports ready` : "";
   }
   function colMap(k) {
     const found = E.FIELDS.filter(([key]) => k.cols[key] >= 0).length;
@@ -343,6 +374,8 @@
     else if (S.rules || S.call || S.msKey || S.msExclude.length) saveProject();
     const ed = sess.get("keelson-edits", {})[projKey()];
     if (ed && Object.keys(ed).length) S.edits = ed; else saveEdits();
+    withNotes(); paintCrumb();
+    if (!S.histMem) loadHist();
   });
   const syncPeople = () => { $("client").value = $("client2").value = S.client; $("prep").value = $("prep2").value = S.prep; saveBrand(); };
   $("client").addEventListener("input", e => { S.client = clean(e.target.value); syncPeople(); });
@@ -378,7 +411,23 @@
 
   // ---------- snapshots: "since last report" ----------
   const projKey = () => (S.title || "Project").trim().toLowerCase();
-  const snaps = () => (store.get("keelson-snapshots", {})[projKey()] || []);
+  // "since last report" in the weekly: snapshots saved on download (localStorage), else the sample's in-memory ones, else a
+  // snapshot read off a saved version (backfilled or imported; it has no per-phase %, so the weekly skips that column)
+  const baseKey = t => String(t.key ?? "").replace(/\s*\(?#\d+\)?$/, "");
+  function snapOf(v) {
+    const n = {}, tasks = {};
+    for (const t of v.tasks) n[baseKey(t)] = (n[baseKey(t)] || 0) + 1;
+    for (const t of v.tasks) if (t.name && n[baseKey(t)] === 1 && t.finish != null) tasks[baseKey(t)] = E.iso(t.finish);
+    const d = x => x == null ? null : E.iso(x);
+    return { v: 2, asOf: v.asOf, rag: v.rag, pct: v.pct, finish: d(v.finish), bfinish: d(v.bfinish), var: v.var, overT: v.overT, overMs: v.overMs,
+      nMs: v.nMs, nMsDone: v.nMsDone, nTask: v.nTask, nTaskDone: v.nTaskDone, phases: {}, tasks };
+  }
+  const snaps = () => {
+    const by = {};
+    for (const v of S.hist) by[v.asOf] = snapOf(v);
+    for (const x of [...S.memSnaps, ...(store.get("keelson-snapshots", {})[projKey()] || [])]) if (x && x.asOf) by[x.asOf] = x;
+    return Object.values(by);
+  };
   const earlier = () => { const cur = E.iso(S.sd); return snaps().filter(s => s && s.asOf && s.asOf < cur).sort((a, b) => a.asOf < b.asOf ? -1 : 1); };
   const prevSnap = () => earlier().at(-1) || null;
   // trend points: the previous snapshot's own history (v2), else the earlier snapshots themselves
@@ -396,33 +445,116 @@
     document.querySelectorAll("[data-compare]").forEach(el => {
       el.hidden = !p;
       if (!p) return;
-      el.innerHTML = `<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h11l-3-3M16 13H5l3 3"/></svg>` +
+      el.innerHTML = icon("swap") +
         `<span>${S.compare ? "Comparing with" : "Not comparing with"} your report of <b>${F(fromIso(p.asOf))}</b></span>` +
         `<label class="switch"><input type="checkbox" role="switch" ${S.compare ? "checked" : ""} data-cmp> Compare</label>`;
     });
   }
   document.addEventListener("change", e => { if (e.target.matches("[data-cmp]")) { S.compare = e.target.checked; paintCompare(); refresh(); } });
 
+  // ---------- version history (KeelsonHistory: IndexedDB, or memory for a sample) ----------
+  const sheetName = () => S.sheets ? S.sheets[S.sheet].name : "";
+  let histSeq = 0;
+  async function loadHist() {
+    if (!KH || !S.k) return;
+    const seq = ++histSeq;
+    let l = [];
+    try { l = await KH.list(projKey()); } catch (e) { console.error("Keelson: version history", e); }
+    if (seq !== histSeq) return;
+    S.hist = l; paintHistBtn(); refresh();
+    if ($("hist").open) paintHist();
+  }
+  async function memHistory(versions) { // the sample's earlier weeks: computed here, stored in a memory store, never in IndexedDB
+    KH.use(KH.memoryStore()); S.histMem = true; S.memSnaps = [];
+    for (const v of versions) {
+      const k = E.compute(v.text, { statusDate: fromIso(v.asOf), msKeys: msKeys() });
+      await KH.put(projKey(), KH.makeVersion(k, { project: projKey(), asOf: v.asOf, file: v.file, savedAt: v.asOf + "T09:00:00.000Z" }));
+      if (R.snapshot) S.memSnaps.push(R.snapshot(k, S.memSnaps[S.memSnaps.length - 1] || null));
+    }
+  }
+  // Word download or Save version: this plan becomes a saved version (a sample's history is kept from then on). Never on PDF
+  // print: afterprint also fires when the print dialog is cancelled.
+  async function saveVersion() {
+    if (!KH) return false;
+    let ok = true;
+    try {
+      if (S.histMem) { const vs = await KH.list(projKey()); KH.use(null); S.histMem = false; for (const v of vs) await KH.put(projKey(), v); }
+      await KH.save(projKey(), S.k, { file: S.file, sheet: sheetName() });
+    } catch (e) { ok = false; console.error("Keelson: version not saved", e); toast("This version couldn't be saved in this browser (storage is full or off)."); }
+    await loadHist();
+    return ok;
+  }
+  async function savePoint() { saveSnap(); const ok = await saveVersion(); S.dirty = false; paintCompare(); return ok; }
+  document.addEventListener("click", async e => {
+    if (!e.target.closest("[data-save]") || !S.k) return;
+    if (await savePoint()) toast(`Saved the version of ${F(S.sd)}${KH && KH.storeKind === "memory" ? " for this tab" : ""}`);
+  });
+  // this plan as a Version (not saved), and the versions the v2 reports read
+  let cvK = null, cvV = null;
+  const curVersion = () => { if (cvK !== S.k) { cvK = S.k; cvV = KH.makeVersion(S.k, { project: projKey(), file: S.file, sheet: sheetName() }); } return cvV; };
+  const prevVersion = () => { if (S.cmp) return S.cmp.version; const a = curVersion().asOf; return S.hist.filter(v => v.asOf < a).pop() || null; };
+  const trendVersions = () => { const c = curVersion(); return [...S.hist.filter(v => v.asOf !== c.asOf), c]; };
+  const paintHistBtn = () => { $("hist-n").textContent = S.hist.length ? `Version history · ${S.hist.length}` : "Version history"; };
+
   // ---------- report building ----------
   if (H && !document.getElementById("kr-css")) { const st = document.createElement("style"); st.id = "kr-css"; st.textContent = H.css; document.head.append(st); }
   const opts = id => ({ title: S.title || "Project status", client: S.client, preparedBy: S.prep, brand: { ...S.brand }, prev: S.compare ? prevSnap() : null, history: S.compare ? histOf(prevSnap()) : [], edits: { ...(S.edits[id] || {}) } });
-  const doc = id => R.build(id, S.k, opts(id));
+  // the forecast runs 5,000 resamples: its result and its page are kept until the plan (S.k) or the saved versions (S.hist) change
+  // ponytail: KF.report() can't take a precomputed result, so a new plan still computes twice (page + tool panel)
+  const fc = { k: null, h: null, res: null, key: "", doc: null };
+  const fcFresh = () => { if (fc.k !== S.k || fc.h !== S.hist) Object.assign(fc, { k: S.k, h: S.hist, res: null, key: "", doc: null }); return fc; };
+  function forecastRes() {
+    const c = fcFresh();
+    if (!c.res) try { c.res = KF.forecast(S.k, { versions: trendVersions() }); } catch (e) { c.res = { ok: false, reason: "The forecast couldn't be worked out for this plan." }; }
+    return c.res;
+  }
+  function doc(id) {
+    if (!isV2(id)) return R.build(id, S.k, opts(id));
+    const o = opts(id), base = { title: o.title, client: o.client, preparedBy: o.preparedBy, edits: o.edits };
+    if (id === "trend") return KT.report(trendVersions(), base);
+    if (id === "forecast") { const c = fcFresh(), key = JSON.stringify(base); if (c.key !== key || !c.doc) Object.assign(c, { key, doc: KF.report(S.k, { ...base, versions: trendVersions() }) }); return c.doc; }
+    const p = prevVersion();
+    if (p) return KD.report(p, curVersion(), { ...base, renames: { accepted: S.diff.accepted, split: S.diff.split }, exclude: S.diff.exclude });
+    return { id: "changes", name: "What changed", title: o.title, subtitle: ["What changed in the plan", o.client && `for ${o.client}`].filter(Boolean).join(" ") + (o.preparedBy ? ` · Prepared by ${o.preparedBy}` : ""),
+      asOf: E.iso(S.sd), rag: S.k.rag || "—", orientation: "portrait", blocks: [
+        { type: "note", text: "Nothing to compare with yet. This report sets this plan beside your last saved report, or beside another export of the same plan." },
+        { type: "heading", text: "What it will show" },
+        { type: "list", items: ["Tasks added, removed or cancelled.", "Finish dates that moved later or earlier, in working days, and milestone moves.", "Baselines that changed, flagged in red.",
+          "Owner changes, renames, phase moves and progress that went backwards.", "One sentence that sums it up, for your sponsor."] },
+        { type: "heading", text: "How to start" },
+        { type: "list", items: ["Compare with another file: drop last week's export of this plan above the page.", "Or press Save version today (a Word download saves one too): next week this one compares itself automatically.",
+          "Or add older exports under Version history; each is placed by its status date."] }] };
+  }
+  // re-baseline notes are an audit trail, so they are kept per project in localStorage (unsaved commentary is only per tab)
+  const NOTES = "keelson-notes";
+  function withNotes() { const n = store.get(NOTES, {})[projKey()]; if (n && typeof n === "object") S.edits.trend = { ...n, ...(S.edits.trend || {}) }; }
   const page = (d, edit, forPrint) => H.html(d, { brand: S.brand, watermark: !isPro() && !forPrint, footer: !isPro(), editable: edit });
 
   // ---------- step 3: gallery ----------
-  const ORIENT = id => (REPORTS.find(r => r.id === id) || {}).orientation;
+  const ICONS = { onepager: "doc", weekly: "report", roadmap: "gantt", variance: "gauge" };
+  // what a v2 card still needs before it says much, shown on the card
+  function need(id, d) {
+    if (id === "changes") return prevVersion() ? "" : "Needs an earlier version";
+    if (id === "trend") { const n = trendVersions().length; return n < 3 ? `Needs 3 reports · you have ${n}` : ""; }
+    if (id === "forecast") return d && d.blocks[0] && d.blocks[0].type === "note" && /will not estimate/.test(d.blocks[0].text) ? "Not enough history to forecast" : "";
+    return "";
+  }
+  function card(r) {
+    let d; try { d = doc(r.id); } catch (e) { console.error("Keelson: report", r.id, e); d = null; }
+    const land = (d?.orientation || r.orientation) === "landscape", v2 = isV2(r.id);
+    const locked = !isPro() && r.id !== "onepager", nd = v2 ? need(r.id, d) : "";
+    return `<li><a class="rc${v2 ? " v2" : ""}" href="#report/${esc(r.id)}" aria-label="${esc(r.name)}${r.description ? ". " + esc(r.description) : ""}${nd ? ". " + esc(nd) : ""}">
+      <div class="thumbbox" aria-hidden="true"${v2 ? ` style="--tbg:var(--tint-${r.tint})"` : ""}><div class="thumb ${land ? "landscape" : "portrait"}"><div class="thumb-in" inert style="width:${land ? 1123 : 794}px">${d ? page(d, false) : ""}</div></div></div>
+      <div class="rc-b"><h3><span><span class="tile ${v2 ? "t-" + r.tint : "t-violet"}">${icon(r.icon || ICONS[r.id] || "doc")}</span>${esc(r.name)}</span>${locked ? '<span class="lock">Pro</span>' : ""}</h3>${r.description ? `<p>${esc(r.description)}</p>` : ""}</div>
+      <div class="meta"><span>${land ? "Landscape" : "Portrait"}</span><span>${isPro() ? "PDF · Word" : r.id === "onepager" ? "Free PDF" : "Preview"}</span>${nd ? `<span class="need">${esc(nd)}</span>` : ""}</div></a></li>`;
+  }
   function paintGallery() {
-    const k = S.k;
-    $("reports-sub").innerHTML = `<b>${esc(S.title || "Your project")}</b> as of ${F(S.sd)}. Open one to edit the commentary and download it.`;
-    $("gallery").innerHTML = REPORTS.map(r => {
-      let d; try { d = doc(r.id); } catch (e) { console.error("Keelson: report", r.id, e); d = null; }
-      const land = (d?.orientation || r.orientation) === "landscape";
-      const locked = !isPro() && r.id !== "onepager";
-      return `<li><a class="rc" href="#report/${esc(r.id)}" aria-label="${esc(r.name)}${r.description ? ". " + esc(r.description) : ""}">
-        <div class="thumbbox" aria-hidden="true"><div class="thumb ${land ? "landscape" : "portrait"}"><div class="thumb-in" inert style="width:${land ? 1123 : 794}px">${d ? page(d, false) : ""}</div></div></div>
-        <div style="display:grid;gap:6px"><h3>${esc(r.name)}${locked ? '<span class="lock">Pro</span>' : ""}</h3>${r.description ? `<p>${esc(r.description)}</p>` : ""}</div>
-        <div class="meta"><span>${land ? "Landscape" : "Portrait"}</span><span>${isPro() ? "PDF · Word" : r.id === "onepager" ? "Free PDF" : "Preview"}</span></div></a></li>`;
-    }).join("");
+    $("reports-sub").innerHTML = `${nWord(ALL.length)} reports for <b>${esc(S.title || "Your project")}</b> as of ${F(S.sd)}. Open one to edit the commentary and download it.${isPro() ? "" : ` ${esc(FREE_RULE)}.`}`;
+    const n = trendVersions().length;
+    $("gallery").innerHTML = `<h3 class="ghead">Status reports</h3><ul class="gallery">${REPORTS.map(card).join("")}</ul>` +
+      (V2.length ? `<h3 class="ghead">Change, trend and forecast <span class="chip chip-new">New</span></h3>` +
+        `<p>Built from this project's saved versions: ${n === 1 ? "only this plan so far" : `${n} reports from ${F(fromIso(trendVersions()[0].asOf))}`}. Press Save version (or download a Word report) to keep this week's; older exports can be added under Version history.</p>` +
+        `<ul class="gallery three">${V2.map(card).join("")}</ul>` : "");
     fitThumbs();
   }
   const ro = new ResizeObserver(es => es.forEach(e => fit(e.target)));
@@ -431,10 +563,10 @@
 
   // ---------- report view ----------
   function paintSwitch() {
-    $("switch").innerHTML = REPORTS.map(r => `<a href="#report/${esc(r.id)}"${r.id === S.report ? ' aria-current="page"' : ""}>${esc(r.name)}</a>`).join("");
+    $("switch").innerHTML = ALL.map(r => `<a href="#report/${esc(r.id)}"${isV2(r.id) ? ' class="v2"' : ""}${r.id === S.report ? ' aria-current="page"' : ""}>${esc(r.name)}</a>`).join("");
   }
   function paintReport(keepFocus) {
-    const id = S.report, r = REPORTS.find(x => x.id === id);
+    const id = S.report, r = ALL.find(x => x.id === id);
     $("h-report").textContent = r ? r.name : "Report";
     paintSwitch();
     let d;
@@ -447,8 +579,9 @@
     $("dl-pdf").innerHTML = pdfOk ? "Download PDF" : 'Download PDF <span class="lock">Pro</span>';
     $("dl-docx").innerHTML = pro ? "Download Word" : 'Download Word <span class="lock">Pro</span>';
     $("dl-note").hidden = pro;
-    $("dl-note").textContent = pro ? "" : id === "onepager" ? "Free PDF includes a small Keelson footer. Pro removes the watermark and footer and unlocks Word." : "Free plan: the one-pager downloads as PDF. Pro unlocks every report as PDF and Word.";
+    $("dl-note").textContent = pro ? "" : `${FREE_RULE}${id === "onepager" ? ", with a small Keelson footer" : ""}. Pro removes the watermark and footer and unlocks every report as PDF and Word.`;
     paintBranding();
+    paintTool();
   }
   // wide screens: show the page at its true width, scaled to fit, so it looks exactly like the PDF; phones reflow instead
   function fitPage() {
@@ -469,7 +602,10 @@
     S.dirty = true; saveEdits();
     $("reset").hidden = false;
   });
-  function saveEdits() { const all = sess.get("keelson-edits", {}); all[projKey()] = S.edits; sess.set("keelson-edits", all); }
+  function saveEdits() {
+    const all = sess.get("keelson-edits", {}); all[projKey()] = S.edits; sess.set("keelson-edits", all);
+    const n = store.get(NOTES, {}); if (S.edits.trend && Object.keys(S.edits.trend).length) n[projKey()] = S.edits.trend; else delete n[projKey()]; store.set(NOTES, n);
+  }
   const unsaved = () => S.dirty && Object.values(S.edits).some(o => o && Object.keys(o).length);
   addEventListener("beforeunload", e => { if (unsaved()) { e.preventDefault(); e.returnValue = ""; } });
   $("page").addEventListener("focusin", e => { // a placeholder prompt is selected whole, so typing replaces it
@@ -501,13 +637,18 @@
   const people = () => { saveBrand(); clearTimeout(peopleT); peopleT = setTimeout(() => { $("page").innerHTML = page(doc(S.report), true); fitPage(); }, 250); };
   $("client2").addEventListener("input", e => { S.client = clean(e.target.value); $("client").value = S.client; people(); });
   $("prep2").addEventListener("input", e => { S.prep = clean(e.target.value); $("prep").value = S.prep; people(); });
-  $("wipe").addEventListener("click", () => {
-    if (!confirm("Remove everything Keelson saved in this browser? That's your theme, branding and logo, licence key, report history, status rules and unsaved commentary. Your plan files aren't affected.")) return;
+  $("wipe").addEventListener("click", async () => {
+    if (!confirm("Remove everything Keelson saved in this browser? That's your theme, branding and logo, licence key, report history, version history of every project, status rules and unsaved commentary. Your plan files aren't affected.")) return;
     for (const st of [localStorage, sessionStorage]) try { Object.keys(st).filter(k => k.startsWith("keelson-")).forEach(k => st.removeItem(k)); } catch (e) {}
+    let cleared = true;
+    if (KH) { // delete the whole "keelson" IndexedDB database (and a sample's in-memory versions)
+      try { if (S.histMem) { KH.use(null); S.histMem = false; } cleared = (await KH.clear()) === true; } catch (e) { cleared = false; console.error("Keelson: clearing version history", e); }
+      S.hist = []; S.memSnaps = []; S.cmp = null; paintHistBtn();
+    }
     lic = null; S.brand = { color: "#1a7f86", logo: null }; S.client = S.prep = ""; S.edits = {}; S.dirty = false; S.rules = null; S.call = null; S.msExclude = []; S.msKey = "";
     $("client").value = $("prep").value = "";
     if (S.k) compute();
-    paintPro(); refresh(); toast("Saved data cleared from this browser");
+    paintPro(); refresh(); toast(cleared ? "Saved data cleared" : "Version history couldn't be cleared. Close other Keelson tabs, then try again.");
   });
   $("logo").addEventListener("change", async e => {
     const f = e.target.files[0]; e.target.value = ""; if (!f) return;
@@ -537,14 +678,14 @@
     if (/^(con|prn|aux|nul|com[0-9¹²³]|lpt[0-9¹²³])(\.|$)/i.test(n)) n = "_" + n;
     return (n || "Report") + ext;
   }
-  const fileBase = ext => { const r = REPORTS.find(x => x.id === S.report); return safeName([S.title || "Project", r ? r.name : S.report, E.iso(S.sd)].join(" - "), ext); };
+  const fileBase = ext => { const r = ALL.find(x => x.id === S.report); return safeName([S.title || "Project", r ? r.name : S.report, E.iso(S.sd)].join(" - "), ext); };
   $("dl-pdf").addEventListener("click", () => {
     if (!isPro() && S.report !== "onepager") return openPro("PDFs of this report come with Pro. The one-pager is free.");
     const pr = $("print-root"), t = document.title;
     pr.innerHTML = page(doc(S.report), false, true);
     document.body.classList.add("printing"); document.title = fileBase(); // the browser names the PDF after the title
-    // the snapshot is saved once the print dialog closes, not on the click (the user may still cancel)
-    addEventListener("afterprint", () => { pr.innerHTML = ""; document.body.classList.remove("printing"); document.title = t; saveSnap(); S.dirty = false; paintCompare(); }, { once: true });
+    // nothing is saved here: afterprint fires whether the PDF was saved or the dialog cancelled (Save version does that)
+    addEventListener("afterprint", () => { pr.innerHTML = ""; document.body.classList.remove("printing"); document.title = t; }, { once: true });
     print();
   });
   $("dl-docx").addEventListener("click", async () => {
@@ -556,10 +697,8 @@
     try {
       if (typeof D.load === "function") await D.load();
       const blob = await D.build(doc(S.report), { brand: { ...S.brand }, footer: !isPro(), rasterize });
-      const a = document.createElement("a"), url = URL.createObjectURL(blob);
-      a.href = url; a.download = fileBase(".docx"); document.body.append(a); a.click(); a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 4000);
-      saveSnap(); S.dirty = false; paintCompare(); toast("Word document saved");
+      saveBlob(blob, fileBase(".docx"));
+      await savePoint(); toast("Word document saved");
     } catch (e) { console.error("Keelson: Word export", e); toast("The Word file couldn't be made. Try again, or download the PDF instead."); }
     finally { b.disabled = false; b.innerHTML = label; }
   });
@@ -580,6 +719,199 @@
     } finally { URL.revokeObjectURL(url); }
   }
 
+  // ---------- v2 tool panel above the page: compare source, change review, trend versions, forecast inputs ----------
+  const GROUPS = [["all", "All"], ["milestoneMoved", "Milestones"], ["baselineMoved", "Baseline"], ["finishLater", "Later"], ["finishEarlier", "Earlier"],
+    ["added", "Added"], ["removed", "Removed", ["removed", "cancelled"]], ["startMoved", "Start moved"], ["ownerChanged", "Owner"],
+    ["progress", "Progress", ["reopened", "pctBackwards"]], ["renamed", "Renamed"], ["phaseMoved", "Phase"]];
+  const WHAT = { milestoneMoved: "Milestone moved", baselineMoved: "Baseline changed", finishLater: "Finish later", finishEarlier: "Finish earlier", added: "Added",
+    removed: "Removed", cancelled: "Cancelled", startMoved: "Start moved", ownerChanged: "Owner changed", reopened: "Reopened", pctBackwards: "% complete down",
+    renamed: "Renamed", phaseMoved: "Moved phase" };
+  const inGroup = (g, c) => g === "all" || ((GROUPS.find(x => x[0] === g) || [])[2] || [g]).includes(c.type);
+  const pctT = v => v == null ? "—" : Math.round(v * 100) + "%";
+  const Ds = v => v == null ? "—" : E.fmt(v, E.iso(v).slice(0, 4) !== E.iso(S.sd).slice(0, 4));
+  const span = c => ["ownerChanged", "renamed", "phaseMoved"].includes(c.type) ? `${c.from || "—"} → ${c.to || "—"}`
+    : c.type === "reopened" ? `Done → ${pctT(c.to)}` : c.type === "pctBackwards" ? `${pctT(c.from)} → ${pctT(c.to)}`
+    : c.type === "added" ? `Due ${Ds(c.to)}` : ["removed", "cancelled"].includes(c.type) ? `Was due ${Ds(c.from)}` : `${Ds(c.from)} → ${Ds(c.to)}`;
+  const toolHead = (r, title, sub, extra = "") => `<div class="tool-h"><span class="tile t-${r.tint}">${icon(r.icon)}</span><div class="grow"><h3>${title}</h3><p>${sub}</p></div>${extra}</div>`;
+  const cmpDrop = () => `<label class="minidrop" for="cmp-file" id="cmp-drop"><input type="file" id="cmp-file" accept=".xlsx,.csv,.tsv,.txt">
+      <span class="tile t-teal">${icon("swap", "ic sm")}</span><span><b>Compare with another file</b><span>${S.cmp ? "Drop a different export to compare with instead." : "Last week's export of this plan, as .xlsx or CSV. Read here, never uploaded."}</span></span></label>`;
+  function toolChanges(r) {
+    const p = prevVersion(), cur = curVersion();
+    const src = S.cmp ? `Comparing with <b>${esc(S.cmp.name)}</b>` : p ? `Comparing with your saved version of <b>${esc(F(fromIso(p.asOf)))}</b>` : "There is no earlier version of this project yet.";
+    const date = S.cmp ? `<div class="field" style="flex:0 1 180px"><label for="cmp-date">Its status date</label><input class="in" type="date" id="cmp-date" value="${E.iso(S.cmp.asOf)}"></div>` : "";
+    const back = S.cmp && S.hist.some(v => v.asOf < cur.asOf) ? `<button class="link" type="button" data-act="cmp-clear">Compare with the last saved version instead</button>` : "";
+    const head = toolHead(r, "What changed", src, date) + `<div class="row">${cmpDrop()}${back}</div>`;
+    if (!p) return head;
+    const rn = { accepted: S.diff.accepted, split: S.diff.split };
+    const all = KD.diff(p, cur, { renames: rn }), inc = KD.diff(p, cur, { renames: rn, exclude: S.diff.exclude });
+    const groups = GROUPS.filter(([g]) => g === "all" || all.changes.some(c => inGroup(g, c)));
+    if (!groups.some(([g]) => g === S.diff.filter)) S.diff.filter = "all";
+    const strip = `<div class="strip" role="group" aria-label="Show changes by type">${groups.map(([g, label]) =>
+      `<button type="button" class="cnt" data-f="${g}" aria-pressed="${S.diff.filter === g}">${label} <b>${inc.changes.filter(c => inGroup(g, c)).length}</b></button>`).join("")}</div>`;
+    const renames = all.renames.length ? `<div class="renames">${all.renames.map(x => {
+      const acc = S.diff.accepted.includes(x.key), spl = S.diff.split.includes(x.key);
+      return `<div class="rn"><span class="grow">${acc ? "Confirmed rename" : spl ? "Kept as two tasks" : "Same task, renamed?"} <b>${esc(x.from)}</b> → <b>${esc(x.to)}</b>${x.phase ? ` <span style="color:var(--muted)">· ${esc(x.phase)}</span>` : ""}</span>` +
+        (acc || spl ? `<button type="button" class="btn line sm" data-rn="${esc(x.key)}" data-act="undo">Undo</button>`
+          : `<button type="button" class="btn line sm" data-rn="${esc(x.key)}" data-act="accept">Confirm rename</button><button type="button" class="btn line sm" data-rn="${esc(x.key)}" data-act="split">Treat as two tasks</button>`) + `</div>`;
+    }).join("")}</div>` : "";
+    const rows = all.changes.filter(c => inGroup(S.diff.filter, c)), CAP = 200;
+    const table = !all.changes.length ? `<p class="hint">No changes of a working day or more between the two versions.</p>` :
+      `<div class="chg" id="chg"><table><thead><tr><th scope="col"><span class="sr">Include in the client version</span></th><th scope="col">Change</th><th scope="col">Task</th><th scope="col">From → to</th><th scope="col" style="text-align:right">Moved</th></tr></thead><tbody>${rows.slice(0, CAP).map(c => {
+        const out = S.diff.exclude.includes(c.id);
+        return `<tr${out ? ' class="out"' : ""}><td><label class="cb"><input type="checkbox" data-x="${esc(c.id)}" ${out ? "" : "checked"} aria-label="Include in the client version: ${esc(WHAT[c.type])}, ${esc(c.name)}"></label></td>` +
+          `<td class="ty">${esc(WHAT[c.type])}</td><td>${c.milestone ? "<b>" + esc(c.name) + "</b>" : esc(c.name)}${c.phase ? `<br><span style="color:var(--muted);font-size:13px">${esc(c.phase)}</span>` : ""}</td>` +
+          `<td>${esc(span(c))}</td><td class="num">${c.wd == null ? "" : (c.wd > 0 ? "+" : "") + c.wd + " wd"}</td></tr>`;
+      }).join("")}</tbody></table></div>${rows.length > CAP ? `<p class="hint">Showing ${CAP} of ${rows.length}. The report lists the rest.</p>` : ""}`;
+    const nOut = S.diff.exclude.length;
+    return head + strip + renames + table + `<p class="hint">Untick a change to leave it out of the client version${nOut ? ` (${plural(nOut, "change")} left out)` : ""}. Click the summary on the page to rewrite it.</p>`;
+  }
+  function toolTrend(r) {
+    const vs = trendVersions(), n = vs.length, cur = curVersion();
+    const dots = `<ul class="vdots" aria-label="Reports in this trend">${vs.map(v => `<li class="${v.asOf === cur.asOf ? "cur" : ""}">${esc(F(fromIso(v.asOf)))}${v.asOf === cur.asOf ? " · this plan" : v.backfilled ? " · older file" : ""}</li>`).join("")}</ul>`;
+    return toolHead(r, "Slip trend", n < 3 ? `Needs 3 reports; you have ${n}.` : `${n} reports, ${esc(F(fromIso(vs[0].asOf)))} to ${esc(F(fromIso(vs[n - 1].asOf)))}.`) + dots +
+      (n < 3 ? `<div class="callout warn">${icon("alert")}<div>The milestone trend, slipping phases and drift rate need 3 reports. Add older exports of this plan and Keelson places each one by its status date, or press Save version each week.
+          <div class="row" style="margin-top:10px"><button class="btn fill sm" type="button" data-act="hist-add">${icon("plus")}Add older files</button></div></div></div>`
+        : `<div class="callout">${icon("pencil")}<div>Every re-baseline stays in the log on the page until it has a note. Click a note to record why it happened and who agreed it; notes are kept with this project on this device.</div></div>`);
+  }
+  function toolForecast(r) {
+    const f = forecastRes();
+    const c = S.k.cols, has = [["bstart", "Baseline start"], ["bfin", "Baseline finish"], ["afin", "Actual finish"]].map(([key, label]) =>
+      `<span class="chip ${c[key] >= 0 ? "chip-ok" : "chip-bad"}"><span class="dot"></span>${label}${c[key] >= 0 ? "" : " missing"}</span>`).join("");
+    return toolHead(r, "Finish-date confidence", f.ok ? `P50 <b>${esc(F(f.p50))}</b> and P80 <b>${esc(F(f.p80))}</b>, from ${plural(f.n, "completed task")}. The plan date is ${esc(F(f.planFinish))}.`
+      : "Keelson only forecasts when the plan's own history is enough to go on.") + `<div class="row">${has}</div>` +
+      (f.ok ? `<div class="callout">${icon("shield")}<div>These dates come from the plan and can't be edited. The page explains how they're worked out, so a sponsor can check them.</div></div>`
+        : `<div class="callout warn">${icon("alert")}<div>${esc(f.reason)}</div></div>`);
+  }
+  function paintTool() {
+    const el = $("tool"), r = V2.find(x => x.id === S.report);
+    el.hidden = !r;
+    if (!r) { el.innerHTML = ""; return; }
+    const sc = $("chg") ? $("chg").scrollTop : 0, fid = document.activeElement && el.contains(document.activeElement) ? focusKey(document.activeElement) : null;
+    el.innerHTML = r.id === "changes" ? toolChanges(r) : r.id === "trend" ? toolTrend(r) : toolForecast(r);
+    if ($("chg")) $("chg").scrollTop = sc;
+    if (fid) el.querySelector(fid)?.focus();
+  }
+  const focusKey = a => a.id ? "#" + CSS.escape(a.id) : a.dataset.x ? `[data-x="${CSS.escape(a.dataset.x)}"]` : a.dataset.f ? `[data-f="${CSS.escape(a.dataset.f)}"]` : a.dataset.rn ? `[data-rn="${CSS.escape(a.dataset.rn)}"]` : null;
+  const repaint = () => { paintReport(); };
+  $("tool").addEventListener("click", e => {
+    const f = e.target.closest("[data-f]"), rn = e.target.closest("[data-rn]"), act = e.target.closest("[data-act]");
+    if (f) { S.diff.filter = f.dataset.f; paintTool(); return; }
+    if (rn) {
+      const key = rn.dataset.rn, a = act.dataset.act, d = S.diff;
+      d.accepted = d.accepted.filter(x => x !== key); d.split = d.split.filter(x => x !== key);
+      if (a === "accept") d.accepted.push(key); if (a === "split") d.split.push(key);
+      repaint(); $("tool").querySelector(`[data-rn="${CSS.escape(key)}"]`)?.focus(); return;
+    }
+    if (!act) return;
+    if (act.dataset.act === "cmp-clear") { S.cmp = null; S.diff = { accepted: [], split: [], exclude: [], filter: "all" }; repaint(); }
+    if (act.dataset.act === "hist-add") openHist(true);
+  });
+  $("tool").addEventListener("change", e => {
+    const x = e.target.closest("[data-x]");
+    if (x) { const id = x.dataset.x; S.diff.exclude = x.checked ? S.diff.exclude.filter(i => i !== id) : [...S.diff.exclude, id]; repaint(); return; }
+    if (e.target.id === "cmp-file") { const f = e.target.files[0]; e.target.value = ""; if (f) compareFile(f); }
+    if (e.target.id === "cmp-date" && S.cmp) { const d = fromIso(e.target.value); if (d != null) { S.cmp.asOf = d; S.cmp.version = cmpVersion(S.cmp.text, d, S.cmp.name, S.cmp.sheet); repaint(); } }
+  });
+  ["dragenter", "dragover"].forEach(t => $("tool").addEventListener(t, e => { const z = e.target.closest("#cmp-drop"); if (z) { e.preventDefault(); z.classList.add("over"); } }));
+  $("tool").addEventListener("dragleave", e => { const z = e.target.closest("#cmp-drop"); if (z && !z.contains(e.relatedTarget)) z.classList.remove("over"); });
+  $("tool").addEventListener("drop", e => { const z = e.target.closest("#cmp-drop"); if (!z) return; e.preventDefault(); e.stopPropagation(); z.classList.remove("over"); if (e.dataTransfer.files[0]) compareFile(e.dataTransfer.files[0]); });
+  const dayOf = ms => Math.floor((ms - new Date(ms).getTimezoneOffset() * 6e4) / DAY_MS);
+  const guessAsOf = f => { const d = f.lastModified ? dayOf(f.lastModified) : null; return d != null && d < S.sd ? d : S.sd - 7; }; // the file's date, if it is older than this plan
+  function cmpVersion(text, asOf, file, sheet) {
+    const k = E.compute(text, { statusDate: asOf, msKeys: msKeys() });
+    if (!(k.rows > 0 && k.cols.name >= 0 && k.cols.finish >= 0)) throw plainErr("We couldn't find task names and finish dates in that file. Check it's an export of this plan.");
+    return KH.makeVersion(k, { project: projKey(), file, sheet, asOf: E.iso(asOf) });
+  }
+  async function compareFile(f) {
+    try {
+      const pp = await parsePlan(f), { text, sheet } = planText(pp), asOf = guessAsOf(f);
+      S.cmp = { name: pp.file, text, sheet, asOf, version: cmpVersion(text, asOf, pp.file, sheet) };
+      S.diff = { accepted: [], split: [], exclude: [], filter: "all" };
+      repaint(); toast(`Comparing with ${pp.file}`); $("cmp-date")?.focus();
+    } catch (e) { console.error("Keelson: compare file", e); toast(e && e.plain ? e.message : READ_FAIL); }
+  }
+
+  // ---------- version history dialog ----------
+  const hd = $("hist");
+  const RAGC = { Red: "chip-bad", Amber: "chip-warn", Green: "chip-ok" };
+  function paintHist() {
+    const cur = S.k ? curVersion().asOf : null, n = S.hist.length;
+    $("hist-sub").innerHTML = `<b>${esc(S.title || "This project")}</b> · ${plural(n, "saved version")}${S.histMem ? " · a sample's history, kept in memory until you save a version" : ""}`;
+    const mem = KH.storeKind === "memory" && !S.histMem; $("hist-mem").hidden = !mem; $("hist-note").hidden = mem;
+    $("hlist").innerHTML = n ? S.hist.slice().reverse().map(v => `<li><span class="when">${esc(F(fromIso(v.asOf)))}</span>` +
+      `<span class="what"><span class="chip ${RAGC[v.rag] || "chip-mute"}"><span class="dot"></span>${esc(v.rag === "—" ? "No status" : v.rag)}</span>${v.asOf === cur ? "This plan's date · " : ""}${v.backfilled ? "Added later · " : ""}${esc(v.file || "Saved report")}</span>` +
+      `<button type="button" class="icon-x" data-del="${esc(v.asOf)}" aria-label="Delete the version of ${esc(F(fromIso(v.asOf)))}">${icon("trash")}</button></li>`).join("")
+      : `<li class="hempty" style="display:block">No saved versions yet. Press Save version (a Word download saves one too); you can also add older exports below.</li>`;
+    $("h-export").disabled = $("h-clear").disabled = !n;
+  }
+  function openHist(add) { if (!S.k) return; bfReset(); paintHist(); hd.showModal(); (add ? $("bf-file") : $("hist-h")).focus(); }
+  document.addEventListener("click", e => { if (e.target.closest("[data-hist]")) openHist(); });
+  $("hist-x").addEventListener("click", () => hd.close());
+  hd.addEventListener("click", e => { if (e.target === hd) hd.close(); });
+  $("hlist").addEventListener("click", async e => {
+    const b = e.target.closest("[data-del]"); if (!b) return;
+    try { await KH.remove(projKey(), b.dataset.del); } catch (err) { console.error(err); }
+    await loadHist(); paintHist(); toast(`Deleted the version of ${F(fromIso(b.dataset.del))}`); ($("hlist").querySelector("[data-del]") || $("hist-h")).focus();
+  });
+  let bf = null;
+  const bfMsg = (m, c = "") => { $("bf-msg").textContent = m; $("bf-msg").className = "status " + c; };
+  function bfReset() { bf = null; $("bf-row").hidden = true; $("bf-t").textContent = "Add an older file"; $("bf-s").textContent = "Last month's export, or any earlier one. It's placed by its status date."; bfMsg(""); }
+  $("bf-file").addEventListener("change", async e => {
+    const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+    bfMsg("Reading…");
+    try {
+      const pp = await parsePlan(f);
+      bf = { file: pp.file, ...planText(pp) };
+      $("bf-t").textContent = pp.file; $("bf-s").textContent = "Pick the status date it was exported for, then add it.";
+      $("bf-row").hidden = false; $("bf-date").value = E.iso(guessAsOf(f)); bfMsg(""); $("bf-date").focus();
+    } catch (err) { console.error("Keelson: older file", err); bfMsg(err && err.plain ? err.message : READ_FAIL, "bad"); }
+  });
+  $("bf-cancel").addEventListener("click", () => { bfReset(); $("bf-file").focus(); });
+  $("bf-go").addEventListener("click", async () => {
+    const d = fromIso($("bf-date").value);
+    if (!bf) return;
+    if (d == null) { bfMsg("Pick the date this file's figures were as of.", "bad"); $("bf-date").focus(); return; }
+    const k = E.compute(bf.text, { statusDate: d, msKeys: msKeys() });
+    if (!(k.rows > 0 && k.cols.name >= 0 && k.cols.finish >= 0)) { bfMsg("We couldn't find task names and finish dates in that file.", "bad"); return; }
+    try { await KH.put(projKey(), KH.fromFile(k, E.iso(d), { project: projKey(), file: bf.file, sheet: bf.sheet })); }
+    catch (err) { console.error("Keelson: older file", err); bfMsg("That version couldn't be saved in this browser.", "bad"); return; }
+    bfReset(); await loadHist(); paintHist();
+    bfMsg(`Added the version of ${F(d)}${d >= S.sd ? ". It's not older than this plan, so What changed still compares with the one before." : "."}`, "ok"); $("bf-file").focus();
+  });
+  function saveBlob(blob, name) {
+    const a = document.createElement("a"), url = URL.createObjectURL(blob);
+    a.href = url; a.download = name; document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+  }
+  $("h-export").addEventListener("click", async () => {
+    try { saveBlob(await KH.exportJSON(projKey()), KH.fileName(S.title || projKey())); toast("History file saved"); }
+    catch (e) { console.error("Keelson: export history", e); toast("The history file couldn't be made."); }
+  });
+  $("h-import").addEventListener("change", async e => {
+    const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+    try {
+      const pv = await KH.previewImport(f, { project: projKey() }), name = S.title || pv.project;
+      if (pv.wouldExceed) { const m = `Importing would take "${name}" past ${KH.MAX} saved versions. Remove some versions or import into another project.`; bfMsg(m, "bad"); toast(m); return; }
+      if (pv.mismatch && !confirm(`This file is the history of '${pv.fileProject}'. Add it to '${name}'?`)) return;
+      if (pv.replaces > 0) {
+        if (confirm(`This replaces ${plural(pv.replaces, "saved version")}. Export your current history first?\n\nOK saves a copy first. Cancel lets you replace them without a copy.`)) saveBlob(await KH.exportJSON(projKey()), KH.fileName(name));
+        else if (!confirm(`Replace ${plural(pv.replaces, "saved version")} of '${name}' without a copy?`)) return;
+      }
+      const r = await KH.importJSON(f, { project: projKey() }); await loadHist(); paintHist(); toast(`Imported ${plural(r.count, "version")}${r.skipped ? ` (${r.skipped} skipped)` : ""}`);
+    }
+    catch (err) { console.error("Keelson: import history", err); toast(err && err.plain ? err.message : "That file couldn't be imported."); }
+  });
+  $("h-clear").addEventListener("click", async () => {
+    if (!confirm(`Delete all ${plural(S.hist.length, "saved version")} of "${S.title}" from this browser? Export a .keelson.json file first if you might need them.`)) return;
+    try { await KH.clear(projKey()); } catch (e) { console.error(e); }
+    S.cmp = null; await loadHist(); paintHist(); toast("This project's history is cleared"); $("hist-h").focus();
+  });
+  function paintCrumb() {
+    const c = $("crumb"), r = ALL.find(x => x.id === S.report);
+    c.hidden = !S.k || S.view === "upload";
+    if (!c.hidden) c.innerHTML = `<b>${esc(S.title || "Project")}</b>${S.view === "report" && r ? " / " + esc(r.name) : ""}`;
+  }
+
   // ---------- views and routing (hash, so Back works) ----------
   const VIEWS = { upload: "v-upload", check: "v-check", reports: "v-reports", report: "v-report" };
   function refresh() {
@@ -593,9 +925,9 @@
     if (!VIEWS[v]) v = "upload";
     if (v !== "upload" && !S.k) { history.replaceState(null, "", "#upload"); v = "upload"; }
     if ((v === "reports" || v === "report") && (!usable() || !callOk())) { history.replaceState(null, "", "#check"); v = "check"; }
-    if (v === "report") { S.report = REPORTS.some(r => r.id === id) ? id : REPORTS[0]?.id; }
+    if (v === "report") { S.report = ALL.some(r => r.id === id) ? id : REPORTS[0]?.id; }
     const changed = S.view !== v || v === "report", first = S.view == null;
-    S.view = v;
+    S.view = v; document.body.dataset.view = v;
     Object.entries(VIEWS).forEach(([k, el]) => { $(el).hidden = k !== v; });
     const order = ["upload", "check", "reports"], at = order.indexOf(v === "report" ? "reports" : v);
     document.querySelectorAll("[data-step]").forEach(a => {
@@ -603,9 +935,11 @@
       a.toggleAttribute("aria-current", i === at); if (i === at) a.setAttribute("aria-current", "step");
       a.setAttribute("aria-disabled", String(!can)); a.tabIndex = can ? 0 : -1;
       a.classList.toggle("done", i < at);
+      a.querySelector("i").innerHTML = i < at ? icon("check") : String(i + 1);
+      a.setAttribute("aria-label", `Step ${i + 1} of 3: ${a.querySelector("span").textContent}${i < at ? ", done" : ""}`);
     });
     if (v === "check") paintCheck();
-    refresh();
+    refresh(); paintCrumb();
     if (changed && !first) { // move focus to the new view, never on first load (Tab must start at the skip link)
       const h = $(VIEWS[v]).querySelector("h1, h2");
       scrollTo({ top: 0, behavior: reduce.matches ? "auto" : "instant" });
@@ -618,5 +952,5 @@
   route();
 
   if (missing.length) upErr(`Part of the app didn't load (${missing.join(", ")}). Reload the page; if it keeps happening, tell us at keelson.co.in.`);
-  window.KeelsonApp = { S, load, isPro, rasterize, safeName }; // for tests
+  window.KeelsonApp = { S, load, isPro, rasterize, safeName, loadHist, curVersion }; // for tests
 })();

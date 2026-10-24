@@ -8,8 +8,9 @@
   const BAR = { "Done": C.grey, "On track": C.teal, "Planned": C.planned, "At risk": C.amber, "Late": C.red };
   const FONT = "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
   const PERIOD = 7, CAP = 20, SLIP_CAP = 15, HIST = 6;
-  // milestone keywords the app passes as msKeys by default (a task whose name contains one is a milestone)
-  const DEFAULT_MS_KEYS = ["go-live", "go live", "sign-off", "signed off", "sign off", "approval", "approved", "decision", "complete", "closed", "gate"];
+  // milestone keywords the app passes as msKeys by default: defined in the engine, which matches them as whole words and only on
+  // rows of at most 1 working day (or with no start), so "Payments gateway integration" or "Prepare approval pack" is not a milestone
+  const DEFAULT_MS_KEYS = E.DEFAULT_MS_KEYS;
   const NOBASE = "No baseline: finish slippage not assessed";
 
   const list = [
@@ -455,8 +456,10 @@
       : `Data check: ${plural(k.rows, "row")} read cleanly${k.nCancel ? ` · ${k.nCancel} cancelled left out` : ""}.`) + " Days late and variances are working days (Mon–Fri)." };
   }
   // the tolerances behind the RAG, from k.rules, so a reader can check the status (M1)
-  function rulesText(k) {
+  function rulesText(k, short) {
     const r = k.rules || {};
+    if (short) return `Status rules: Amber if finish is over ${r.amberVar} wd past baseline, a milestone is overdue, over ${r.amberOver} tasks are overdue or progress is over ${r.amberBehind} points behind; ` +
+      `Red above ${r.redVar} wd, ${plural(r.redMs, "overdue milestone")} or ${r.redBehind} points. Schedule only; cost and scope not assessed.`; // one-pager footer: must stay on two lines
     return `Status rules: Amber if the forecast finish is more than ${plural(r.amberVar, "working day")} after baseline, any milestone is overdue, more than ${plural(r.amberOver, "task")} ${r.amberOver === 1 ? "is" : "are"} overdue ` +
       `or progress is more than ${plural(r.amberBehind, "point")} behind plan; Red above ${r.redVar} days, ${plural(r.redMs, "overdue milestone")} or ${r.redBehind} points. Schedule only; cost and scope not assessed.`;
   }
@@ -495,7 +498,7 @@
       { type: "columns", columns: [[cm.highlights], [cm.concerns], [cm.next]] },
       cm.decisions,
       tl || { type: "note", text: "No dates found to draw a timeline." },
-      { type: "note", text: [...notes, dc.text.replace(" Days late and variances are working days (Mon–Fri).", "").replace(/ read cleanly(.*)\.$/, ", no issues$1."), rulesText(k)].join(" ") }, // one footer note line: notes, data check, status rules
+      { type: "note", text: [...notes, dc.text.replace(" Days late and variances are working days (Mon–Fri).", "").replace(/ read cleanly(.*)\.$/, ", no issues$1."), rulesText(k, true)].join(" ") }, // one footer note line: notes, data check, status rules
     ]);
   }
 
