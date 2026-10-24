@@ -134,11 +134,13 @@
 }
 @media (prefers-reduced-motion: reduce) { .kr-edit { transition: none } }
 
-@page kr-portrait { size: A4 portrait; margin: 12mm }
-@page kr-landscape { size: A4 landscape; margin: 12mm }
+/* zero page margins: the browser then has no room for its own URL / date / page-number lines; the report's margin is padding
+   cloned onto every printed page */
+@page kr-portrait { size: A4 portrait; margin: 0 }
+@page kr-landscape { size: A4 landscape; margin: 0 }
 @media print {
-  .kr-page { max-width: none; width: auto; margin: 0; padding: 0; box-shadow: none; border-radius: 0; min-height: 270mm; page: kr-portrait; font-size: 12px }
-  .kr-page.kr-landscape { min-height: 183mm; page: kr-landscape }
+  .kr-page { max-width: none; width: auto; margin: 0; padding: 12mm; -webkit-box-decoration-break: clone; box-decoration-break: clone; box-shadow: none; border-radius: 0; min-height: 294mm; page: kr-portrait; font-size: 12px }
+  .kr-page.kr-landscape { min-height: 207mm; page: kr-landscape }
   .kr-page + .kr-page { break-before: page }
   .kr-foot { break-before: avoid; break-inside: avoid } /* never a page holding only the footer line */
   .kr-page, .kr-page * { -webkit-print-color-adjust: exact; print-color-adjust: exact }
