@@ -593,14 +593,16 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
     </ul>
     <div id="pro-buy">
       <a class="btn fill block lg" id="buy" href="#" target="_blank" rel="noopener">Join the Pro waitlist</a>
+      <a class="btn line block lg" id="buy-y" href="#" target="_blank" rel="noopener" style="margin-top:8px" hidden></a>
       <p class="status" id="buy-note" style="text-align:center;margin-top:8px"></p>
     </div>
     <p class="or-line">Already have a licence key?</p>
     <div class="field"><label for="key">Licence key</label>
       <div class="keyrow"><input class="in" type="text" id="key" autocomplete="off" spellcheck="false" placeholder="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"><button class="btn line" type="button" id="key-go">Activate</button></div>
       <p class="status" id="key-msg" role="status" aria-live="polite"></p>
-      <small class="hint">Only the key is sent, to Lemon Squeezy, to check it (plus your IP address, as with any web request). Your plan never leaves this device.</small></div>
-    <button class="link" type="button" id="key-x" hidden style="justify-self:start">Remove the key from this device</button>
+      <small class="hint">Your licence key is in the receipt email from Lemon Squeezy. Only the key, this browser's activation ID and a label ("Keelson", the browser name and the date) are sent, to Lemon Squeezy, to check it (plus your IP address, as with any web request). Your plan never leaves this device.</small></div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center"><button class="link" type="button" id="key-x" hidden>Remove the key from this device</button>
+      <a class="link" id="portal" href="#" target="_blank" rel="noopener" hidden>Manage subscription</a></div>
   </form>
 </dialog>
 
@@ -646,6 +648,7 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
 <script src="diff.js"></script>
 <script src="trend.js"></script>
 <script src="forecast.js"></script>
+<script src="store-config.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

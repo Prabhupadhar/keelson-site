@@ -572,7 +572,7 @@
       <article class="plan pop">
         <h3>Pro <span class="chip chip-brand">Best for consultants</span></h3><p class="for">For the PM or consultant</p>
         <p class="price"><b data-m="$12" data-y="$8">$12</b><span>/ month</span></p><p class="price-note" data-m="or $96 billed yearly" data-y="$96 billed yearly">or $96 billed yearly</p>
-        <a class="btn btn-primary" href="mailto:support@keelson.co.in?subject=Keelson%20Pro%20waitlist">Join the Pro waitlist</a>
+        <a class="btn btn-primary" href="mailto:support@keelson.co.in?subject=Keelson%20Pro%20waitlist" data-buy="proMonthly" data-buy-m="proMonthly" data-buy-y="proYearly">Join the Pro waitlist</a>
         <ul>
           <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>No watermark, no Keelson footer</span></li>
           <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>All seven reports, PDF and Word</span></li>
@@ -592,8 +592,8 @@
       </article>
       <article class="plan">
         <h3>Template packs</h3><p class="for">Excel and Google Sheets</p>
-        <p class="price"><b>$9</b><span>one-time</span></p><p class="price-note">or all five for $29 · not on sale yet</p>
-        <a class="btn btn-secondary" href="mailto:support@keelson.co.in?subject=Notify%20me%3A%20Keelson%20template%20packs">Notify me</a>
+        <p class="price"><b>$9</b><span>one-time</span></p><p class="price-note">or all five for $29<span data-when="presale" data-for="packSaas"> · not on sale yet</span></p>
+        <a class="btn btn-secondary" href="mailto:support@keelson.co.in?subject=Notify%20me%3A%20Keelson%20template%20packs" data-buy="packSaas">Notify me</a>
         <ul>
           <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Plan &amp; Gantt that schedules itself</span></li>
           <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>RAID and change log</span></li>
@@ -609,7 +609,8 @@
       <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Cancel any time</span></li>
       <li><svg class="ic" aria-hidden="true"><use href="#i-download"/></svg><a href="#pricing" data-store="dashboard">Free Excel dashboard: download</a></li>
     </ul>
-    <p class="fine center" style="margin-top:var(--sp-4)">Prices in USD. Pro and the template packs aren't on sale yet; the waitlist and Notify me buttons open an email to us. When checkout opens, Lemon Squeezy, our merchant of record, will handle payment, tax and VAT.</p>
+    <p class="fine center" style="margin-top:var(--sp-4)" data-when="presale">Prices in USD. Pro and the template packs aren't on sale yet; the waitlist and Notify me buttons open an email to us. When checkout opens, Lemon Squeezy, our merchant of record, will handle payment, tax and VAT.</p>
+    <p class="fine center" style="margin-top:var(--sp-4)" data-when="sale" hidden>Prices in USD. Checkout is on Lemon Squeezy, our merchant of record, which handles payment, tax, VAT and receipts. Your Pro licence key arrives in the receipt email.</p>
   </div>
 </section>
 
@@ -665,6 +666,7 @@
 <script src="engine.js"></script>
 <script src="samples.js"></script>
 <script src="samples-history.js"></script>
+<script src="store-config.js"></script>
 <script src="index.js"></script>
 </body>
 </html>

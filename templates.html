@@ -118,8 +118,9 @@
       <span class="eyebrow"><svg class="ic sm" aria-hidden="true"><use href="#i-box"/></svg>Template packs for Excel and Google Sheets</span>
       <h1 id="h-packs">One plan. Every format.</h1>
       <p class="lead">Self-scheduling plans, RAID logs and go-live runbooks that hand over in your client's template, MS Project, Google Sheets, CSV or PDF.</p>
-      <p class="avail"><b>Not on sale yet.</b> The Software / SaaS pack will be $9 and all five packs $29. Leave your email and we'll tell you when they open; nothing else.</p>
-      <div class="row center-row"><a class="btn btn-primary" href="mailto:support@keelson.co.in?subject=Notify%20me%3A%20Keelson%20template%20packs">Notify me <svg class="ic sm arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a><a class="btn btn-secondary" href="./#try">Try the free Quick check</a></div>
+      <p class="avail" data-when="presale" data-for="packSaas"><b>Not on sale yet.</b> The Software / SaaS pack will be $9 and all five packs $29. Leave your email and we'll tell you when they open; nothing else.</p>
+      <p class="avail" data-when="sale" data-for="packSaas" hidden><b>On sale now.</b> The Software / SaaS pack is $9, one-time, through Lemon Squeezy, our merchant of record.</p>
+      <div class="row center-row"><a class="btn btn-primary" href="mailto:support@keelson.co.in?subject=Notify%20me%3A%20Keelson%20template%20packs" data-buy="packSaas">Notify me <svg class="ic sm arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a><a class="btn btn-secondary" href="./#try">Try the free Quick check</a></div>
     </div>
     <div class="tablist" role="tablist" aria-label="Hand-over formats">
       <button class="tab" type="button" role="tab" id="ft1" aria-controls="fp1" aria-selected="true">Your plan</button>
@@ -309,7 +310,7 @@
       <details><summary>Can I use it on client projects?<svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Yes, on any number of your own and your clients' projects. Share the filled-in files with anyone; don't resell or give away the templates themselves.</p></details>
       <details><summary>Do I need to enable macros?<svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>No. Every workbook is a plain .xlsx with formulas only, so company security settings won't block it.</p></details>
       <details><summary>Will I get a native .mpp file?<svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>No. You get MS Project XML, which MS Project desktop opens directly, plus an import tab. Microsoft Planner can't import either.</p></details>
-      <details><summary>When can I buy them?<svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Not yet: the packs are still being finished and none is on sale. Press <a href="mailto:support@keelson.co.in?subject=Notify%20me%3A%20Keelson%20template%20packs">Notify me</a> and we'll email you once when they open. Anyone who buys all five will get each later sector pack at no extra cost.</p></details>
+      <details><summary>When can I buy them?<svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary><p data-when="presale" data-for="packSaas">Not yet: the packs are still being finished and none is on sale. Press <a href="mailto:support@keelson.co.in?subject=Notify%20me%3A%20Keelson%20template%20packs">Notify me</a> and we'll email you once when they open. Anyone who buys all five will get each later sector pack at no extra cost.</p><p data-when="sale" data-for="packSaas" hidden>Now: the Software / SaaS pack is on sale, checkout through Lemon Squeezy. The other sector packs follow; anyone who buys all five will get each later sector pack at no extra cost.</p></details>
     </div>
   </div>
 </section>
@@ -338,6 +339,7 @@
   </div>
 </footer>
 
+<script src="store-config.js"></script>
 <script src="index.js"></script>
 </body>
 </html>

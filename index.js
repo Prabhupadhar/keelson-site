@@ -11,10 +11,25 @@ themeBtn.addEventListener("click", () => {
 matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", paintBtn);
 paintBtn();
 
-// The free dashboard downloads straight from this site. Pro and the template packs aren't on sale yet: their buttons are
-// mailto waitlists in the HTML. When checkout opens, put the Lemon Squeezy share URLs back on those buttons
-// (live checkout: https://keelson.lemonsqueezy.com/checkout/buy/99b08dcc-8db5-4229-930b-4e66e53696e5).
+// The free dashboard downloads straight from this site. Pro and the packs are mailto waitlists in the HTML (the no-JS
+// default); a checkout link in store-config.js turns its [data-buy] button into a Lemon Squeezy checkout and swaps the
+// [data-when="presale"] notes for the [data-when="sale"] ones (data-for names the link; none = any link).
 document.querySelectorAll('[data-store="dashboard"]').forEach(a => { a.href = "downloads/Keelson-dashboard-v1.0.0.zip"; a.setAttribute("download", ""); });
+const CO = (window.KEELSON_STORE || {}).checkout || {};
+const buyUrl = k => typeof CO[k] === "string" && /^https:\/\/[a-z0-9-]+\.lemonsqueezy\.com\/(checkout\/)?buy\/[0-9a-f-]{36}(\?.*)?$/.test(CO[k]) ? CO[k] : "";
+const BUY_LABEL = { proMonthly: "Get Keelson Pro", proYearly: "Get Keelson Pro", packSaas: "Buy the pack · $9" };
+function paintBuy(bill = "m") {
+  document.querySelectorAll("[data-buy]").forEach(a => {
+    if (a.dataset.buyM) a.dataset.buy = [a.dataset["buy" + bill.toUpperCase()], a.dataset.buyM, a.dataset.buyY].find(buyUrl) || a.dataset.buyM; // billing toggle picks the variant
+    const url = buyUrl(a.dataset.buy); if (!url) return;
+    a.href = url; a.target = "_blank"; a.rel = "noopener";
+    const t = [...a.childNodes].find(n => n.nodeType === 3 && n.nodeValue.trim()); // keep any icon after the label
+    if (t) t.nodeValue = BUY_LABEL[a.dataset.buy] + (t.nextSibling ? " " : "");
+  });
+}
+paintBuy();
+const onSale = k => k ? !!buyUrl(k) : Object.keys(BUY_LABEL).some(buyUrl);
+document.querySelectorAll("[data-when]").forEach(el => { el.hidden = (el.dataset.when === "sale") !== !!onSale(el.dataset.for); });
 
 // popovers: product menu and the small-screen menu. Escape or a click outside closes and returns focus.
 function popover(btn, pop) {
@@ -55,6 +70,7 @@ const bills = [...document.querySelectorAll("[data-bill]")];
 bills.forEach(b => b.addEventListener("click", () => {
   const k = b.dataset.bill; bills.forEach(x => x.setAttribute("aria-pressed", x === b));
   document.querySelectorAll("[data-m][data-y]").forEach(el => { el.textContent = el.dataset[k]; });
+  paintBuy(k);
 }));
 
 // the CSV picker is a label: make Enter and Space open it like a button

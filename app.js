@@ -5,10 +5,16 @@
 (function () {
   "use strict";
   if (window.top !== window.self) { document.body.hidden = true; return; } // never run inside someone else's frame
-  const CHECKOUT_URL = ""; // Lemon Squeezy checkout link for Keelson Pro; empty shows "Join the Pro waitlist" (an email)
-  const LICENCE_API = "https://api.lemonsqueezy.com/v1/licenses/validate";
-  // set from Lemon Squeezy > Settings > Store / product IDs; while empty, any valid key from any store is accepted
-  const STORE_ID = null, PRODUCT_IDS = [];
+  // store settings live in store-config.js (docs/LEMON-SQUEEZY.md); anything malformed counts as not set
+  const CFG = window.KEELSON_STORE || {}, CO = CFG.checkout || {};
+  const BUY_RE = /^https:\/\/[a-z0-9-]+\.lemonsqueezy\.com\/(checkout\/)?buy\/[0-9a-f-]{36}(\?.*)?$/;
+  const buyUrl = k => typeof CO[k] === "string" && BUY_RE.test(CO[k]) ? CO[k] : "";
+  const PORTAL = typeof CFG.portal === "string" && /^https:\/\/([a-z0-9-]+\.)*lemonsqueezy\.com(\/[^\s"<>]*)?$/.test(CFG.portal) ? CFG.portal : "";
+  const LS_API = "https://api.lemonsqueezy.com/v1/licenses/";
+  // no store set = Pro isn't on sale: no key unlocks it (otherwise a key from any Lemon Squeezy store would)
+  const STORE_ID = Number.isSafeInteger(CFG.storeId) && CFG.storeId > 0 ? CFG.storeId : null;
+  const PRODUCT_IDS = Array.isArray(CFG.proProductIds) ? CFG.proProductIds.filter(Number.isSafeInteger) : [];
+  const SELLING = STORE_ID != null && PRODUCT_IDS.length > 0;
   const DAY_MS = 864e5, FRESH = 7, GRACE = 14, SNAP_KEEP = 12, HISTORY = 6;
   const SUPPORT = (m => m && !/\{\{/.test(m) ? m : "us")((document.querySelector('meta[name="keelson-support"]') || {}).content);
   const READ_FAIL = "We couldn't read that workbook. Save it again from Excel as .xlsx, or export it as CSV.";
@@ -77,32 +83,47 @@
   // ---------- licence (a convenience, not security: the reports are built in this tab either way) ----------
   let lic = store.get("keelson-licence", null);
   // a record that was tampered with (or written by a clock set ahead) is dropped, not trusted
-  if (lic && (typeof lic !== "object" || typeof lic.key !== "string" || !Number.isFinite(lic.checkedAt) || lic.checkedAt > Date.now())) { lic = null; store.del("keelson-licence"); }
+  if (lic && (typeof lic !== "object" || typeof lic.key !== "string" || !Number.isFinite(lic.checkedAt) || lic.checkedAt > Date.now() || (lic.instanceId != null && typeof lic.instanceId !== "string"))) { lic = null; store.del("keelson-licence"); }
   const licAge = () => lic ? (Date.now() - lic.checkedAt) / DAY_MS : Infinity;
-  const isPro = () => !!(lic && lic.valid && (!lic.expiresAt || Date.parse(lic.expiresAt) > Date.now()) && licAge() <= FRESH + GRACE);
-  // The server counts as reached only for an answer it really gave: 2xx, or 400/404, with a JSON boolean `valid`.
-  // Anything else (429, a captive portal's HTML page, other errors, a blocked request) is "unreachable", so the grace period applies.
-  async function validate(key) {
+  const isPro = () => !!(SELLING && lic && lic.valid && (!lic.expiresAt || Date.parse(lic.expiresAt) > Date.now()) && licAge() <= FRESH + GRACE);
+  // The server counts as reached only for an answer it really gave: 2xx, or 400/404/422, with the JSON boolean the call
+  // promises (valid / activated / deactivated). Anything else (429, a captive portal's HTML page, other errors, a blocked
+  // request) is "unreachable", so the grace period applies.
+  const FLAG = { validate: "valid", activate: "activated", deactivate: "deactivated" };
+  async function ls(op, params) {
     let res;
     try {
-      res = await fetch(LICENCE_API, { method: "POST", headers: { Accept: "application/json" }, body: new URLSearchParams({ license_key: key }), credentials: "omit", referrerPolicy: "no-referrer", cache: "no-store" });
+      res = await fetch(LS_API + op, { method: "POST", headers: { Accept: "application/json" }, body: new URLSearchParams(params), credentials: "omit", referrerPolicy: "no-referrer", cache: "no-store" });
     } catch (e) { return { reach: false, why: await blocked() ? "blocked" : "offline" }; }
     if (res.status === 429) return { reach: false, why: "rate" };
     let j = null; try { j = await res.json(); } catch (e) {}
-    if (!(res.ok || res.status === 400 || res.status === 404) || !j || typeof j !== "object" || typeof j.valid !== "boolean") return { reach: false, why: "offline" };
-    const lk = j.license_key || {}, meta = j.meta || {};
-    const ours = STORE_ID == null || (meta.store_id === STORE_ID && PRODUCT_IDS.includes(meta.product_id));
-    const valid = j.valid && ours;
-    return { reach: true, rec: { key, valid, status: !ours ? "another product" : lk.status || (valid ? "active" : "invalid"), expiresAt: lk.expires_at || null, checkedAt: Date.now() }, error: j.error || "", other: !ours };
+    if (!(res.ok || [400, 404, 422].includes(res.status)) || !j || typeof j !== "object" || typeof j[FLAG[op]] !== "boolean") return { reach: false, why: "offline" };
+    const meta = j.meta || {}, mine = SELLING && meta.store_id === STORE_ID && PRODUCT_IDS.includes(meta.product_id);
+    return { reach: true, j, ok: j[FLAG[op]] && mine, mine, other: !mine && meta.store_id != null, instance: (j.instance && typeof j.instance.id === "string" && j.instance.id) || "", error: String(j.error || "") };
   }
+  const record = (key, r, instanceId) => {
+    const lk = r.j.license_key || {};
+    return { key, instanceId: instanceId || null, valid: r.ok, status: r.other ? "another product" : lk.status || (r.ok ? "active" : "invalid"), expiresAt: lk.expires_at || null, checkedAt: Date.now() };
+  };
+  const instanceName = () => { const u = navigator.userAgent; return `Keelson · ${/Edg\//.test(u) ? "Edge" : /OPR\//.test(u) ? "Opera" : /Firefox\//.test(u) ? "Firefox" : /Chrom(e|ium)\//.test(u) ? "Chrome" : /Safari\//.test(u) ? "Safari" : "Browser"} · ${new Date().toISOString().slice(0, 10)}`; };
+  const release = (key, id) => { if (key && id) ls("deactivate", { license_key: key, instance_id: id }); }; // best effort: frees the activation slot
+  const LIMIT = /activation limit/i;
   // the request failed outright: if the server still answers an opaque no-cors request, it is up and this page's origin
   // is refused (CORS), which is not the user's connection; no key is sent with this probe
-  const blocked = () => fetch(LICENCE_API, { method: "HEAD", mode: "no-cors", credentials: "omit", referrerPolicy: "no-referrer", cache: "no-store" }).then(() => true, () => false);
+  const blocked = () => fetch(LS_API + "validate", { method: "HEAD", mode: "no-cors", credentials: "omit", referrerPolicy: "no-referrer", cache: "no-store" }).then(() => true, () => false);
   async function revalidate() { // older than 7 days: check again quietly; keep Pro through 14 days of network trouble
-    if (!lic || !lic.key || licAge() <= FRESH) return;
-    const r = await validate(lic.key);
-    if (r.reach) { lic = r.rec; store.set("keelson-licence", lic); paintPro(); refresh(); }
-    else { lic.offline = true; paintPro(); }
+    if (!SELLING || !lic || !lic.key || licAge() <= FRESH) return;
+    const key = lic.key;
+    let inst = lic.instanceId, tried = !!lic.instTried;
+    if (!inst && !tried) { // a key saved before per-browser activations: claim a slot once; at the limit it still works without one
+      const a = await ls("activate", { license_key: key, instance_name: instanceName() });
+      if (a.reach) { tried = true; if (a.ok && a.instance) inst = a.instance; else if (a.instance) release(key, a.instance); }
+    }
+    const r = await ls("validate", inst ? { license_key: key, instance_id: inst } : { license_key: key });
+    if (!lic || lic.key !== key) return; // removed or replaced meanwhile
+    if (r.reach) { lic = { ...record(key, r, inst), ...(tried ? { instTried: true } : {}) }; paintPro(); refresh(); }
+    else { Object.assign(lic, { offline: true, instanceId: inst || null }, tried ? { instTried: true } : {}); paintPro(); }
+    store.set("keelson-licence", { ...lic, offline: undefined });
   }
   const proBtn = $("pro-btn");
   function paintPro() {
@@ -116,10 +137,11 @@
       const until = new Date(lic.checkedAt + (FRESH + GRACE) * DAY_MS);
       act.innerHTML = pro
         ? `<b>Pro is active on this device</b><span>Key ending ${esc(lic.key.slice(-4))} · checked ${new Date(lic.checkedAt).toLocaleDateString()}${lic.offline ? ` · we couldn't reach the licence server, so Pro stays on until ${until.toLocaleDateString()}` : ""}</span>`
-        : `<b style="color:var(--bad)">This key isn't active</b><span>Status: ${esc(lic.status || "unknown")}${lic.expiresAt ? ` · expired ${new Date(lic.expiresAt).toLocaleDateString()}` : ""}. Renew it, or enter another key.</span>`;
+        : `<b style="color:var(--bad)">This key isn't active</b><span>Status: ${esc(SELLING ? lic.status || "unknown" : "Pro isn't on sale")}${lic.expiresAt ? ` · expired ${new Date(lic.expiresAt).toLocaleDateString()}` : ""}. ${PORTAL ? `<a href="${esc(PORTAL)}" target="_blank" rel="noopener">Renew</a> it` : "Renew it"}, or enter another key.</span>`;
     }
     $("pro-buy").hidden = pro;
     $("key-x").hidden = !lic;
+    $("portal").hidden = !(lic && lic.key && PORTAL);
     document.querySelector(".perks").hidden = pro;
     $("pro-h").textContent = pro ? "Keelson Pro" : "Send reports that look like yours";
   }
@@ -128,16 +150,19 @@
   proBtn.addEventListener("click", () => openPro());
   $("pro-x").addEventListener("click", () => dlg.close());
   dlg.addEventListener("click", e => { if (e.target === dlg) dlg.close(); });
-  if (CHECKOUT_URL) { $("buy").href = CHECKOUT_URL; $("buy").textContent = "Get Keelson Pro"; }
+  if (PORTAL) $("portal").href = PORTAL;
+  const plans = [["proMonthly", "Monthly · $12"], ["proYearly", "Yearly · $96 (save 33%)"]].filter(([k]) => buyUrl(k));
+  if (plans.length) plans.forEach(([k, label], i) => { const a = $(i ? "buy-y" : "buy"); a.href = buyUrl(k); a.textContent = label; a.hidden = false; $("buy-note").hidden = true; });
   else { // no checkout yet: a waitlist email, said up front
     $("buy").href = `mailto:${/@/.test(SUPPORT) ? SUPPORT : "support@keelson.co.in"}?subject=${encodeURIComponent("Keelson Pro waitlist")}`; $("buy").removeAttribute("target");
-    $("buy").setAttribute("aria-describedby", "buy-note"); $("buy-note").textContent = "Pro isn't on sale yet. Join the waitlist and we'll email you when it is. Got a licence key already? Enter it below.";
+    $("buy").setAttribute("aria-describedby", "buy-note"); $("buy-note").textContent = "Pro isn't on sale yet. Join the waitlist and we'll email you when it is.";
   }
   async function activate() {
     const key = $("key").value.trim(), msg = $("key-msg");
+    if (!SELLING) { msg.className = "status warn"; msg.textContent = "Pro isn't on sale yet, so there are no licence keys to enter. Join the waitlist and we'll email you when it is."; return; }
     if (!key) { msg.className = "status bad"; msg.textContent = "Paste your licence key first."; $("key").focus(); return; }
     msg.className = "status"; msg.textContent = "Checking your key…"; $("key-go").disabled = true;
-    const r = await validate(key);
+    const r = await ls("activate", { license_key: key, instance_name: instanceName() });
     $("key-go").disabled = false;
     if (!r.reach) {
       msg.className = "status warn";
@@ -146,9 +171,20 @@
         : "We couldn't reach the licence server. Check your connection and try again; your plan is still here.";
       return;
     }
-    if (r.other) { msg.className = "status bad"; msg.textContent = "That key is for a different product. Check it's the Keelson Pro key from your receipt email."; return; }
-    if (!r.rec.valid) { msg.className = "status bad"; msg.textContent = r.error && !/^license_key/i.test(r.error) ? `That key didn't work: ${r.error}` : "That key isn't valid. Check it matches the one in your receipt email."; return; }
-    lic = r.rec; store.set("keelson-licence", lic);
+    if (r.other) { release(key, r.instance); msg.className = "status bad"; msg.textContent = "That key is for a different product. Check it's the Keelson Pro key from your receipt email."; return; }
+    if (!r.ok) {
+      const st = (r.j.license_key || {}).status;
+      msg.className = "status bad";
+      if (LIMIT.test(r.error)) { msg.textContent = `This key is already active on its maximum number of browsers. Remove it from one of them (Unlock Pro › Remove the key), or email ${SUPPORT}.`; return; }
+      if (r.mine && (st === "expired" || st === "disabled" || /expired|disabled/i.test(r.error))) { // keep it so the dialog shows the renew link
+        lic = record(key, r); if (!/expired|disabled/.test(lic.status)) lic.status = /expired/i.test(r.error) ? "expired" : "disabled";
+        store.set("keelson-licence", lic); $("key").value = ""; msg.textContent = `That key is ${lic.status}.`; paintPro(); return;
+      }
+      msg.textContent = r.error && !/^license_key/i.test(r.error) ? `That key didn't work: ${r.error}` : "That key isn't valid. Check it matches the one in your receipt email.";
+      return;
+    }
+    if (lic && lic.key && lic.instanceId && lic.instanceId !== r.instance) release(lic.key, lic.instanceId); // replacing a key frees the old slot
+    lic = record(key, r, r.instance); store.set("keelson-licence", lic);
     $("key").value = ""; msg.className = "status ok"; msg.textContent = "Pro is unlocked. Enjoy.";
     paintPro(); refresh();
     setTimeout(() => dlg.open && dlg.close(), 1100);
@@ -156,7 +192,7 @@
   }
   $("key-go").addEventListener("click", activate);
   $("key").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); activate(); } });
-  $("key-x").addEventListener("click", () => { lic = null; store.del("keelson-licence"); paintPro(); refresh(); $("key-msg").textContent = "Key removed from this device."; $("key").focus(); });
+  $("key-x").addEventListener("click", () => { if (lic) release(lic.key, lic.instanceId); lic = null; store.del("keelson-licence"); paintPro(); refresh(); $("key-msg").textContent = "Key removed from this device."; $("key").focus(); });
   paintPro();
   revalidate();
 
@@ -645,6 +681,7 @@
       try { if (S.histMem) { KH.use(null); S.histMem = false; } cleared = (await KH.clear()) === true; } catch (e) { cleared = false; console.error("Keelson: clearing version history", e); }
       S.hist = []; S.memSnaps = []; S.cmp = null; paintHistBtn();
     }
+    if (lic) release(lic.key, lic.instanceId);
     lic = null; S.brand = { color: "#1a7f86", logo: null }; S.client = S.prep = ""; S.edits = {}; S.dirty = false; S.rules = null; S.call = null; S.msExclude = []; S.msKey = "";
     $("client").value = $("prep").value = "";
     if (S.k) compute();
@@ -949,7 +986,10 @@
     }
   }
   addEventListener("hashchange", route);
+  const buyer = location.hash === "#pro"; // Lemon Squeezy sends buyers back to app.html#pro after checkout
+  if (buyer) history.replaceState(null, "", "#upload");
   route();
+  if (buyer) openPro();
 
   if (missing.length) upErr(`Part of the app didn't load (${missing.join(", ")}). Reload the page; if it keeps happening, tell us at keelson.co.in.`);
   window.KeelsonApp = { S, load, isPro, rasterize, safeName, loadHist, curVersion }; // for tests
