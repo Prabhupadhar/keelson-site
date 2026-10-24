@@ -98,7 +98,7 @@ code{font-family:var(--font-mono);font-size:.9em}
 .mnav h4{font-size:var(--fs-micro);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--muted);margin:10px 12px 4px}
 
 /* hero */
-.hero{position:relative;padding:clamp(40px,6vw,80px) 0 0;text-align:center;overflow:hidden;isolation:isolate}
+.hero{position:relative;padding:clamp(40px,6vw,80px) 0 0;text-align:center;overflow:hidden;isolation:isolate;overflow-anchor:none} /* no scroll anchor in the animated hero: a reload at the top otherwise lands a few px down */
 .hero-pill{display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:5px 14px 5px 5px;border-radius:var(--r-pill);background:var(--surface);box-shadow:var(--shadow-2),inset 0 0 0 1px var(--line);font-size:14px;color:var(--ink-2);text-decoration:none}
 .hero-pill .chip{padding:2px 9px;font-size:12px}
 .hero h1{font-size:var(--fs-display);line-height:var(--lh-tight);letter-spacing:var(--tracking-display);margin:var(--sp-5) auto 0;max-width:none}
@@ -108,6 +108,19 @@ code{font-family:var(--font-mono);font-size:.9em}
 .stage{position:relative;margin:clamp(36px,5vw,60px) auto 0;max-width:1160px;padding:0 var(--gutter)}
 .stage-bg{position:absolute;inset:8% 0 0;border-radius:var(--r-2xl) var(--r-2xl) 0 0;background:var(--bg-soft);box-shadow:inset 0 0 0 1px var(--line)}
 
+/* sample PDFs: hero, report gallery, Pro card */
+.samples{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:0 4px;margin:0;font-size:14.5px;color:var(--ink-2)}
+.samples>span{margin-right:4px}
+.samples a{display:inline-flex;align-items:center;min-height:44px;padding:0 8px;font-weight:800}
+.samples-hero{margin-top:var(--sp-3)}
+#reports .samples{margin-top:var(--sp-3)}
+/* the weekly loop (hero) */
+.loop{margin:var(--sp-6) auto 0;max-width:960px}
+.loop-h{font-size:clamp(18px,2vw,21px);font-weight:800;color:var(--ink);letter-spacing:var(--tracking-head)}
+.loop ol{list-style:none;margin:var(--sp-4) 0 0;padding:0;display:flex;justify-content:center;align-items:center;gap:8px 14px;flex-wrap:wrap;font-size:15px;color:var(--ink-2)}
+.loop li{display:flex;align-items:center;gap:10px}
+.loop li:not(:last-child)::after{content:"→";margin:0 4px;color:var(--muted)}
+.loop .n{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--accent-tint);color:var(--accent-tint-ink);font-weight:800;font-size:14px;flex:none}
 /* product window (hero) */
 .mock{position:relative;margin:0 clamp(0px,3vw,40px);background:var(--surface);border-radius:var(--r-lg) var(--r-lg) 0 0;box-shadow:var(--shadow-mock);overflow:hidden;text-align:left;font-size:13px;border:1px solid var(--line);border-bottom:0;top:clamp(20px,3vw,36px)}
 .mock-top{display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--surface)}
@@ -527,7 +540,7 @@ table.cmp{width:100%;border-collapse:collapse;min-width:640px;font-size:15px}
 .billing button{border:0;background:none;min-height:44px;padding:0 16px;border-radius:var(--r-pill);font-weight:800;font-size:14px;color:var(--muted);cursor:pointer}
 .billing button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow-1)}
 .billing .save{color:var(--spark-text)}
-.plans{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--sp-4);align-items:stretch}
+.plans{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-4);align-items:stretch;max-width:840px;margin:0 auto}
 .plan{position:relative;display:flex;flex-direction:column;gap:var(--sp-4);padding:28px 24px;border-radius:var(--r-xl);background:var(--surface);box-shadow:var(--shadow-2),inset 0 0 0 1px var(--line);min-width:0}
 .plan.pop{box-shadow:var(--shadow-3),inset 0 0 0 1.5px var(--accent)}
 .plan h3{font-size:19px;display:flex;align-items:center;gap:8px;justify-content:space-between;flex-wrap:wrap}
@@ -541,6 +554,11 @@ table.cmp{width:100%;border-collapse:collapse;min-width:640px;font-size:15px}
 .plan li .ic{width:18px;height:18px;color:var(--brand-text);margin-top:2px}
 .plan .btn{width:100%}
 .plan .more{margin-top:auto;display:inline-flex;align-items:center;gap:6px;min-height:44px;font-weight:800;text-decoration:none;font-size:14.5px}.plan .more:hover{text-decoration:underline}
+.plan .value{font-size:14.5px;font-weight:800;color:var(--ink);margin-top:-6px}
+.plan .buy-note{color:var(--muted);font-size:13px;margin-top:-6px;text-align:center}.plan .buy-note a{color:inherit}
+.plan .samples{margin-top:auto;justify-content:flex-start;gap:0 18px}.plan .samples>span{flex-basis:100%}.plan .samples a{padding:0}
+.plans-after{margin:var(--sp-5) 0 0;text-align:center;color:var(--ink-2);font-size:15px}.plans-after+.plans-after{margin-top:var(--sp-2)}
+.plans-after a{display:inline-flex;align-items:center;min-height:44px;font-weight:800}
 .guar{display:flex;flex-wrap:wrap;gap:10px 26px;justify-content:center;margin:var(--sp-6) 0 0;padding:0;list-style:none;color:var(--muted);font-size:14px}
 .guar li{display:flex;gap:8px;align-items:center}
 .guar .ic{width:18px;height:18px;color:var(--brand-text)}
@@ -603,7 +621,6 @@ table.cmp{width:100%;border-collapse:collapse;min-width:640px;font-size:15px}
 @media (max-width:1080px){
   .mock-body{grid-template-columns:170px minmax(0,1fr)}
   .paperwrap{display:none}
-  .plans{grid-template-columns:repeat(2,minmax(0,1fr))}
   .gal{grid-template-columns:repeat(2,minmax(0,1fr))}
   .foot-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
   .foot-grid>div:first-child{grid-column:1/-1}
@@ -634,6 +651,8 @@ table.cmp{width:100%;border-collapse:collapse;min-width:640px;font-size:15px}
   .steps span:not(.on){display:none}
   .crumb{display:none}
   .plans,.gal{grid-template-columns:minmax(0,1fr)}
+  .loop ol{flex-direction:column;align-items:flex-start;width:fit-content;margin-inline:auto;gap:10px}
+  .loop li::after{content:none!important}
   .tab{padding:0 14px;font-size:14px}
   .tablist{justify-content:flex-start;flex-wrap:nowrap;overflow-x:auto;margin-inline:calc(var(--gutter) * -1);padding:4px var(--gutter) 8px;scrollbar-width:none}
   .tablist::-webkit-scrollbar{display:none}

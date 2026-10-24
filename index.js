@@ -13,7 +13,7 @@ paintBtn();
 
 // The free dashboard downloads straight from this site. Pro and the packs are mailto waitlists in the HTML (the no-JS
 // default); a checkout link in store-config.js turns its [data-buy] button into a Lemon Squeezy checkout and swaps the
-// [data-when="presale"] notes for the [data-when="sale"] ones (data-for names the link; none = any link).
+// [data-when="presale"] notes for the [data-when="sale"] ones (data-for names the links, space-separated; none = any link).
 document.querySelectorAll('[data-store="dashboard"]').forEach(a => { a.href = "downloads/Keelson-dashboard-v1.0.0.zip"; a.setAttribute("download", ""); });
 const CO = (window.KEELSON_STORE || {}).checkout || {};
 const buyUrl = k => typeof CO[k] === "string" && /^https:\/\/[a-z0-9-]+\.lemonsqueezy\.com\/(checkout\/)?buy\/[0-9a-f-]{36}(\?.*)?$/.test(CO[k]) ? CO[k] : "";
@@ -27,8 +27,8 @@ function paintBuy(bill = "m") {
     if (t) t.nodeValue = BUY_LABEL[a.dataset.buy] + (t.nextSibling ? " " : "");
   });
 }
-paintBuy();
-const onSale = k => k ? !!buyUrl(k) : Object.keys(BUY_LABEL).some(buyUrl);
+paintBuy(document.querySelector('[data-bill][aria-pressed="true"]')?.dataset.bill); // the page's default billing (Yearly on index.html)
+const onSale = k => (k ? k.split(" ") : Object.keys(BUY_LABEL)).some(buyUrl);
 document.querySelectorAll("[data-when]").forEach(el => { el.hidden = (el.dataset.when === "sale") !== !!onSale(el.dataset.for); });
 
 // popovers: product menu and the small-screen menu. Escape or a click outside closes and returns focus.

@@ -140,6 +140,7 @@
   .kr-page { max-width: none; width: auto; margin: 0; padding: 0; box-shadow: none; border-radius: 0; min-height: 270mm; page: kr-portrait; font-size: 12px }
   .kr-page.kr-landscape { min-height: 183mm; page: kr-landscape }
   .kr-page + .kr-page { break-before: page }
+  .kr-foot { break-before: avoid; break-inside: avoid } /* never a page holding only the footer line */
   .kr-page, .kr-page * { -webkit-print-color-adjust: exact; print-color-adjust: exact }
   .kr-tw, .kr-fig { overflow: visible }
   .kr-fig svg { width: auto; max-width: 100%; max-height: 225mm; margin: 0 auto } .kr-landscape .kr-fig svg { max-height: 140mm }

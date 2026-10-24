@@ -143,17 +143,30 @@
     $("key-x").hidden = !lic;
     $("portal").hidden = !(lic && lic.key && PORTAL);
     document.querySelector(".perks").hidden = pro;
-    $("pro-h").textContent = pro ? "Keelson Pro" : "Send reports that look like yours";
+    $("pro-h").textContent = pro ? "Keelson Pro" : proCtx || "Send reports that look like yours";
+    $("pro-thumb").hidden = pro || !proCtx;
   }
   const dlg = $("pro");
-  const openPro = why => { $("pro-why").textContent = why || ""; $("pro-why").hidden = !why || isPro(); $("key-msg").textContent = ""; $("key-msg").className = "status"; paintPro(); dlg.showModal(); ($("pro-buy").hidden ? $("key") : $("buy")).focus(); };
+  let proCtx = ""; // "Your <project> <report> is ready" when a locked download opened the dialog
+  // a locked download: say whose report is waiting and show it (the watermarked page they were viewing, inert, scaled down)
+  const lockedPro = () => {
+    const r = ALL.find(x => x.id === S.report);
+    proCtx = `Your ${S.title || "project"} ${r ? r.name : "report"} is ready`;
+    let d = null; try { d = doc(S.report); } catch (e) {}
+    const land = d && d.orientation === "landscape";
+    $("pro-thumb").innerHTML = d ? `<div class="thumb ${land ? "landscape" : "portrait"}"><div class="thumb-in" inert style="width:${land ? 1123 : 794}px">${page(d, false)}</div></div>` : "";
+    openPro(`Download it without the watermark, plus Word export and all ${nWord(ALL.length).toLowerCase()} reports — $12 a month or $96 a year.`, true);
+    const t = $("pro-thumb").firstElementChild; if (t) fit(t);
+  };
+  const openPro = (why, ctx) => { if (!ctx) proCtx = ""; $("pro-why").textContent = why || ""; $("pro-why").hidden = !why || isPro(); $("key-msg").textContent = ""; $("key-msg").className = "status"; paintPro(); dlg.showModal(); ($("pro-buy").hidden ? $("key") : $("buy")).focus(); };
   proBtn.addEventListener("click", () => openPro());
   $("pro-x").addEventListener("click", () => dlg.close());
   dlg.addEventListener("click", e => { if (e.target === dlg) dlg.close(); });
   if (PORTAL) $("portal").href = PORTAL;
   const plans = [["proMonthly", "Monthly · $12"], ["proYearly", "Yearly · $96 (save 33%)"]].filter(([k]) => buyUrl(k));
   if (plans.length) plans.forEach(([k, label], i) => { const a = $(i ? "buy-y" : "buy"); a.href = buyUrl(k); a.textContent = label; a.hidden = false; $("buy-note").hidden = true; });
-  else { // no checkout yet: a waitlist email, said up front
+  else { // no checkout yet: a waitlist email, said up front; purchase terms only make sense once it is on sale
+    $("buy-terms").hidden = true;
     $("buy").href = `mailto:${/@/.test(SUPPORT) ? SUPPORT : "support@keelson.co.in"}?subject=${encodeURIComponent("Keelson Pro waitlist")}`; $("buy").removeAttribute("target");
     $("buy").setAttribute("aria-describedby", "buy-note"); $("buy-note").textContent = "Pro isn't on sale yet. Join the waitlist and we'll email you when it is.";
   }
@@ -582,9 +595,11 @@
     return `<li><a class="rc${v2 ? " v2" : ""}" href="#report/${esc(r.id)}" aria-label="${esc(r.name)}${r.description ? ". " + esc(r.description) : ""}${nd ? ". " + esc(nd) : ""}">
       <div class="thumbbox" aria-hidden="true"${v2 ? ` style="--tbg:var(--tint-${r.tint})"` : ""}><div class="thumb ${land ? "landscape" : "portrait"}"><div class="thumb-in" inert style="width:${land ? 1123 : 794}px">${d ? page(d, false) : ""}</div></div></div>
       <div class="rc-b"><h3><span><span class="tile ${v2 ? "t-" + r.tint : "t-violet"}">${icon(r.icon || ICONS[r.id] || "doc")}</span>${esc(r.name)}</span>${locked ? '<span class="lock">Pro</span>' : ""}</h3>${r.description ? `<p>${esc(r.description)}</p>` : ""}</div>
-      <div class="meta"><span>${land ? "Landscape" : "Portrait"}</span><span>${isPro() ? "PDF · Word" : r.id === "onepager" ? "Free PDF" : "Preview"}</span>${nd ? `<span class="need">${esc(nd)}</span>` : ""}</div></a></li>`;
+      <div class="meta"><span>${land ? "Landscape" : "Portrait"}</span><span>${isPro() ? "PDF · Word" : r.id === "onepager" ? "Free PDF" : "Preview"}</span>${nd ? `<span class="need">${esc(nd)}</span>` : ""}</div></a>` +
+      (r.id === "changes" && nd ? `<button class="btn fill block" type="button" id="g-cmp">${icon("plus")}Add last week's export to see what changed</button>` : "") + `</li>`;
   }
   function paintGallery() {
+    $("loop-hint").hidden = isPro();
     $("reports-sub").innerHTML = `${nWord(ALL.length)} reports for <b>${esc(S.title || "Your project")}</b> as of ${F(S.sd)}. Open one to edit the commentary and download it.${isPro() ? "" : ` ${esc(FREE_RULE)}.`}`;
     const n = trendVersions().length;
     $("gallery").innerHTML = `<h3 class="ghead">Status reports</h3><ul class="gallery">${REPORTS.map(card).join("")}</ul>` +
@@ -593,6 +608,9 @@
         `<ul class="gallery three">${V2.map(card).join("")}</ul>` : "");
     fitThumbs();
   }
+  // one version only: last week's export goes straight into What changed (read here, compared, never uploaded)
+  $("gallery").addEventListener("click", e => { if (e.target.closest("#g-cmp")) $("g-cmp-file").click(); });
+  $("g-cmp-file").addEventListener("change", async e => { const f = e.target.files[0]; e.target.value = ""; if (f && await compareFile(f)) go("report/changes"); });
   const ro = new ResizeObserver(es => es.forEach(e => fit(e.target)));
   function fit(t) { const inn = t.firstElementChild; if (!inn) return; const s = t.clientWidth / parseFloat(inn.style.width); inn.style.transform = `scale(${s})`; }
   function fitThumbs() { document.querySelectorAll(".thumb").forEach(t => { fit(t); ro.observe(t); }); }
@@ -717,7 +735,7 @@
   }
   const fileBase = ext => { const r = ALL.find(x => x.id === S.report); return safeName([S.title || "Project", r ? r.name : S.report, E.iso(S.sd)].join(" - "), ext); };
   $("dl-pdf").addEventListener("click", () => {
-    if (!isPro() && S.report !== "onepager") return openPro("PDFs of this report come with Pro. The one-pager is free.");
+    if (!isPro() && S.report !== "onepager") return lockedPro();
     const pr = $("print-root"), t = document.title;
     pr.innerHTML = page(doc(S.report), false, true);
     document.body.classList.add("printing"); document.title = fileBase(); // the browser names the PDF after the title
@@ -726,7 +744,7 @@
     print();
   });
   $("dl-docx").addEventListener("click", async () => {
-    if (!isPro()) return openPro("Editable Word documents come with Pro.");
+    if (!isPro()) return lockedPro();
     const D = window.KeelsonDocx;
     if (!D) return toast("Word export isn't available in this build.");
     const b = $("dl-docx"), label = b.innerHTML;
@@ -864,8 +882,8 @@
       const pp = await parsePlan(f), { text, sheet } = planText(pp), asOf = guessAsOf(f);
       S.cmp = { name: pp.file, text, sheet, asOf, version: cmpVersion(text, asOf, pp.file, sheet) };
       S.diff = { accepted: [], split: [], exclude: [], filter: "all" };
-      repaint(); toast(`Comparing with ${pp.file}`); $("cmp-date")?.focus();
-    } catch (e) { console.error("Keelson: compare file", e); toast(e && e.plain ? e.message : READ_FAIL); }
+      repaint(); toast(`Comparing with ${pp.file}`); $("cmp-date")?.focus(); return true;
+    } catch (e) { console.error("Keelson: compare file", e); toast(e && e.plain ? e.message : READ_FAIL); return false; }
   }
 
   // ---------- version history dialog ----------
