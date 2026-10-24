@@ -67,10 +67,10 @@
           <div class="nav-pop" id="prodmenu" hidden>
             <div class="mega">
               <div class="mega-col">
-                <a class="mega-item" href="app.html"><span class="mi-ic t-violet"><svg class="ic" aria-hidden="true"><use href="#i-report"/></svg></span><span><b>Reports app</b><span>Seven reports, from one-pager to finish forecast, as PDF or Word</span></span></a>
-                <a class="mega-item" href="./#changes"><span class="mi-ic t-teal"><svg class="ic" aria-hidden="true"><use href="#i-swap"/></svg></span><span><b>What changed <span class="chip chip-new">New</span></b><span>Last week's export vs this week's, on one page</span></span></a>
-                <a class="mega-item" href="./#trend"><span class="mi-ic t-rose"><svg class="ic" aria-hidden="true"><use href="#i-trend"/></svg></span><span><b>Slip trend <span class="chip chip-new">New</span></b><span>Every slipped milestone and re-baseline, on record</span></span></a>
-                <a class="mega-item" href="./#forecast"><span class="mi-ic t-blue"><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg></span><span><b>Finish forecast <span class="chip chip-new">New</span></b><span>P50 and P80 from your plan's own track record</span></span></a>
+                <a class="mega-item" href="app.html"><span class="mi-ic"><svg class="ic" aria-hidden="true"><use href="#i-report"/></svg></span><span><b>Reports app</b><span>Seven reports, from one-pager to finish forecast, as PDF or Word</span></span></a>
+                <a class="mega-item" href="./#changes"><span class="mi-ic"><svg class="ic" aria-hidden="true"><use href="#i-swap"/></svg></span><span><b>What changed <span class="chip chip-new">New</span></b><span>Last week's export vs this week's, on one page</span></span></a>
+                <a class="mega-item" href="./#trend"><span class="mi-ic"><svg class="ic" aria-hidden="true"><use href="#i-trend"/></svg></span><span><b>Slip trend <span class="chip chip-new">New</span></b><span>Every slipped milestone and re-baseline, on record</span></span></a>
+                <a class="mega-item" href="./#forecast"><span class="mi-ic"><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg></span><span><b>Finish forecast <span class="chip chip-new">New</span></b><span>P50 and P80 from your plan's own track record</span></span></a>
               </div>
               <div class="mega-side">
                 <h4>Free</h4>
@@ -78,7 +78,7 @@
                 <a href="templates.html" aria-current="page"><svg class="ic sm" aria-hidden="true"><use href="#i-box"/></svg>Template packs</a>
                 <a href="tools.html"><svg class="ic sm" aria-hidden="true"><use href="#i-tool"/></svg>Free tools</a>
                 <h4 style="margin-top:10px">Works with</h4>
-                <p>Excel, CSV and MS Project XML exports from MS Project, Jira, Smartsheet and client trackers.</p>
+                <p>Excel and CSV exports from MS Project, Jira, Smartsheet and client trackers.</p>
               </div>
             </div>
           </div>
@@ -130,7 +130,7 @@
     </div>
     <div class="tabpanel" role="tabpanel" id="fp1" aria-labelledby="ft1" tabindex="0">
       <div><h3>One plan you actually maintain.</h3><p class="lead">Dates, roll-ups and status all calculate from the tasks you type. This is the only place you update.</p></div>
-      <div class="tp-visual t-teal"><div class="doc"><div class="doc-h"><i style="background:#1e7a4f" aria-hidden="true">X</i>Your plan<span>Keelson-Project-Plan.xlsx</span></div>
+      <div class="tp-visual"><div class="doc"><div class="doc-h"><i aria-hidden="true">X</i>Your plan<span>Keelson-Project-Plan.xlsx</span></div>
         <div class="scroll"><table class="tb t-ours"><thead><tr><th scope="col">ID</th><th scope="col">WBS</th><th scope="col">Task</th><th scope="col">Start</th><th scope="col">Finish</th><th scope="col">%</th></tr></thead><tbody>
           <tr class="s"><td class="num">54</td><td>8</td><td>Testing</td><td>14-Dec-26</td><td>17-Mar-27</td><td class="num">20%</td></tr>
           <tr><td class="num">55</td><td>8.1</td><td class="in2">Test strategy &amp; UAT scripts</td><td>14-Dec-26</td><td>18-Dec-26</td><td class="num">100%</td></tr>
@@ -140,7 +140,7 @@
     </div>
     <div class="tabpanel" role="tabpanel" id="fp2" aria-labelledby="ft2" tabindex="0" hidden>
       <div><h3>Their columns, their order, their dates.</h3><p class="lead">Describe the client's template once. Every week, copy the Client Format tab into their file.<sup><a href="#n3" aria-label="Note 3">3</a></sup></p></div>
-      <div class="tp-visual t-violet"><div class="doc"><div class="doc-h"><i style="background:#0f7a72" aria-hidden="true">C</i>Client's template<span>Brightwater PMO standard (fictional)</span></div>
+      <div class="tp-visual"><div class="doc"><div class="doc-h"><i aria-hidden="true">C</i>Client's template<span>Brightwater PMO standard (fictional)</span></div>
         <div class="scroll"><table class="tb t-client"><thead><tr><th scope="col">Ref</th><th scope="col">Activity</th><th scope="col">Responsible</th><th scope="col">End Date</th><th scope="col">RAG Status</th></tr></thead><tbody>
           <tr class="s"><td>8</td><td>Testing</td><td></td><td>17/03/2027</td><td>In Progress</td></tr>
           <tr><td>8.1</td><td class="in2">Test strategy &amp; UAT scripts</td><td>Morgan Brooks</td><td>18/12/2026</td><td>Complete</td></tr>
@@ -150,7 +150,7 @@
     </div>
     <div class="tabpanel" role="tabpanel" id="fp3" aria-labelledby="ft3" tabindex="0" hidden>
       <div><h3>Ready for Project, links intact.</h3><p class="lead">Hierarchy, durations, baselines and dependencies, renumbered for Project's own task IDs.<sup><a href="#n2" aria-label="Note 2">2</a></sup></p></div>
-      <div class="tp-visual t-blue"><div class="doc"><div class="doc-h"><i style="background:#2b579a" aria-hidden="true">P</i>MS Project<span>Keelson-Project-Plan-MSProject.xml</span></div>
+      <div class="tp-visual"><div class="doc"><div class="doc-h"><i aria-hidden="true">P</i>MS Project<span>Keelson-Project-Plan-MSProject.xml</span></div>
         <div class="scroll"><table class="tb t-msp"><thead><tr><th scope="col">ID</th><th scope="col">Task Name</th><th scope="col">Duration</th><th scope="col">Predecessors</th></tr></thead><tbody>
           <tr class="s"><td class="num">54</td><td>Testing</td><td>62 days</td><td></td></tr>
           <tr><td class="num">55</td><td class="in2">Test strategy &amp; UAT scripts</td><td>5 days</td><td>21</td></tr>
@@ -160,7 +160,7 @@
     </div>
     <div class="tabpanel" role="tabpanel" id="fp4" aria-labelledby="ft4" tabindex="0" hidden>
       <div><h3>Upload it. It still calculates.</h3><p class="lead">No macros means nothing to convert. The plan keeps scheduling in the browser.<sup><a href="#n1" aria-label="Note 1">1</a></sup></p></div>
-      <div class="tp-visual t-amber"><div class="doc"><div class="doc-h"><i style="background:#13804b" aria-hidden="true">S</i>Google Sheets<span>Uploaded .xlsx, formulas live</span></div>
+      <div class="tp-visual"><div class="doc"><div class="doc-h"><i aria-hidden="true">S</i>Google Sheets<span>Uploaded .xlsx, formulas live</span></div>
         <div class="scroll"><table class="tb t-gs"><thead><tr><th scope="col"><span class="sr">Row</span></th><th scope="col">A</th><th scope="col">B</th><th scope="col">C</th><th scope="col">D</th><th scope="col">E</th></tr></thead><tbody>
           <tr class="s"><td class="rn">58</td><td class="num">54</td><td>8</td><td>Testing</td><td>14-Dec-26</td><td>17-Mar-27</td></tr>
           <tr><td class="rn">59</td><td class="num">55</td><td>8.1</td><td class="in2">Test strategy &amp; UAT scripts</td><td>14-Dec-26</td><td>18-Dec-26</td></tr>
@@ -169,7 +169,7 @@
     </div>
     <div class="tabpanel" role="tabpanel" id="fp5" aria-labelledby="ft5" tabindex="0" hidden>
       <div><h3>Print it, or pipe it anywhere.</h3><p class="lead">Print-ready layouts for the steering committee, and CSV for Jira, Power BI or your own database.</p></div>
-      <div class="tp-visual t-rose" aria-hidden="true"><div class="paper printpage"><div class="ph">Project Dashboard</div>
+      <div class="tp-visual" aria-hidden="true"><div class="paper printpage"><div class="ph">Project Dashboard</div>
         <div class="ts"><div class="a">Amber</div><div>14 Apr</div><div>+2 days</div><div>73%</div><div>7 of 11</div><div>2</div></div>
         <div class="ln t" style="width:90%"></div><div class="ln" style="width:70%"></div><div class="ln t" style="width:80%"></div><div class="ln" style="width:60%"></div><div class="ln t" style="width:85%"></div></div></div>
     </div>
@@ -268,12 +268,45 @@
   </div>
 </section>
 
-<!-- ============ FAQ ============ -->
-<section class="section soft" id="faq" aria-labelledby="h-faq">
+<!-- ============ COMPARISON (moved from the homepage) ============ -->
+<section class="section soft" id="compare" aria-labelledby="h-compare">
   <div class="wrap">
-    <div class="head"><h2 id="h-faq">Template pack questions.</h2></div>
+    <div class="head">
+      <span class="eyebrow">Where Keelson fits</span>
+      <h2 id="h-compare">Built for the person who reports on plans other people keep.</h2>
+      <p class="lead">Keelson doesn't replace your planning tool. It sits on top of the exports, for the weekly question every sponsor asks.</p>
+    </div>
+    <div class="tbl-wrap">
+      <table class="cmp vs">
+        <caption class="sr">Keelson compared with spreadsheets, PM suites' built-in reports and specialist schedule tools</caption>
+        <thead><tr><th scope="col">&nbsp;</th><th scope="col" class="hl">Keelson</th><th scope="col">Spreadsheets<small>by hand</small></th><th scope="col">PM suites<small>built-in reports</small></th><th scope="col">Specialist schedule tools<small>analysis software</small></th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Reads MS Project, Jira, Smartsheet and Excel exports</th><td class="hl"><svg class="ic" role="img" aria-label="Included"><use href="#i-check"/></svg>Yes, side by side</td><td>You copy and paste</td><td>Their own data</td><td>Mainly schedule files</td></tr>
+          <tr><th scope="row">“What changed since last week”</th><td class="hl"><svg class="ic" role="img" aria-label="Included"><use href="#i-check"/></svg>One page, in seconds</td><td>Manual compare</td><td>Activity history, varies</td><td>Often, for schedule files</td></tr>
+          <tr><th scope="row">Slip trend and re-baseline log</th><td class="hl"><svg class="ic" role="img" aria-label="Included"><use href="#i-check"/></svg>From your saved weekly exports</td><td>Only if you keep every copy</td><td>Varies by product</td><td>Often</td></tr>
+          <tr><th scope="row">Finish date with odds</th><td class="hl"><svg class="ic" role="img" aria-label="Included"><use href="#i-check"/></svg>P50 / P80 from the plan's own history</td><td class="no">No</td><td class="no">Rarely</td><td>Usually from three-point estimates you enter</td></tr>
+          <tr><th scope="row">Client-ready PDF and editable Word</th><td class="hl"><svg class="ic" role="img" aria-label="Included"><use href="#i-check"/></svg>Seven reports, your brand</td><td>You build it</td><td>Dashboards; exports vary</td><td>Analyst-style reports</td></tr>
+          <tr><th scope="row">Where your plan goes</th><td class="hl"><svg class="ic" role="img" aria-label="Included"><use href="#i-check"/></svg>Stays in your browser</td><td>Stays on your machine</td><td>The vendor's cloud, usually</td><td>Varies</td></tr>
+          <tr><th scope="row">Set-up</th><td class="hl"><svg class="ic" role="img" aria-label="Included"><use href="#i-check"/></svg>None: open a web page</td><td>Build and maintain a template</td><td>The whole team works in the suite</td><td>Install and training</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="fine center" style="margin-top:var(--sp-4)">General categories, not specific products. Capabilities vary by product and edition; check with the vendor.</p>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="section" id="faq" aria-labelledby="h-faq">
+  <div class="wrap">
+    <div class="head"><h2 id="h-faq">More questions.</h2></div>
     <div class="faq">
-            <details><summary>Can I use it on client projects?<svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Yes, on any number of your own and your clients' projects. Share the filled-in files with anyone; don't resell or give away the templates themselves.</p></details>
+      <p class="faq-grp">Reports app</p>
+      <details><summary>How many reports do I need for the slip trend?<svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Three for the milestone trend, two for the re-baseline log. If you have older exports, drop them in: each is placed by its status date, not the order you add them.</p></details>
+      <details><summary>Can I change the wording before I send it?<svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Yes. Click any commentary to rewrite it, or download Word and edit there. The forecast's numbers can be hidden but not edited.</p></details>
+      <details><summary>Is it PMBOK or PRINCE2 compliant?<svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>It uses their vocabulary and the artefacts both expect: baselines, tolerances, registers and change control. No standards body certifies templates, and Keelson doesn't claim to be certified or endorsed.</p></details>
+      <p class="faq-grp">Template packs</p>
+      <details><summary>Can it really match my client's Excel template?<svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>For templates with one row per task, yes: up to 20 columns in any order, fixed values, blank columns and five date styles. Merged cells or several rows per task still need a tidy-up after pasting.</p></details>
+      <details><summary>Can I use it on client projects?<svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Yes, on any number of your own and your clients' projects. Share the filled-in files with anyone; don't resell or give away the templates themselves.</p></details>
       <details><summary>Do I need to enable macros?<svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>No. Every workbook is a plain .xlsx with formulas only, so company security settings won't block it.</p></details>
       <details><summary>Will I get a native .mpp file?<svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>No. You get MS Project XML, which MS Project desktop opens directly, plus an import tab. Microsoft Planner can't import either.</p></details>
       <details><summary>When can I buy them?<svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Not yet: the packs are still being finished and none is on sale. Press <a href="mailto:support@keelson.co.in?subject=Notify%20me%3A%20Keelson%20template%20packs">Notify me</a> and we'll email you once when they open. Anyone who buys all five will get each later sector pack at no extra cost.</p></details>
@@ -297,7 +330,7 @@
       <div><a class="logo" href="./"><svg aria-hidden="true"><use href="#k-mark"/></svg>Keelson</a><p class="tag">What changed, whether it's getting worse, and when it will really finish. Your plan stays on your device.</p></div>
       <div><h4>Product</h4><ul><li><a href="app.html">Reports app</a></li><li><a href="./#changes">What changed</a></li><li><a href="./#trend">Slip trend</a></li><li><a href="./#forecast">Finish forecast</a></li><li><a href="./#pricing">Pricing</a></li></ul></div>
       <div><h4>Free</h4><ul><li><a href="./#try">Quick check</a></li><li><a href="./#pricing" data-store="dashboard">Excel dashboard</a></li><li><a href="tools.html#wd">Working days</a></li><li><a href="tools.html#gng">Go / No-Go</a></li></ul></div>
-      <div><h4>Learn</h4><ul><li><a href="templates.html" aria-current="page">Template packs</a></li><li><a href="#frameworks">Methods</a></li><li><a href="./#compare">Compare</a></li><li><a href="./#faq">FAQ</a></li></ul></div>
+      <div><h4>Learn</h4><ul><li><a href="templates.html" aria-current="page">Template packs</a></li><li><a href="#frameworks">Methods</a></li><li><a href="#compare">Compare</a></li><li><a href="./#faq">FAQ</a></li></ul></div>
       <div><h4>Company</h4><ul><li><a href="mailto:support@keelson.co.in">Contact</a></li><li><a href="legal.html#licence">Licence</a></li><li><a href="legal.html#refunds">Refunds</a></li><li><a href="legal.html#privacy">Privacy</a></li></ul></div>
     </div>
     <p class="foot-tm">Microsoft, Excel and Project are trademarks of Microsoft Corporation; Google Sheets is a trademark of Google LLC; Jira is a trademark of Atlassian; Smartsheet and Asana are trademarks of their owners. Keelson is independent and not affiliated with or endorsed by any of them.</p>
