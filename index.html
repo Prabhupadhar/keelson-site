@@ -23,7 +23,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"Keelson","url":"https://keelson.co.in/","logo":"https://keelson.co.in/favicon.svg","sameAs":["https://www.linkedin.com/company/https-keelson.co.in/"]}</script>
 </head>
-<body>
+<body class="home">
 <a class="skip" href="#main">Skip to content</a>
 
 <!-- Icon set: 24px grid, 1.75 stroke, round caps/joins. Drawn for Keelson (docs/DESIGN-SYSTEM.md §6). -->
@@ -69,9 +69,9 @@
             <div class="mega">
               <div class="mega-col">
                 <a class="mega-item" href="app.html"><span class="mi-ic"><svg class="ic" aria-hidden="true"><use href="#i-report"/></svg></span><span><b>Reports app</b><span>Seven reports, from one-pager to finish forecast, as PDF or Word</span></span></a>
-                <a class="mega-item" href="#changes"><span class="mi-ic"><svg class="ic" aria-hidden="true"><use href="#i-swap"/></svg></span><span><b>What changed <span class="chip chip-new">New</span></b><span>Last week's plan compared with this week's, on one page</span></span></a>
-                <a class="mega-item" href="#trend"><span class="mi-ic"><svg class="ic" aria-hidden="true"><use href="#i-trend"/></svg></span><span><b>Slip trend <span class="chip chip-new">New</span></b><span>How milestone dates moved, week by week</span></span></a>
-                <a class="mega-item" href="#forecast"><span class="mi-ic"><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg></span><span><b>Finish forecast <span class="chip chip-new">New</span></b><span>Likely finish dates, based on how the plan has gone so far</span></span></a>
+                <a class="mega-item" href="#changes"><span class="mi-ic"><svg class="ic" aria-hidden="true"><use href="#i-swap"/></svg></span><span><b>What changed</b><span>Last week's plan compared with this week's, on one page</span></span></a>
+                <a class="mega-item" href="#trend"><span class="mi-ic"><svg class="ic" aria-hidden="true"><use href="#i-trend"/></svg></span><span><b>Slip trend</b><span>How milestone dates moved, week by week</span></span></a>
+                <a class="mega-item" href="#forecast"><span class="mi-ic"><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg></span><span><b>Finish forecast</b><span>Likely finish dates, based on how the plan has gone so far</span></span></a>
               </div>
               <div class="mega-side">
                 <h4>Free</h4>
@@ -114,29 +114,19 @@
 <main id="main" tabindex="-1">
 <!-- ============ HERO ============ -->
 <section class="hero" aria-labelledby="h-hero">
-  <div class="wrap">
-    <a class="hero-pill rise" href="#changes"><span class="chip chip-new">New</span> <span>See what changed <span class="hide-sm">since last week, and the likely finish date</span></span> <svg class="ic sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
-    <h1 id="h-hero" class="rise d1">Turn your project plan into a <span class="grad-text nb">status report</span> in minutes.</h1>
-    <p class="lead rise d2">Upload your plan from MS Project, Jira, Smartsheet or Excel. Keelson shows what changed since last week, flags delays, and creates a report you can send to your client.</p>
-    <div class="hero-ctas rise d3">
-      <a class="btn btn-primary btn-lg" href="app.html#upload"><svg class="ic" aria-hidden="true"><use href="#i-upload"/></svg>Upload your plan</a>
-      <a class="btn btn-secondary btn-lg" href="samples/keelson-sample-onepager.pdf" target="_blank" rel="noopener" type="application/pdf">See a sample report</a>
-    </div>
-    <p class="hero-trust rise d3">Free · No sign-up · Your file stays on your computer</p>
-    <div class="loop rise d3">
-      <p class="loop-h">Every week:</p>
-      <ol>
-        <li><span class="n" aria-hidden="true">1</span>Upload the new plan</li>
-        <li><span class="n" aria-hidden="true">2</span>See what changed</li>
-        <li><span class="n" aria-hidden="true">3</span>Send the report</li>
-      </ol>
+  <div class="wrap hero-copy">
+    <h1 id="h-hero" class="rise">Turn your project plan into a status report in minutes</h1>
+    <p class="lead rise d1">Upload your plan from MS Project, Jira, Smartsheet or Excel. Keelson shows what changed since last week, flags delays, and creates a report you can send to your client.</p>
+    <div class="hero-act rise d2">
+      <div class="hero-ctas">
+        <a class="btn btn-primary btn-lg" href="app.html#upload"><svg class="ic" aria-hidden="true"><use href="#i-upload"/></svg>Upload your plan</a>
+        <a class="btn btn-secondary btn-lg" href="samples/keelson-sample-onepager.pdf" target="_blank" rel="noopener" type="application/pdf">See a sample report</a>
+      </div>
+      <p class="hero-trust">Free · No sign-up · Your file stays on your computer</p>
     </div>
   </div>
-
+  <div class="wrap">
   <div class="stage rise d3" role="img" aria-label="Keelson app preview with the fictional FieldFlow sample: what changed since 16 February, plan finish 3 June, 13 working days behind baseline, P80 finish 23 July, and a one-page changes report ready as PDF or Word.">
-    <div class="stage-bg"></div>
-    <div class="float f1" aria-hidden="true"><span class="mi-ic"><svg class="ic sm"><use href="#i-swap"/></svg></span><div><b>plan-23Feb.xlsx vs plan-16Feb.xlsx</b><span>Compared in this tab. 0 bytes uploaded.</span></div></div>
-    <div class="float f2" aria-hidden="true"><span class="mi-ic"><svg class="ic sm"><use href="#i-target"/></svg></span><div><b>P80 finish: 23 Jul</b><span>8 in 10 replays finish by then</span></div></div>
     <div class="mock" aria-hidden="true">
       <div class="mock-top">
         <span class="logo"><svg><use href="#k-mark"/></svg>Keelson</span>
@@ -151,9 +141,9 @@
           <span class="si"><svg class="ic"><use href="#i-gantt"/></svg>Roadmap</span>
           <span class="si"><svg class="ic"><use href="#i-columns"/></svg>Variance</span>
           <h5 style="margin-top:14px">Over time</h5>
-          <span class="si on"><svg class="ic"><use href="#i-swap"/></svg>What changed<i>New</i></span>
-          <span class="si"><svg class="ic"><use href="#i-trend"/></svg>Slip trend<i>New</i></span>
-          <span class="si"><svg class="ic"><use href="#i-target"/></svg>Forecast<i>New</i></span>
+          <span class="si on"><svg class="ic"><use href="#i-swap"/></svg>What changed</span>
+          <span class="si"><svg class="ic"><use href="#i-trend"/></svg>Slip trend</span>
+          <span class="si"><svg class="ic"><use href="#i-target"/></svg>Forecast</span>
           <div class="file"><b>plan-23Feb.xlsx</b>34 tasks · 7 milestones · 6 weekly versions on this device</div>
         </div>
         <div class="main">
@@ -189,56 +179,41 @@
       </div>
     </div>
   </div>
-</section>
-
-<!-- ============ WORKS WITH + TRUST ============ -->
-<!-- Plain text names only: no third-party logos or certification marks (trademark and endorsement rules). -->
-<section class="works" aria-labelledby="h-works">
-  <div class="wrap">
-    <p class="lbl" id="h-works">Works with exports from</p>
-    <ul class="marks">
-      <li>Microsoft Project</li>
-      <li>Jira</li>
-      <li>Smartsheet</li>
-      <li>Excel</li>
-      <li>Google Sheets</li>
-      <li>CSV</li>
-    </ul>
-    <p class="fine">Reads .xlsx, .csv and .tsv files or a pasted table. From MS Project, save as .xlsx or CSV first. Product names are trademarks of their owners. Keelson is not affiliated with or endorsed by them.</p>
-    <ul class="trust">
-      <li><svg class="ic sm" aria-hidden="true"><use href="#i-lock"/></svg>Your plan never leaves your browser</li>
-      <li><svg class="ic sm" aria-hidden="true"><use href="#i-users"/></svg>No account needed</li>
-      <li><svg class="ic sm" aria-hidden="true"><use href="#i-doc"/></svg><a href="#faq-forecast">Method published</a></li>
-    </ul>
-    <div class="proof">
-      <div><b>7</b><span>client-ready reports from one export</span></div>
-      <div><b>100+</b><span>column names recognised</span></div>
-      <div><b>5</b><span>real-world plan formats tested<sup><a href="#n2" aria-label="Note 2">2</a></sup></span></div>
-      <div><b>0</b><span>bytes of your plan uploaded</span></div>
-    </div>
   </div>
+  <!-- ============ WORKS WITH ============ -->
+<!-- Plain text names only: no third-party logos or certification marks (trademark and endorsement rules). -->
+<div class="wrap works">
+  <p class="lbl" id="h-works">Works with exports from</p>
+  <ul class="marks">
+    <li>Microsoft Project</li>
+    <li>Jira</li>
+    <li>Smartsheet</li>
+    <li>Excel</li>
+    <li>Google Sheets</li>
+    <li>CSV</li>
+  </ul>
+  <p class="fine">Reads .xlsx, .csv and .tsv files or a pasted table. From MS Project, save as .xlsx or CSV first. Tested on five real-world plan shapes.<sup><a href="#n2" aria-label="Note 2">2</a></sup> Product names are trademarks of their owners. Keelson is not affiliated with or endorsed by them.</p>
+</div>
 </section>
 
 <!-- ============ THREE QUESTIONS: what changed, slip trend, finish forecast ============ -->
-<!-- The three panels switch with :target (CSS only), so #changes, #trend and #forecast links from any page land on their panel. -->
-<section class="section soft qsec" id="why" aria-labelledby="h-why">
+<!-- WAI-ARIA tabs (index.js). #changes, #trend and #forecast links from any page select their tab. -->
+<section class="section soft" id="why" aria-labelledby="h-why">
   <div class="wrap">
-    <div class="head">
-      <span class="eyebrow">For project managers who report to a sponsor or client</span>
-      <h2 id="h-why">Every sponsor asks the same three questions.</h2>
-      <p class="lead">Your plan has the answers. They are spread across last week's file, this week's file and the baseline. Keelson puts them on one page.</p>
+    <div class="intro">
+      <h2 id="h-why">Every sponsor asks the same three questions</h2>
+      <p>Your plan has the answers. They are spread across last week's file, this week's file and the baseline. Keelson puts them on one page.</p>
     </div>
-    <nav class="qnav" aria-label="The three questions">
-      <a href="#changes"><span class="qn">1</span>What changed since last week?</a>
-      <a href="#trend"><span class="qn">2</span>Is it getting worse?</a>
-      <a href="#forecast"><span class="qn">3</span>When will it finish?</a>
-    </nav>
-    <div class="qpanels">
+    <div class="qtabs" role="tablist" aria-label="The three questions">
+      <button class="qtab" type="button" role="tab" id="t1" aria-controls="p1" aria-selected="true"><span class="hide-sm">What changed since last week?</span><span class="show-sm">What changed</span></button>
+      <button class="qtab" type="button" role="tab" id="t2" aria-controls="p2" aria-selected="false" tabindex="-1"><span class="hide-sm">Is it getting worse?</span><span class="show-sm">Getting worse?</span></button>
+      <button class="qtab" type="button" role="tab" id="t3" aria-controls="p3" aria-selected="false" tabindex="-1"><span class="hide-sm">When will it finish?</span><span class="show-sm">Finish date</span></button>
+    </div>
+    <div class="qpanel" role="tabpanel" id="p1" aria-labelledby="t1">
     <article class="qp split" id="changes" aria-labelledby="h-changes">
     <div class="copy">
-      <span class="eyebrow"><span class="chip chip-new">New</span>What changed</span>
-      <h3 id="h-changes">Upload two weekly plans. See what changed.</h3>
-      <p class="lead">Add both files, or compare with the version Keelson saved last week. You get one short summary for your sponsor, and the table behind it.</p>
+      <h3 id="h-changes">Upload two weekly plans and see what changed</h3>
+      <p>Add both files, or compare with the version Keelson saved last week. You get one short summary for your sponsor, and the table behind it.</p>
       <ul class="ticks">
         <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Tasks added, removed, moved later or earlier, new owner, progress gone down, renamed</span></li>
         <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Baseline changes are always shown in red</span></li>
@@ -262,16 +237,16 @@
             <tr><td><span class="chip chip-mute">Removed</span></td><td>Archive legacy reports</td><td class="hide-sm">Data migration</td><td class="r">removed</td></tr>
           </tbody>
         </table>
-        <p class="fine" style="margin-top:var(--sp-3)">wd = working days (Monday to Friday)</p>
         <p class="excl" aria-hidden="true"><span class="box on"><svg class="ic"><use href="#i-check"/></svg></span>Show in the client version · 27 of 28 changes</p>
       </div>
     </div>
     </article>
-    <article class="qp split flip" id="trend" aria-labelledby="h-trend">
+    </div>
+    <div class="qpanel" role="tabpanel" id="p2" aria-labelledby="t2" hidden>
+    <article class="qp split" id="trend" aria-labelledby="h-trend">
     <div class="copy">
-      <span class="eyebrow"><span class="chip chip-new">New</span>Slip trend: how dates moved over time</span>
-      <h3 id="h-trend">See how milestone dates moved, week by week.</h3>
-      <p class="lead">Keelson saves each weekly plan on your computer. It shows the forecast date of each key milestone, week by week. It also records every time the baseline was changed, with the date.</p>
+      <h3 id="h-trend">See how milestone dates moved, week by week</h3>
+      <p>Keelson saves each weekly plan on your computer and charts the forecast date of each key milestone over time. It also records every time the baseline was changed, with the date.</p>
       <ul class="ticks">
         <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Trend for up to 8 milestones, and the phases that keep moving later</span></li>
         <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>In plain words: how many working days the finish moves later each week, and where it lands if that continues</span></li>
@@ -323,11 +298,12 @@
       </div>
     </div>
     </article>
+    </div>
+    <div class="qpanel" role="tabpanel" id="p3" aria-labelledby="t3" hidden>
     <article class="qp split" id="forecast" aria-labelledby="h-forecast">
     <div class="copy">
-      <span class="eyebrow"><span class="chip chip-new">New</span>Finish forecast</span>
-      <h3 id="h-forecast">A likely finish date, with honest odds.</h3>
-      <p class="lead">Keelson checks how long your finished tasks took compared with their baseline. Then it asks: what if the rest of the plan goes the same way? You get two dates (P50 and P80) and one clear sentence for your sponsor.</p>
+      <h3 id="h-forecast">A likely finish date, with honest odds</h3>
+      <p>Keelson checks how long your finished tasks took compared with their baseline, then asks what happens if the rest of the plan goes the same way. You get two dates (P50 and P80) and one clear sentence for your sponsor.</p>
       <ul class="ticks">
         <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Based on your plan's own history. No extra estimates, no add-ins</span></li>
         <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Gives no forecast when there is too little data, or when the baseline looks reset to actual dates</span></li>
@@ -360,113 +336,12 @@
   </div>
 </section>
 
-<!-- ============ PRODUCT TOUR (tabs) ============ -->
-<section class="section" id="tour" aria-labelledby="h-tour">
-  <div class="wrap">
-    <div class="head">
-      <span class="eyebrow"><svg class="ic sm" aria-hidden="true"><use href="#i-report"/></svg>One export in, every report out</span>
-      <h2 id="h-tour">From your plan file to a steering committee report.</h2>
-      <p class="lead">Keelson reads the plan you already have. It checks it, compares it with last week and writes the reports your sponsor expects.</p>
-    </div>
-    <div class="tablist" role="tablist" aria-label="Product tour">
-      <button class="tab" type="button" role="tab" id="t1" aria-controls="p1" aria-selected="true"><svg class="ic sm" aria-hidden="true"><use href="#i-columns"/></svg>Map columns</button>
-      <button class="tab" type="button" role="tab" id="t2" aria-controls="p2" aria-selected="false" tabindex="-1"><svg class="ic sm" aria-hidden="true"><use href="#i-gauge"/></svg>Check status</button>
-      <button class="tab" type="button" role="tab" id="t3" aria-controls="p3" aria-selected="false" tabindex="-1"><svg class="ic sm" aria-hidden="true"><use href="#i-swap"/></svg>Compare weeks</button>
-      <button class="tab" type="button" role="tab" id="t4" aria-controls="p4" aria-selected="false" tabindex="-1"><svg class="ic sm" aria-hidden="true"><use href="#i-report"/></svg>Weekly report</button>
-      <button class="tab" type="button" role="tab" id="t5" aria-controls="p5" aria-selected="false" tabindex="-1"><svg class="ic sm" aria-hidden="true"><use href="#i-gantt"/></svg>Roadmap</button>
-    </div>
-    <div class="tabpanel" role="tabpanel" id="p1" aria-labelledby="t1" tabindex="0">
-      <div>
-        <h3>It finds your columns, so you don't retype them.</h3>
-        <p class="lead">Finish, End Date, Due Date, Resource Names, Assignee, Epic Link: it knows over 100 column names from common PM tools. If it misses one, you choose it once.</p>
-        <ul class="ticks">
-          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Reads <code>Mon 3/17/27</code>, <code>17/03/2027</code>, <code>17-Mar-27</code> and real Excel dates</span></li>
-          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Works out day-first or month-first from your own data</span></li>
-          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Shows missing dates before you send the report</span></li>
-        </ul>
-      </div>
-      <div class="tp-visual" aria-hidden="true">
-        <div class="map">
-          <div class="map-row"><span>Task Name</span><svg class="ic"><use href="#i-arrow"/></svg><span>Task</span></div>
-          <div class="map-row"><span>Finish · dd/mm/yyyy</span><svg class="ic"><use href="#i-arrow"/></svg><span>Finish</span></div>
-          <div class="map-row"><span>Resource Names</span><svg class="ic"><use href="#i-arrow"/></svg><span>Owner</span></div>
-          <div class="map-row"><span>% Complete</span><svg class="ic"><use href="#i-arrow"/></svg><span>Progress</span></div>
-          <div class="map-row"><span>Baseline Finish</span><svg class="ic"><use href="#i-arrow"/></svg><span>Baseline</span></div>
-          <div class="map-row"><span>Unique ID</span><svg class="ic"><use href="#i-arrow"/></svg><span>Task ID</span></div>
-        </div>
-      </div>
-    </div>
-    <div class="tabpanel" role="tabpanel" id="p2" aria-labelledby="t2" tabindex="0" hidden>
-      <div>
-        <h3>A status colour you can defend.</h3>
-        <p class="lead">Four rules decide the colour: finish delay, late milestones, late tasks and progress against plan. You set the limits once. You can change the colour, and your reason is printed next to it.</p>
-        <ul class="ticks">
-          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Every Green, Amber or Red comes with the rule that set it</span></li>
-          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Readers see both the calculated colour and yours</span></li>
-        </ul>
-      </div>
-      <div class="tp-visual" aria-hidden="true"><div class="rules">
-        <div><span><span class="mk n"><svg class="ic"><use href="#i-alert"/></svg></span>Finish within 5 working days of baseline</span><b>+13 days</b></div>
-        <div><span><span class="mk y"><svg class="ic"><use href="#i-check"/></svg></span>Fewer than 2 overdue milestones</span><b>0</b></div>
-        <div><span><span class="mk y"><svg class="ic"><use href="#i-check"/></svg></span>Fewer than 3 overdue tasks</span><b>0</b></div>
-        <div><span><span class="mk y"><svg class="ic"><use href="#i-check"/></svg></span>Progress within 10 points of plan</span><b>48% vs 48%</b></div>
-        <div><span>Result</span><span class="chip chip-warn"><span class="dot"></span>Amber</span></div>
-      </div></div>
-    </div>
-    <div class="tabpanel" role="tabpanel" id="p3" aria-labelledby="t3" tabindex="0" hidden>
-      <div>
-        <h3>This week against last week, task by task.</h3>
-        <p class="lead">Tasks are matched by Unique ID or Issue key. So new row numbers or a new sort order do not show as false changes. Possible renames wait for you to confirm.</p>
-        <ul class="ticks">
-          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Moves under one working day go to an appendix</span></li>
-          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Untick anything you do not want the client to see</span></li>
-        </ul>
-      </div>
-      <div class="tp-visual" aria-hidden="true"><div class="map">
-        <div class="cstrip"><span class="on"><b>28</b> All</span><span><b>1</b> Added</span><span><b>1</b> Removed</span><span><b>18</b> Later</span><span><b>6</b> Earlier</span><span><b>1</b> Owner</span></div>
-        <div class="chg">
-          <div><span class="chip chip-bad">Later</span><span>UAT sign-off</span><b class="bad">+2 wd</b></div>
-          <div><span class="chip chip-bad">Later</span><span>User acceptance testing</span><b class="bad">+2 wd</b></div>
-          <div><span class="chip chip-warn">Owner</span><span>Telematics feed</span><b>→ Grace Okafor</b></div>
-          <div><span class="chip chip-brand">Rename?</span><span>Configure field service mobile app → … offline</span><b>Confirm</b></div>
-        </div>
-      </div></div>
-    </div>
-    <div class="tabpanel" role="tabpanel" id="p4" aria-labelledby="t4" tabindex="0" hidden>
-      <div>
-        <h3>The weekly status, written for you.</h3>
-        <p class="lead">Summary, milestones, late work and what changed since last week. Click any sentence to change it. Then download a PDF or a Word file you can edit.</p>
-      </div>
-      <div class="tp-visual" aria-hidden="true"><div class="mini-kpis">
-        <div class="kpi"><small>Status</small><span class="chip chip-warn"><span class="dot"></span>Amber</span></div>
-        <div class="kpi"><small>Complete</small><b>48%</b><em>expected 48% by now</em></div>
-        <div class="kpi"><small>Milestones met</small><b>3 of 7</b><em>next: SIT exit</em></div>
-        <div class="kpi"><small>Plan finish</small><b>3 Jun</b><em>baseline 17 May</em></div>
-      </div></div>
-    </div>
-    <div class="tabpanel" role="tabpanel" id="p5" aria-labelledby="t5" tabindex="0" hidden>
-      <div>
-        <h3>A roadmap the client can read in ten seconds.</h3>
-        <p class="lead">Phases, milestones and today's date on one page, in your brand colour.</p>
-      </div>
-      <div class="tp-visual" aria-hidden="true"><div class="map gantt">
-        <div class="g-row"><span>Discovery</span><div><i class="c1" style="left:0;width:20%;--p:100%"></i></div></div>
-        <div class="g-row"><span>Build &amp; configure</span><div><i class="c2" style="left:18%;width:40%;--p:100%"></i></div></div>
-        <div class="g-row"><span>Data migration</span><div><i class="c2" style="left:56%;width:22%;--p:15%"></i></div></div>
-        <div class="g-row"><span>Testing</span><div><i class="c3" style="left:70%;width:18%;--p:0%"></i></div></div>
-        <div class="g-row"><span>Cutover &amp; go-live</span><div><i class="c4" style="left:86%;width:6%"></i><span class="ms" style="left:91%"></span></div></div>
-      </div></div>
-    </div>
-  </div>
-</section>
-
 <!-- ============ REPORT GALLERY ============ -->
 <section class="section" id="reports" aria-labelledby="h-reports">
   <div class="wrap">
-    <div class="head">
-      <span class="eyebrow"><svg class="ic sm" aria-hidden="true"><use href="#i-doc"/></svg>Seven client-ready reports</span>
-      <h2 id="h-reports">Every report you send each week.</h2>
-      <p class="lead">Seven reports from one plan file, with your logo and colour, as PDF, Word or PowerPoint. Four use this week's plan. Three use the weeks you saved before. Reports always print on a white page.</p>
+    <div class="intro">
+      <h2 id="h-reports">The reports you send each week</h2>
+      <p>Seven client-ready reports from one plan file, as PDF, Word or PowerPoint, with your logo and colour. These four use this week's plan; <a href="#changes">What changed</a>, <a href="#trend">Slip trend</a> and <a href="#forecast">Finish forecast</a> use the weeks you saved before. All of them print on a white page.</p>
     </div>
     <div class="gal">
       <article class="gi">
@@ -505,7 +380,6 @@
         <h3>Variance</h3><p>Each phase and task compared with its baseline, in working days, biggest delay first.</p>
       </article>
     </div>
-    <p class="center" style="margin-top:var(--sp-6)"><span class="chip chip-new">New</span> <span style="color:var(--ink-2)">Plus <a href="#changes"><b>What changed</b></a>, <a href="#trend"><b>Slip trend</b></a> and <a href="#forecast"><b>Finish forecast</b></a>: seven reports in all.</span></p>
     <p class="samples"><span>See a real report <span class="fine">(PDF, fictional sample)</span></span> <a href="samples/keelson-sample-onepager.pdf" target="_blank" rel="noopener" type="application/pdf">One-pager</a><a href="samples/keelson-sample-what-changed.pdf" target="_blank" rel="noopener" type="application/pdf">What changed</a><a href="samples/keelson-sample-finish-forecast.pdf" target="_blank" rel="noopener" type="application/pdf">Finish forecast</a></p>
   </div>
 </section>
@@ -513,10 +387,9 @@
 <!-- ============ LIVE DEMO: the real dashboard rules, run in this tab ============ -->
 <section class="section soft" id="try" aria-labelledby="h-try">
   <div class="wrap">
-    <div class="head">
-      <span class="eyebrow"><svg class="ic sm" aria-hidden="true"><use href="#i-lock"/></svg>Quick check · Free · Nothing uploaded</span>
-      <h2 id="h-try">Check any plan without leaving this page.</h2>
-      <p class="lead">Paste a plan from MS Project, Jira, Smartsheet or Excel, and see its status. It starts with a sample plan. Your plan stays in this browser tab. The free Excel dashboard uses the same rules.</p>
+    <div class="intro">
+      <h2 id="h-try">Check any plan without leaving this page</h2>
+      <p>Paste a plan from MS Project, Jira, Smartsheet or Excel and see its status. It starts with a sample plan and stays in this browser tab. Keelson knows over 100 column names from common PM tools and reads dates like <code>Mon 3/17/27</code>, <code>17/03/2027</code> or <code>17-Mar-27</code>. If it misses a column, you choose it once from a list.</p>
     </div>
     <div class="pg" id="pg">
       <div class="pg-top">
@@ -549,21 +422,15 @@
         </div>
       </div>
     </div>
-    <div class="pg-3">
-      <div><h3><span class="mi-ic"><svg class="ic sm" aria-hidden="true"><use href="#i-columns"/></svg></span>Finds your columns.</h3><p>It knows over 100 column names from common PM tools. If it misses one, you choose it once from a list.</p></div>
-      <div><h3><span class="mi-ic"><svg class="ic sm" aria-hidden="true"><use href="#i-calendar"/></svg></span>Reads messy dates.</h3><p><code>Mon 3/17/27</code>, <code>17/03/2027</code>, <code>17-Mar-27</code> or real Excel dates. It works out day-or-month-first from your own data.</p></div>
-      <div><h3><span class="mi-ic"><svg class="ic sm" aria-hidden="true"><use href="#i-gauge"/></svg></span>Shows its working.</h3><p>Green, Amber or Red from rules you can change, or your own call with a reason. A data check flags missing dates first.</p></div>
-    </div>
-    <p class="fine center" style="margin-top:var(--sp-5)">Sample company, people and project are fictional.<sup><a href="#n1" aria-label="Note 1">1</a></sup> The demo reads pasted text and CSV; the reports app also opens .xlsx and .tsv files.</p>
+    <p class="fine" style="margin-top:var(--sp-5)">Sample company, people and project are fictional.<sup><a href="#n1" aria-label="Note 1">1</a></sup> The demo reads pasted text and CSV; the reports app also opens .xlsx and .tsv files.</p>
   </div>
 </section>
 
 <!-- ============ PRICING ============ -->
-<section class="section soft" id="pricing" aria-labelledby="h-pricing">
+<section class="section" id="pricing" aria-labelledby="h-pricing">
   <div class="wrap">
     <div class="head">
-      <span class="eyebrow">Pricing</span>
-      <h2 id="h-pricing">Free to try. Pro when it goes to the client.</h2>
+      <h2 id="h-pricing">Free to try, Pro when it goes to the client</h2>
       <div class="billing" role="group" aria-label="Billing period">
         <button type="button" aria-pressed="false" data-bill="m">Monthly</button>
         <button type="button" aria-pressed="true" data-bill="y">Yearly <span class="save">Pro saves 33%</span></button>
@@ -577,7 +444,7 @@
         <ul>
           <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Quick check of any plan</span></li>
           <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Preview all 7 reports · one-pager as PDF</span></li>
-          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Free Excel dashboard download</span></li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span><a href="#pricing" data-store="dashboard">Free Excel dashboard</a> download</span></li>
           <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Free PM tools</span></li>
         </ul>
       </article>
@@ -591,46 +458,42 @@
           <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Every week: upload the new plan, see what changed, send the report</span></li>
           <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>All seven reports, PDF, Word and PowerPoint</span></li>
           <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Your logo and brand colour; no watermark, no Keelson footer</span></li>
-          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>What changed, slip trend and finish forecast <span class="chip chip-new" style="padding:1px 7px;font-size:11px">New</span></span></li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>What changed, slip trend and finish forecast</span></li>
         </ul>
-        <p class="samples"><span>See sample PDFs:</span> <a href="samples/keelson-sample-onepager.pdf" target="_blank" rel="noopener" type="application/pdf">One-pager</a><a href="samples/keelson-sample-what-changed.pdf" target="_blank" rel="noopener" type="application/pdf">What changed</a><a href="samples/keelson-sample-finish-forecast.pdf" target="_blank" rel="noopener" type="application/pdf">Finish forecast</a></p>
       </article>
     </div>
-    <p class="plans-after">Running a PMO or practice? Team plan coming <span class="nb">— <a href="mailto:support@keelson.co.in?subject=Keelson%20Team%20waitlist">join the waitlist</a></span></p>
-    <p class="plans-after"><a href="templates.html">Excel template packs →</a></p>
-    <ul class="guar">
-      <li><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg>Your plan never uploaded</li>
-      <li><svg class="ic" aria-hidden="true"><use href="#i-download"/></svg><a href="#pricing" data-store="dashboard">Free Excel dashboard: download</a></li>
-    </ul>
+    <div class="after-row"><p class="plans-after">Running a PMO or practice? Team plan coming <span class="nb">— <a href="mailto:support@keelson.co.in?subject=Keelson%20Team%20waitlist">join the waitlist</a></span></p>
+    <p class="plans-after"><a href="templates.html">Excel template packs →</a></p></div>
     <p class="fine center" style="margin-top:var(--sp-4)" data-when="presale" data-for="proMonthly proYearly">Prices in USD. Pro isn't on sale yet; the waitlist button opens an email to us. When checkout opens, Lemon Squeezy, our merchant of record, will handle payment, tax, VAT and invoices.</p>
     <p class="fine center" style="margin-top:var(--sp-4)" data-when="sale" data-for="proMonthly proYearly" hidden>Prices in USD. Checkout is on Lemon Squeezy, our merchant of record, which handles payment, tax, VAT, receipts and invoices. Your Pro licence key arrives in the receipt email.</p>
   </div>
 </section>
 
 <!-- ============ FAQ ============ -->
-<section class="section" id="faq" aria-labelledby="h-faq">
-  <div class="wrap">
-    <div class="head"><h2 id="h-faq">Questions, answered.</h2></div>
+<section class="section soft" id="faq" aria-labelledby="h-faq">
+  <div class="wrap faq-wrap">
+    <div class="faq-side">
+      <h2 id="h-faq">Common questions</h2>
+      <p><a href="templates.html#faq">More on slip trend, client templates, wording, PMBOK and PRINCE2</a></p>
+    </div>
     <div class="faq">
-      <p class="faq-grp">Privacy</p>
       <details><summary>When I try it on this site, is my plan uploaded?<svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>No. The page reads your plan inside your browser tab. There is no server to send it to. Load the page, turn off Wi-Fi, and it still works. The quick check saves nothing: close the tab and it is gone.</p></details>
       <details><summary>Where is my version history kept?<svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>In your browser's own storage on this device. A version is saved when you download a Word or PowerPoint report or press Save version: one per report date, up to 52 per project. You can export it as a .keelson.json file and import it on another machine; anyone you give that file to can read the plan in it. Nothing is sent to us. Clearing this site's data in your browser removes it.</p></details>
       <details><summary>Does anything go online at all?<svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Only a Pro licence key, checked with our reseller when you enter it and about once a week after. No plan data is included. This website itself makes no network requests after it loads: no cookies, no analytics, no third-party scripts or fonts. Loading the pages does reach our host, GitHub Pages, which sees your IP address and browser type like any web host (<a href="legal.html#hosting">details</a>).</p></details>
-      <p class="faq-grp">The new features</p>
       <details><summary>How does “What changed” match tasks between two exports?<svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>By ID first (Unique ID from MS Project, Issue key from Jira, or an ID column), then by phase and name. Close name matches within a phase are shown as “probable rename” for you to confirm or split. Column order and date format can differ between the two files.</p></details>
       <details id="faq-forecast"><summary>Where do the P50 and P80 dates come from?<svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>From your own completed tasks: how long each took against its baselined duration. Keelson replays the remaining work thousands of times, each time drawing task durations from that track record, and parallel work waits for its slowest path. The P50 is the 50/50 date; the P80 is the date 8 in 10 replays finish by. It needs Baseline Start and Baseline Finish columns and at least 10 completed tasks, and it refuses when the baseline looks reset to actuals. It ignores new scope and risks that aren't in the plan yet, and says so.</p><p>Checked on 1,000 simulated projects (P80 held in 81%, P50 in 53%); not yet validated on real project histories. Dependencies are inferred from dates; a Predecessors column, if present, is not used yet.</p></details>
-      <p class="faq-grp">Your plan</p>
       <details><summary>Will the dashboard read my plan?<svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>If it has one row per task with a name and a finish or due date, yes. It recognises the usual column names from MS Project, Smartsheet, Jira, Asana, Monday and most client trackers, and title rows above the headers are fine. Phases come from a Phase or Workstream column, or from your outline levels or WBS. Everything happens inside the Excel file: nothing is uploaded.</p></details>
     </div>
-    <p class="center" style="margin-top:var(--sp-5)"><a href="templates.html#faq">More questions: slip trend, client templates, wording, PMBOK and PRINCE2</a></p>
   </div>
 </section>
 
-<!-- ============ CTA BAND ============ -->
+<!-- ============ CLOSING CTA ============ -->
 <section class="wrap" aria-labelledby="h-cta">
   <div class="cta">
-    <h2 id="h-cta">Your next sponsor report starts with one upload.</h2>
-    <p>Try it on your own plan. Nothing to install. Your file stays on your computer.</p>
+    <div>
+      <h2 id="h-cta">Try it on this week's plan</h2>
+      <p>Nothing to install. Your file stays on your computer.</p>
+    </div>
     <div class="row"><a class="btn btn-primary btn-lg" href="app.html#upload">Upload your plan <svg class="ic arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a><a class="btn btn-secondary btn-lg" href="#pricing">See pricing</a></div>
   </div>
 </section>

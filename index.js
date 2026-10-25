@@ -62,6 +62,15 @@ document.querySelectorAll('[role="tablist"]').forEach(list => {
   });
 });
 
+// a #fragment inside a hidden tab panel (#changes, #trend, #forecast from the menus and other pages) selects its tab
+const openHash = () => {
+  const el = location.hash.length > 1 ? document.getElementById(decodeURIComponent(location.hash.slice(1))) : null;
+  const panel = el?.closest('[role="tabpanel"]'); if (!panel) return;
+  if (panel.hidden) document.querySelector(`[role="tab"][aria-controls="${panel.id}"]`).click();
+  (panel.closest("section") || panel).scrollIntoView();
+};
+addEventListener("hashchange", openHash); openHash();
+
 // the sections below live on one page each (index, templates, tools): each block runs only where its markup is
 const $ = id => document.getElementById(id);
 
