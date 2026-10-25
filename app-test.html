@@ -18,7 +18,7 @@
    App density: 8-16px gaps, 14-20px radii. Report pages (render-html.js) stay paper-white in both themes. */
 *, *::before, *::after { box-sizing: border-box }
 [hidden] { display: none !important }
-html { -webkit-text-size-adjust: 100% }
+html { -webkit-text-size-adjust: 100%; scrollbar-gutter: stable } /* no sideways jump between short and long views */
 body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--ink); font: 500 var(--fs-body)/var(--lh-body) var(--font-sans); -webkit-font-smoothing: antialiased; overflow-x: hidden }
 h1, h2, h3, p { margin: 0 }
 h1, h2, h3 { font-weight: 800; letter-spacing: var(--tracking-head); line-height: var(--lh-head); text-wrap: balance }
@@ -32,27 +32,20 @@ button, input, select, textarea { font: inherit; color: inherit }
 .skip { position: absolute; left: 16px; top: -60px; z-index: 100; padding: 10px 16px; border-radius: var(--r-pill); background: var(--ink); color: var(--bg); font-weight: 800; text-decoration: none }
 .skip:focus { top: 12px }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap }
-.grad-text { color: var(--accent-text) }
 .chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: var(--r-pill); font-size: 12px; font-weight: 800; line-height: 1.4; white-space: nowrap; letter-spacing: .01em }
-.chip-new { background: var(--accent-tint); color: var(--accent-tint-ink) }
-.chip-brand { background: var(--tint-violet); color: var(--tint-violet-ink) }
 .chip-mute { background: var(--surface-2); color: var(--muted) }
 .chip-ok { background: var(--ok-bg); color: var(--ok) } .chip-warn { background: var(--warn-bg); color: var(--warn) } .chip-bad { background: var(--bad-bg); color: var(--bad) }
 .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex: none }
-/* tint classes (app.js still emits t-*): one neutral icon tile, no rainbow */
-.t-teal, .t-violet, .t-amber, .t-blue, .t-rose { background: var(--bg-soft); color: var(--ink); box-shadow: inset 0 0 0 1px var(--line) }
 
 /* nav: logo, project breadcrumb, 3-step pill, theme, Pro */
 .nav { position: sticky; top: 0; z-index: 30; background: var(--nav-bg); border-bottom: 1px solid var(--line); -webkit-backdrop-filter: saturate(1.6) blur(14px); backdrop-filter: saturate(1.6) blur(14px) }
 .nav .wrap { display: flex; align-items: center; gap: var(--sp-4); height: 64px }
-body[data-view="report"] .nav .wrap { max-width: 1520px } /* same column as the content below */
 .brand { display: inline-flex; align-items: center; gap: 9px; min-height: 44px; color: var(--ink); text-decoration: none; font-weight: 800; font-size: 19px; letter-spacing: -.02em; white-space: nowrap }
 .brand svg { width: 26px; height: 26px }
-.brand .chip { padding: 2px 8px; font-size: 11px; letter-spacing: .06em; text-transform: uppercase }
-.crumb { min-width: 0; color: var(--muted); font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: var(--sp-4); border-left: 1px solid var(--line) }
+.crumb { min-width: 0; flex: 0 1 auto; color: var(--muted); font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: var(--sp-4); border-left: 1px solid var(--line) }
 .crumb b { color: var(--ink); font-weight: 800 }
 .steps { display: flex; gap: 2px; margin: 0 0 0 auto; padding: 4px; list-style: none; border-radius: var(--r-pill); background: var(--surface-2) }
-.steps a { display: flex; align-items: center; gap: 7px; min-height: 36px; padding: 0 14px 0 6px; border-radius: var(--r-pill); color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 800; white-space: nowrap; transition: background var(--dur-2), color var(--dur-2), box-shadow var(--dur-2) }
+.steps a { display: flex; align-items: center; gap: 7px; min-height: 36px; padding: 0 14px 0 6px; border-radius: var(--r-pill); color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 800; white-space: nowrap } /* no transition: the current step changes instantly with the view */
 .steps a i { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; font: 800 12px/1 var(--font-sans); font-style: normal; box-shadow: inset 0 0 0 1.5px var(--line-strong); color: var(--muted) }
 .steps a i svg { width: 14px; height: 14px; stroke-width: 2.6 }
 .steps a[aria-current="step"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow-1) }
@@ -67,7 +60,7 @@ body[data-view="report"] .nav .wrap { max-width: 1520px } /* same column as the 
 .theme svg { width: 20px; height: 20px }
 @media (max-width: 1100px) { .crumb { display: none } }
 @media (max-width: 760px) { .steps a span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap } .steps a { padding: 0 6px; min-width: 44px; justify-content: center } .nav .wrap { gap: 8px } .steps { margin-left: auto } }
-@media (max-width: 420px) { .brand b { display: none } .brand .chip { display: none } }
+@media (max-width: 420px) { .brand b { display: none } }
 
 /* buttons */
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 20px; border: 0; border-radius: var(--r-pill); font: 800 15px/1.1 var(--font-sans);
@@ -86,50 +79,46 @@ body[data-view="report"] .nav .wrap { max-width: 1520px } /* same column as the 
 .btn.block { width: 100% }
 .btn[aria-disabled="true"], .btn:disabled { background: var(--surface-2); color: var(--muted); box-shadow: inset 0 0 0 1.5px var(--line); cursor: not-allowed; transform: none }
 .btn[aria-disabled="true"] .lock, .btn:disabled .lock { background: var(--surface); color: var(--muted) }
-.lock { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: var(--r-pill); background: var(--tint-violet); color: var(--tint-violet-ink); font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase }
-.btn.fill .lock { background: var(--on-accent); color: var(--accent) }
+.lock { display: inline-flex; align-items: center; padding: 1px 7px; border-radius: var(--r-xs); box-shadow: inset 0 0 0 1px var(--line-strong); color: var(--muted); font-size: 12px; font-weight: 800 }
+.btn.fill .lock { box-shadow: inset 0 0 0 1px currentColor; color: var(--on-accent) }
 .link { border: 0; background: none; padding: 6px 2px; min-height: 32px; color: var(--link); cursor: pointer; font-size: 14px; font-weight: 800; text-decoration: underline; text-underline-offset: 3px }
 .link:hover { text-decoration-thickness: 2px }
 .link.danger { color: var(--bad) }
 
-.privacy { display: inline-flex; align-items: center; gap: 7px; font-size: 14px; color: var(--muted) }
+.privacy { display: inline-flex; align-items: center; gap: 7px; font-size: 14px; color: var(--muted); white-space: nowrap }
 .privacy .ic { width: 16px; height: 16px; color: var(--muted) }
 @media (max-width: 1280px) { .nav .privacy { display: none } }
 
 main { padding-bottom: var(--sp-9) }
-#v-report.wrap { max-width: 1520px }
 #v-check { padding-bottom: 0 } main:has(#v-check:not([hidden])) { padding-bottom: 0 }
-.view { animation: viewin var(--dur-4) var(--ease-out) both }
-@keyframes viewin { from { opacity: 0; transform: translateY(14px) } to { opacity: 1; transform: none } }
-.vh { display: grid; gap: 10px; padding: clamp(28px, 5vw, 56px) 0 clamp(20px, 3vw, 32px) }
-.vh h1, .vh h2 { font-size: clamp(1.9rem, 1.4rem + 1.9vw, 2.75rem); outline: none }
-.vh p { color: var(--muted); font-size: var(--fs-lead); line-height: 1.55; max-width: 62ch }
+.view { animation: viewin var(--dur-2) ease-out both } /* a quick fade, no movement */
+@keyframes viewin { from { opacity: 0 } to { opacity: 1 } }
+/* type scale: page title 28 (24 on phones), section 18, card 16 */
+.vh { display: grid; gap: 8px; padding: 40px 0 24px }
+.vh h1, .vh h2 { font-size: 28px; letter-spacing: -.015em; line-height: 1.2; outline: none }
+.vh p { color: var(--muted); font-size: 16px; line-height: 1.55; max-width: 68ch }
 .vh p b { color: var(--ink); font-weight: 800 }
+.vh .hint { font-size: 14px }
+@media (max-width: 560px) { .vh { padding: 24px 0 16px } .vh h1, .vh h2 { font-size: 24px } }
 .vh-row { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px }
-.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); padding: clamp(18px, 2.2vw, 24px); display: grid; gap: 16px; align-content: start; min-width: 0; box-shadow: var(--shadow-1) }
-.card h3 { font-size: 18px }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); padding: clamp(16px, 2vw, 24px); display: grid; gap: 16px; align-content: start; min-width: 0 }
+.card h3 { font-size: 16px; letter-spacing: -.01em }
 .card .sub { color: var(--muted); font-size: 15px; margin-top: -8px }
-.eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: var(--fs-small); font-weight: 800; color: var(--brand-text); letter-spacing: .01em }
 .label { font-size: var(--fs-micro); font-weight: 800; letter-spacing: var(--tracking-label); text-transform: uppercase; color: var(--muted) }
 
-/* upload */
-.hero { text-align: center; justify-items: center; padding-top: clamp(40px, 7vw, 80px); position: relative }
-.hero h1 { font-size: var(--fs-display); letter-spacing: var(--tracking-display); line-height: var(--lh-tight); max-width: 15ch }
-.hero p { margin: 8px auto 0 }
-.vh .kicker, .kicker { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px 6px 6px; border-radius: var(--r-pill); background: var(--surface); box-shadow: var(--shadow-2); border: 1px solid var(--line); font-size: 14px; line-height: 1.4; color: var(--ink-2); max-width: none }
-.drop { position: relative; display: grid; justify-items: center; gap: 10px; text-align: center; padding: clamp(36px, 6vw, 60px) 20px; border-radius: var(--r-xl); cursor: pointer;
-  background: var(--surface); border: 2px dashed var(--line-strong); box-shadow: var(--shadow-2); transition: border-color var(--dur-2), background-color var(--dur-2), transform var(--dur-3) var(--ease-out) }
-.drop:hover { border-color: var(--primary) }
-.drop.over { border-color: var(--primary); border-style: solid; transform: scale(1.01); background: var(--accent-tint) }
+/* upload: a modest title; the drop zone is the main thing on the page */
+.drop { position: relative; display: grid; justify-items: center; gap: 8px; text-align: center; padding: clamp(40px, 7vw, 72px) 20px; border-radius: var(--r-lg); cursor: pointer;
+  background: var(--surface); border: 1.5px dashed var(--line-strong); transition: border-color var(--dur-2), background-color var(--dur-2) }
+.drop:hover { border-color: var(--primary); background: var(--bg-soft) }
+.drop.over { border-color: var(--primary); border-style: solid; background: var(--accent-tint) }
 .drop:focus-within { outline: 3px solid var(--focus); outline-offset: 3px }
 .drop input { position: absolute; width: 1px; height: 1px; opacity: 0 }
-.drop > .tile { width: 64px; height: 64px; border-radius: 18px; display: grid; place-items: center; margin-bottom: 4px }
-.drop > .tile .ic { width: 30px; height: 30px }
-.drop b { font-size: clamp(1.25rem, 1.1rem + .6vw, 1.5rem); font-weight: 800; letter-spacing: -.02em }
+.drop > .ic { width: 28px; height: 28px; color: var(--muted); margin-bottom: 4px }
+.drop b { font-size: 18px; font-weight: 800; letter-spacing: -.01em }
 .drop .or { color: var(--muted) } .drop .or u { color: var(--link); text-underline-offset: 3px; font-weight: 800 }
 .drop small { color: var(--muted); font-size: 14px } .drop small b { color: var(--ink); font-size: inherit; letter-spacing: 0 }
 .gnote { margin: -20px 0 28px; max-width: 75ch }
-.try { display: flex; justify-content: center; margin-top: 12px }
+.try { display: flex; margin-top: 16px }
 textarea.in { resize: vertical; font: 500 16px/1.5 var(--font-sans) }
 .opt { color: var(--muted); font-weight: 500 }
 .vh .detected { max-width: 80ch; color: var(--muted); font-size: 15px; line-height: 1.5 }
@@ -138,26 +127,22 @@ textarea.in { resize: vertical; font: 500 16px/1.5 var(--font-sans) }
 .busy { display: inline-flex; gap: 10px; align-items: center; color: var(--muted) }
 .spin { display: inline-block; width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--line-strong); border-top-color: var(--primary); animation: spin .8s linear infinite }
 @keyframes spin { to { transform: rotate(360deg) } }
-.alt { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 16px; margin-top: 16px }
+.alt { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 16px; align-items: start; margin-top: 32px }
 @media (max-width: 860px) { .alt { grid-template-columns: minmax(0, 1fr) } }
 textarea.paste { width: 100%; min-height: 128px; resize: vertical; border-radius: var(--r-sm); border: 1.5px solid var(--line-strong); background: var(--bg-soft); color: var(--ink); padding: 12px 14px; font: 13px/1.5 var(--font-mono); white-space: pre; overflow: auto }
 textarea.paste:focus { outline: none; border-color: var(--focus); box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 25%, transparent) }
 .samples { display: grid; gap: 8px }
-.sample { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 12px; align-items: center; text-align: left; min-height: 64px; padding: 10px 14px 10px 10px; border-radius: var(--r-md); border: 1px solid var(--line); background: var(--surface);
-  cursor: pointer; transition: border-color var(--dur-2), background-color var(--dur-2), transform var(--dur-2) var(--ease-out) }
-.sample:hover { border-color: var(--primary); background: var(--bg-soft) }
-.sample:active { transform: scale(.99) }
-.sample .tile { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font: 800 13px/1 var(--font-sans) }
-.sample b { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 800 } .sample span.n { display: block; font-size: 14px; color: var(--muted); line-height: 1.4 }
+.samples { gap: 0; border: 1px solid var(--line); border-radius: var(--r-sm); overflow: hidden }
+.sample { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; text-align: left; min-height: 56px; padding: 10px 14px; border: 0; border-top: 1px solid var(--line); background: var(--surface);
+  cursor: pointer; transition: background-color var(--dur-2) }
+.sample:first-child { border-top: 0 }
+.sample:hover { background: var(--bg-soft) }
+.sample b { display: block; font-size: 15px; font-weight: 800 } .sample span.n { display: block; font-size: 14px; color: var(--muted); line-height: 1.4 }
 .sample .go { color: var(--muted) }
-.sample.feat { border: 1.5px solid color-mix(in srgb, var(--primary) 40%, var(--line)); background: linear-gradient(var(--surface), var(--surface)) padding-box; box-shadow: var(--shadow-2) }
-.sample.feat:hover { background: var(--accent-tint) }
 .fict { font-size: 13px; color: var(--muted) }
 .err { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: var(--r-md); background: var(--bad-bg); color: var(--ink); font-size: 15px; margin-top: 16px }
 .err::before { content: "!"; flex: none; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: var(--bad); color: var(--bg); font-weight: 800; font-size: 13px }
-.trust { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 24px; list-style: none; padding: 0; margin: 24px 0 0; color: var(--muted); font-size: 14px }
-.trust li { display: inline-flex; align-items: center; gap: 7px }
-.trust .ic { width: 16px; height: 16px; color: var(--brand-text) }
+.trust { margin-top: 24px; color: var(--muted); font-size: 14px }
 
 /* check */
 .check { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 16px; align-items: start }
@@ -171,7 +156,7 @@ textarea.paste:focus { outline: none; border-color: var(--focus); box-shadow: 0 
 .in:hover { border-color: color-mix(in srgb, var(--primary) 45%, var(--line-strong)) }
 .in:focus { outline: none; border-color: var(--focus); box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 25%, transparent) }
 .in:focus-visible { outline: none }
-.summary { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px; align-items: center; padding: 14px 16px; border-radius: var(--r-md); background: var(--bg-soft); border: 1px solid var(--line) }
+.summary { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px; align-items: center; padding: 14px 16px; border-radius: var(--r-sm); background: var(--bg-soft) }
 .rag { display: inline-grid; place-items: center; min-width: 78px; padding: 9px 12px; border-radius: var(--r-pill); font-weight: 800; font-size: 15px }
 .rag.Red { background: #d92d20; color: #fff } .rag.Amber { background: #f5a524; color: #101828 } .rag.Green { background: #067647; color: #fff } .rag.none { background: var(--surface-2); color: var(--muted) }
 .summary b { font-size: 16px; font-weight: 800 } .summary p { color: var(--muted); font-size: 14px }
@@ -185,13 +170,14 @@ textarea.paste:focus { outline: none; border-color: var(--focus); box-shadow: 0 
 .msg.bad { background: var(--bad-bg) } .msg.bad::before { content: "!"; display: grid; place-items: center; background: var(--bad); color: var(--bg); font-weight: 800; font-size: 13px }
 .msg.info { background: var(--tint-blue) } .msg.info::before { content: "i"; display: grid; place-items: center; background: var(--tint-blue-ink); color: var(--tint-blue); font: italic 800 13px/1 Georgia, serif }
 .msg span { color: var(--muted) } .msg.info span, .msg.info div { color: var(--ink) }
-.cols { border: 1px solid var(--line); border-radius: var(--r-md); padding: 0 14px }
+.cols { border-top: 1px solid var(--line) }
 .cols summary { display: flex; justify-content: space-between; align-items: center; gap: 10px; min-height: 48px; font-size: 15px; font-weight: 800; cursor: pointer; list-style: none }
 .cols summary::-webkit-details-marker { display: none }
 .cols summary::after { content: ""; width: 8px; height: 8px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: rotate(45deg) translateY(-2px); transition: transform var(--dur-2) }
 .cols[open] summary::after { transform: rotate(-135deg) }
 .cols summary span { margin-left: auto; color: var(--muted); font-weight: 500; font-size: 14px }
-.cols[open] { padding-bottom: 14px }
+.cols[open] { padding-bottom: 16px }
+.cols + .cols { margin-top: -16px } /* one ruled list, not three boxes */
 .cm { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 6px 12px; align-items: center; font-size: 14px }
 .cm label { color: var(--muted) } .cm label b { color: var(--ink); font-weight: 800 }
 .cm label.ok::before { content: "✓ "; color: var(--ok); font-weight: 800 }
@@ -211,56 +197,50 @@ textarea.paste:focus { outline: none; border-color: var(--focus); box-shadow: 0 
 @media (max-width: 560px) { .bar-act p { display: none } .bar-act .btn { padding-left: 16px; padding-right: 16px; font-size: 15px } .bar-act .btn.fill { flex: 1 } }
 
 /* gallery */
-.compare { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; min-height: 52px; padding: 8px 10px 8px 16px; border-radius: var(--r-md); background: var(--bg-soft); box-shadow: inset 0 0 0 1px var(--line); color: var(--ink); font-size: 15px; margin-bottom: 20px }
+.compare { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; min-height: 52px; padding: 4px 12px 4px 16px; border-radius: var(--r-sm); background: var(--bg-soft); color: var(--ink); font-size: 15px; margin-bottom: 24px }
 .compare .ic { width: 18px; height: 18px; color: var(--muted) }
 .switch { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; cursor: pointer; font-size: 14px; font-weight: 800; margin-left: auto }
 .switch input { appearance: none; -webkit-appearance: none; width: 42px; height: 26px; margin: 0; border-radius: 999px; background: var(--line-strong); position: relative; cursor: pointer; transition: background var(--dur-2); flex: none }
 .switch input::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, .3); transition: transform var(--dur-3) var(--ease-out) }
 .switch input:checked { background: var(--primary) } .switch input:checked::after { transform: translateX(16px) }
 .switch input:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px }
-.ghead { display: flex; align-items: center; gap: 10px; margin: 8px 0 14px; font-size: 18px }
-.ghead + p { color: var(--muted); font-size: 15px; margin: -8px 0 16px; max-width: 70ch }
-.gallery { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; list-style: none; padding: 0; margin: 0 0 36px }
+.ghead { display: flex; align-items: center; gap: 8px; margin: 8px 0 16px; font-size: 18px; letter-spacing: -.01em }
+.gallery { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; list-style: none; padding: 0; margin: 0 0 40px }
 .gallery.three { grid-template-columns: repeat(3, minmax(0, 1fr)) }
 @media (max-width: 1100px) { .gallery, .gallery.three { grid-template-columns: repeat(2, minmax(0, 1fr)) } }
 @media (max-width: 560px) { .gallery, .gallery.three { grid-template-columns: minmax(0, 1fr) } }
-.rc { display: grid; gap: 14px; align-content: start; padding: 12px 12px 16px; border-radius: var(--r-lg); background: var(--surface); border: 1px solid var(--line); color: inherit; text-decoration: none; height: 100%; box-shadow: var(--shadow-1);
-  transition: transform var(--dur-3) var(--ease-out), box-shadow var(--dur-3) var(--ease-out), border-color var(--dur-2) }
-@media (hover: hover) { .rc:hover { transform: translateY(-3px); box-shadow: var(--shadow-3); border-color: var(--line-strong) } }
-.rc:focus-visible { outline-offset: 4px; border-radius: var(--r-lg) }
-.thumbbox { display: grid; place-items: center; aspect-ratio: 4 / 3.4; border-radius: var(--r-md); background: var(--bg-soft); border: 1px solid var(--line); overflow: hidden; padding: 14px }
-.rc.v2 .thumbbox { background: var(--tbg, var(--bg-soft)) }
+.rc { display: grid; gap: 12px; align-content: start; padding: 8px 8px 16px; border-radius: var(--r-md); background: var(--surface); border: 1px solid var(--line); color: inherit; text-decoration: none; height: 100%;
+  transition: border-color var(--dur-2), box-shadow var(--dur-2) }
+@media (hover: hover) { .rc:hover { border-color: var(--line-strong); box-shadow: var(--shadow-1) } }
+.rc:focus-visible { outline-offset: 4px; border-radius: var(--r-md) }
+.thumbbox { display: grid; place-items: center; aspect-ratio: 4 / 3.4; border-radius: var(--r-sm); background: var(--bg-soft); overflow: hidden; padding: 16px }
 .thumb { position: relative; width: 100%; overflow: hidden; border-radius: 3px; background: #fff; box-shadow: 0 8px 22px -10px rgba(16, 24, 40, .35), 0 0 0 1px rgba(16, 24, 40, .06) }
 .thumb.portrait { aspect-ratio: 210 / 297; width: auto; height: 100% }
 .thumb.landscape { aspect-ratio: 297 / 210 }
 .thumb-in { position: absolute; left: 0; top: 0; transform-origin: 0 0; pointer-events: none }
 .thumb-in .kr-page { box-shadow: none; border-radius: 0; margin: 0 }
-.rc-b { display: grid; gap: 6px; padding: 0 4px }
-.rc h3 { font-size: 17px; display: flex; align-items: center; gap: 8px; justify-content: space-between }
-.rc h3 > span:first-child { display: inline-flex; align-items: center; gap: 8px; min-width: 0 }
-.rc h3 .tile { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; flex: none }
-.rc h3 .tile .ic { width: 16px; height: 16px }
+.rc-b { display: grid; gap: 4px; padding: 0 8px }
+.rc h3 { font-size: 16px; letter-spacing: -.01em; display: flex; align-items: baseline; gap: 8px; justify-content: space-between }
 .rc p { color: var(--muted); font-size: 14px; line-height: 1.5 }
-.rc .meta { display: flex; gap: 6px; flex-wrap: wrap; font-size: 12px; padding: 0 4px }
-.rc .meta span { padding: 3px 9px; border-radius: 999px; background: var(--surface-2); color: var(--muted); font-weight: 800 }
+.rc .meta { display: flex; gap: 4px 0; flex-wrap: wrap; font-size: 13px; padding: 0 8px; color: var(--muted) }
+.rc .meta span + span::before { content: "·"; padding: 0 6px }
 .gallery > li { display: flex; flex-direction: column; gap: 8px } .gallery > li > .rc { flex: 1 }
 .loop { display: flex; align-items: center; gap: 8px; font-size: 15px } .loop .ic { width: 18px; height: 18px; flex: none }
-.rc .meta span.need { background: var(--tint-amber); color: var(--tint-amber-ink) }
+.rc .meta span.need { color: var(--ink-2); font-weight: 800 }
 
 /* report view */
 .rv-top { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; padding: 18px 0 }
 .back { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; color: var(--ink-2); text-decoration: none; font-size: 15px; font-weight: 800; padding: 0 12px 0 6px; border-radius: var(--r-pill) }
 .back:hover { background: var(--surface-2); color: var(--ink) }
 .back svg { width: 18px; height: 18px }
-.seg { display: flex; padding: 4px; max-width: 100%; overflow-x: auto; scrollbar-width: none; gap: 2px; border-radius: var(--r-pill); background: var(--surface-2) }
-.seg a { display: inline-flex; align-items: center; min-height: 36px; color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 800; padding: 0 14px; border-radius: var(--r-pill); transition: var(--dur-2); white-space: nowrap }
+.seg { display: flex; flex-wrap: wrap; padding: 4px; max-width: 100%; gap: 2px; border-radius: var(--r-md); background: var(--surface-2) }
+.seg a { display: inline-flex; align-items: center; min-height: 36px; color: var(--muted); text-decoration: none; font-size: 13.5px; font-weight: 800; padding: 0 10px; border-radius: var(--r-sm); transition: var(--dur-2); white-space: nowrap }
 .seg a:hover { color: var(--ink) }
 .seg a[aria-current="page"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow-1) }
-.seg a.v2::after { content: ""; width: 6px; height: 6px; margin-left: 7px; border-radius: 50%; background: var(--accent-text) }
 .rv { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 20px; align-items: start }
 @media (max-width: 1020px) { .rv { grid-template-columns: minmax(0, 1fr) } }
 .rv-main { display: grid; gap: 16px; min-width: 0 }
-.stage { background: var(--bg-soft); border: 1px solid var(--line); border-radius: var(--r-lg); padding: clamp(10px, 3vw, 32px); min-width: 0; overflow: hidden }
+.stage { background: var(--bg-soft); border-radius: var(--r-md); padding: clamp(10px, 3vw, 32px); min-width: 0; overflow: hidden }
 .stage-h { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 16px; margin: -4px 0 14px; color: var(--muted); font-size: 14px }
 .stage-h .pencil { display: inline-flex; gap: 7px; align-items: center } .stage-h svg { width: 16px; height: 16px; color: var(--link) }
 #page .kr-edit { cursor: text }
@@ -280,10 +260,9 @@ textarea.paste:focus { outline: none; border-color: var(--focus); box-shadow: 0 
 .logo-prev img { max-height: 28px; max-width: 120px; display: block }
 
 /* v2 tool panel above the page: compare, trend versions, forecast status */
-.tool { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 18px clamp(16px, 2vw, 22px); display: grid; gap: 14px; box-shadow: var(--shadow-1); min-width: 0 }
-.tool-h { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px }
-.tool-h .tile { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; flex: none }
-.tool-h h3 { font-size: 17px } .tool-h p { color: var(--muted); font-size: 14px }
+.tool { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); padding: clamp(16px, 2vw, 24px); display: grid; gap: 16px; min-width: 0 }
+.tool-h { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px 16px }
+.tool-h h3 { font-size: 16px; letter-spacing: -.01em } .tool-h p { color: var(--muted); font-size: 14px }
 .tool-h .grow { flex: 1 1 260px; min-width: 0 }
 .strip { display: flex; flex-wrap: wrap; gap: 6px }
 .cnt { display: inline-flex; align-items: center; gap: 7px; min-height: 36px; padding: 0 12px; border-radius: var(--r-pill); border: 1.5px solid var(--line-strong); background: var(--surface); color: var(--ink-2); font-size: 14px; font-weight: 800; cursor: pointer }
@@ -307,7 +286,7 @@ textarea.paste:focus { outline: none; border-color: var(--focus); box-shadow: 0 
 .minidrop:hover, .minidrop.over { border-color: var(--primary); background: var(--accent-tint) }
 .minidrop:focus-within { outline: 3px solid var(--focus); outline-offset: 2px }
 .minidrop input[type=file] { position: absolute; width: 1px; height: 1px; opacity: 0 }
-.minidrop .tile { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; flex: none }
+.minidrop > .ic { color: var(--muted) }
 .minidrop b { display: block; font-size: 15px } .minidrop span { color: var(--muted); font-size: 13px }
 .row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px }
 .callout { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border-radius: var(--r-md); background: var(--tint-blue); color: var(--ink); font-size: 15px }
@@ -315,11 +294,12 @@ textarea.paste:focus { outline: none; border-color: var(--focus); box-shadow: 0 
 .callout.warn { background: var(--tint-amber) } .callout.warn .ic { color: var(--tint-amber-ink) }
 .vdots { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; margin: 0; padding: 0 }
 .vdots li { padding: 3px 10px; border-radius: var(--r-pill); background: var(--surface-2); font-size: 13px; color: var(--ink-2); font-weight: 800 }
-.vdots li.cur { background: var(--tint-violet); color: var(--tint-violet-ink) }
+.vdots li.cur { background: var(--ink); color: var(--bg) }
 
 /* history dialog */
-.hlist { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; max-height: 300px; overflow: auto }
-.hlist li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 8px 8px 8px 12px; border-radius: var(--r-md); background: var(--bg-soft); border: 1px solid var(--line) }
+.hlist { list-style: none; margin: 0; padding: 0; display: grid; max-height: 300px; overflow: auto; border-block: 1px solid var(--line) }
+.hlist li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; align-items: center; min-height: 48px; padding: 4px 0 4px 4px }
+.hlist li + li { border-top: 1px solid var(--line) }
 .hlist .when { font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap }
 .hlist .what { color: var(--muted); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
 .hlist .what .chip { margin-right: 6px; padding: 1px 8px; font-size: 11px }
@@ -329,27 +309,27 @@ textarea.paste:focus { outline: none; border-color: var(--focus); box-shadow: 0 
 .icon-x .ic { width: 18px; height: 18px }
 .hempty { padding: 16px; border-radius: var(--r-md); background: var(--bg-soft); color: var(--muted); font-size: 15px; text-align: center }
 #bf-msg:empty { display: none }
-.back-f { display: grid; gap: 10px; padding: 14px; border-radius: var(--r-md); border: 1px solid var(--line) }
+.back-f { display: grid; gap: 8px }
 
 /* dialogs */
-dialog { width: min(480px, calc(100vw - 32px)); max-height: calc(100vh - 32px); padding: 0; border: 1px solid var(--line); border-radius: var(--r-xl); background: var(--surface); color: var(--ink); box-shadow: var(--shadow-3) }
+dialog { width: min(480px, calc(100vw - 32px)); max-height: calc(100vh - 32px); padding: 0; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); color: var(--ink); box-shadow: var(--shadow-3) }
 dialog.wide { width: min(620px, calc(100vw - 32px)) }
 dialog::backdrop { background: rgba(16, 24, 40, .45); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px) }
 dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
-@keyframes pop { from { opacity: 0; transform: translateY(12px) scale(.98) } to { opacity: 1; transform: none } }
-.dlg { display: grid; gap: 18px; padding: 28px }
+@keyframes pop { from { opacity: 0; transform: scale(.98) } to { opacity: 1; transform: none } }
+.dlg { display: grid; gap: 16px; padding: 24px }
 .dlg-h { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px }
-.dlg h2 { font-size: 26px; outline: none; margin-top: 4px }
+.dlg h2 { font-size: 22px; letter-spacing: -.015em; line-height: 1.25; outline: none }
 .dlg .x { width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--surface-2); color: var(--ink-2); cursor: pointer; display: grid; place-items: center; flex: none }
 .dlg .x:hover { color: var(--ink); background: var(--line) }
-.dlg-top { display: none }
 .perks { display: grid; gap: 10px; list-style: none; padding: 0; margin: 0; font-size: 15px }
-.perks li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; align-items: start } .perks li .ic { width: 20px; height: 20px; color: var(--brand-text); margin-top: 2px }
+.perks li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; align-items: start } .perks li .ic { width: 20px; height: 20px; color: var(--ok); margin-top: 2px }
 .or-line { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: 13px } .or-line::before, .or-line::after { content: ""; flex: 1; height: 1px; background: var(--line) }
 .keyrow { display: flex; gap: 8px } .keyrow .in { font-family: var(--font-mono); font-size: 14px }
 .status { font-size: 14px; min-height: 1.3em } .status.ok { color: var(--ok) } .status.bad { color: var(--bad) } .status.warn { color: var(--warn) }
 .pro-thumb { display: grid; place-items: center; height: 200px; padding: 14px; border-radius: var(--r-md); background: var(--bg-soft); border: 1px solid var(--line); overflow: hidden }
 .pro-thumb .thumb { height: 100%; width: auto; max-width: 100% }
+@media (max-width: 560px) { .pro-thumb { height: 140px } .dlg { padding: 20px } }
 .pro-on { display: grid; gap: 6px; padding: 14px 16px; border-radius: var(--r-md); background: var(--ok-bg) }
 .pro-on b { color: var(--ok) } .pro-on span { color: var(--ink-2); font-size: 14px }
 
@@ -374,11 +354,7 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
 }
 /* phones: samples and the report switcher become grids instead of a long list / a hidden horizontal scroll */
 @media (max-width: 560px) {
-  .samples { grid-template-columns: repeat(3, minmax(0, 1fr)) }
-  .sample.feat { grid-column: 1 / -1 }
-  .sample:not(.feat) { grid-template-columns: minmax(0, 1fr); justify-items: center; text-align: center; gap: 6px; padding: 12px 6px }
-  .sample:not(.feat) b { justify-content: center; font-size: 14px }
-  .sample:not(.feat) .n, .sample:not(.feat) .go { display: none }
+  .sample:not(:first-child) .n { display: none } /* phones: names only, except the first (the sample with history) */
 }
 @media (max-width: 760px) {
   .seg { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; border-radius: var(--r-md) }
@@ -429,13 +405,13 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
 </svg>
 <header class="nav">
   <div class="wrap">
-    <a class="brand" href="./" aria-label="Keelson home page"><svg aria-hidden="true"><use href="#k-mark"/></svg><b>Keelson</b><span class="chip chip-brand">Pro</span></a>
-    <span class="crumb" id="crumb" hidden></span>
+    <a class="brand" href="./" aria-label="Keelson home page"><svg aria-hidden="true"><use href="#k-mark"/></svg><b>Keelson</b></a>
     <nav aria-label="Steps"><ol class="steps">
       <li><a href="#upload" data-step="upload"><i aria-hidden="true">1</i><span>Upload</span></a></li>
       <li><a href="#check" data-step="check"><i aria-hidden="true">2</i><span>Check</span></a></li>
       <li><a href="#reports" data-step="reports"><i aria-hidden="true">3</i><span>Reports</span></a></li>
     </ol></nav>
+    <span class="crumb" id="crumb" hidden></span>
     <div class="nav-r">
       <span class="privacy"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg>Your plan stays on this device</span>
       <button class="theme" type="button" id="theme"></button>
@@ -447,45 +423,38 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
 <main id="main">
   <!-- 1 UPLOAD -->
   <section class="view wrap" id="v-upload" aria-labelledby="h-upload">
-    <div class="vh hero">
-      <p class="kicker"><span class="chip chip-new">New</span>What changed, slip trend and finish-date confidence</p>
-      <h1 id="h-upload" tabindex="-1">Your plan in. <span class="grad-text"><span style="white-space:nowrap">Client-ready</span> reports out.</span></h1>
-      <p>Drop in the plan you already keep. Get seven reports: the executive one-pager, weekly status, milestone roadmap and schedule variance, plus what changed, the slip trend and finish-date confidence, ready as PDF or editable Word and PowerPoint.</p>
+    <div class="vh">
+      <h1 id="h-upload" tabindex="-1">Upload this week's plan</h1>
+      <p>An export from MS Project, Jira, Smartsheet or your own tracker. Keelson reads it on this computer and never uploads it.</p>
     </div>
     <label class="drop" id="drop" for="file">
       <input type="file" id="file" accept=".xlsx,.csv,.tsv,.txt,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv,text/tab-separated-values,text/plain">
-      <span class="tile t-violet"><svg class="ic" aria-hidden="true"><use href="#i-upload"/></svg></span>
+      <svg class="ic" aria-hidden="true"><use href="#i-upload"/></svg>
       <b id="drop-t">Drop your plan here</b>
       <span class="or" id="drop-s">or <u>choose a file</u></span>
-      <small>Accepted: Excel <b>.xlsx</b>, <b>.csv</b>, <b>.tsv</b>, or a table pasted below</small>
-      <small>From MS Project, Smartsheet, Jira, Asana or your own tracker</small>
+      <small>Excel <b>.xlsx</b>, <b>.csv</b> or <b>.tsv</b>. Or paste a table below.</small>
     </label>
-    <div class="try"><button class="btn line" type="button" id="try-sample"><svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg>No file? Try a sample plan</button></div>
+    <div class="try"><button class="btn line" type="button" id="try-sample">No file? Try a sample plan</button></div>
     <div class="err" id="up-err" role="alert" hidden></div>
     <div class="alt">
       <div class="card">
-        <h3 id="h-samples">No plan to hand? Try a sample</h3>
+        <h3 id="h-samples">Sample plans</h3>
         <div class="samples" id="samples" role="list" aria-labelledby="h-samples"></div>
         <p class="fict">Samples are a fictional project. Nothing you open here is saved unless you press Save version or download a Word or PowerPoint report.</p>
       </div>
       <div class="card">
-        <div><h3><label for="paste">Or paste it</label></h3></div>
-        <p class="sub">Select the whole table in Excel or MS Project, headers included, then copy and paste.</p>
+        <div><h3><label for="paste">Paste a table</label></h3></div>
+        <p class="sub">In Excel or MS Project, select the whole table with its headers. Copy it and paste it here.</p>
         <textarea class="paste" id="paste" spellcheck="false" autocomplete="off" placeholder="Task Name&#9;Start&#9;Finish&#9;% Complete&#10;Kickoff&#9;02/11/2026&#9;02/11/2026&#9;100%"></textarea>
         <div><button class="btn line sm" type="button" id="paste-go">Use this plan</button></div>
       </div>
     </div>
-    <ul class="trust">
-      <li><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg>Read in your browser, never uploaded</li>
-      <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Nothing to install</li>
-      <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Keeps working if your connection drops, as long as you don't reload</li>
-    </ul>
+    <p class="trust">Nothing to install. Once this page has loaded, it keeps working without a connection, as long as you don't reload.</p>
   </section>
 
   <!-- 2 CHECK -->
   <section class="view wrap" id="v-check" aria-labelledby="h-check" hidden>
     <div class="vh">
-      <span class="eyebrow">Step 2 of 3</span>
       <h2 id="h-check" tabindex="-1">Check your plan</h2>
       <p id="check-sub"></p>
     </div>
@@ -542,7 +511,7 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
   <!-- 3 REPORTS -->
   <section class="view wrap" id="v-reports" aria-labelledby="h-reports" hidden>
     <div class="vh vh-row">
-      <div style="display:grid;gap:10px;flex:1 1 520px"><span class="eyebrow">Step 3 of 3</span><h2 id="h-reports" tabindex="-1">Your reports</h2><p id="reports-sub"></p><p class="detected" id="detected"></p><p class="hint loop" id="loop-hint" hidden><svg class="ic" aria-hidden="true"><use href="#i-swap"/></svg>Upload next week's export and Keelson shows what changed since this one.</p></div>
+      <div style="display:grid;gap:8px;flex:1 1 520px"><h2 id="h-reports" tabindex="-1">Your reports</h2><p id="reports-sub"></p><p class="detected" id="detected"></p><p class="hint loop" id="loop-hint" hidden><svg class="ic" aria-hidden="true"><use href="#i-swap"/></svg>Upload next week's export and Keelson shows what changed since this one.</p></div>
       <button class="btn line" type="button" id="hist-btn" data-hist><svg class="ic" aria-hidden="true"><use href="#i-history"/></svg><span id="hist-n">Version history</span></button>
     </div>
     <div class="compare" data-compare hidden></div>
@@ -604,9 +573,8 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
 </main>
 
 <dialog id="pro" aria-labelledby="pro-h" aria-describedby="pro-why">
-  <div class="dlg-top" aria-hidden="true"></div>
   <form class="dlg" method="dialog" id="pro-form">
-    <div class="dlg-h"><div><p class="eyebrow">Keelson Pro</p><h2 id="pro-h" tabindex="-1">Send reports that look like yours</h2><p class="hint" id="pro-why" style="margin-top:6px;font-size:15px" hidden></p></div>
+    <div class="dlg-h"><div><h2 id="pro-h" tabindex="-1">Send reports that look like yours</h2><p class="hint" id="pro-why" style="margin-top:6px;font-size:15px" hidden></p></div>
       <button class="x" type="button" id="pro-x" aria-label="Close"><svg class="ic sm" aria-hidden="true"><use href="#i-x"/></svg></button></div>
     <div id="pro-active" class="pro-on" hidden></div>
     <div class="pro-thumb" id="pro-thumb" aria-hidden="true" hidden></div>
@@ -633,14 +601,13 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
 </dialog>
 
 <dialog id="hist" class="wide" aria-labelledby="hist-h">
-  <div class="dlg-top" aria-hidden="true"></div>
   <div class="dlg">
-    <div class="dlg-h"><div><p class="eyebrow">Version history</p><h2 id="hist-h" tabindex="-1">Saved versions</h2><p class="hint" id="hist-sub" style="margin-top:6px"></p></div>
+    <div class="dlg-h"><div><h2 id="hist-h" tabindex="-1">Version history</h2><p class="hint" id="hist-sub" style="margin-top:6px"></p></div>
       <button class="x" type="button" id="hist-x" aria-label="Close"><svg class="ic sm" aria-hidden="true"><use href="#i-x"/></svg></button></div>
     <ul class="hlist" id="hlist" aria-label="Saved versions, oldest first"></ul>
     <div class="back-f">
       <label class="minidrop" for="bf-file"><input type="file" id="bf-file" accept=".xlsx,.csv,.tsv,.txt">
-        <span class="tile t-teal"><svg class="ic sm" aria-hidden="true"><use href="#i-plus"/></svg></span>
+        <svg class="ic sm" aria-hidden="true"><use href="#i-plus"/></svg>
         <span><b id="bf-t">Add an older file</b><span id="bf-s">Last month's export, or any earlier one. It's placed by its status date.</span></span></label>
       <div class="row" id="bf-row" hidden>
         <div class="field" style="flex:1 1 180px"><label for="bf-date">Its status date</label><input class="in" type="date" id="bf-date"></div>

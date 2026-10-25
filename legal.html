@@ -12,34 +12,105 @@
 <link rel="stylesheet" href="design/tokens.css">
 <link rel="stylesheet" href="site.css">
 <script src="theme.js"></script>
-<style>
-.legal{max-width:820px;padding-bottom:var(--sp-7)}
-.legal h1{font-size:var(--fs-h1);letter-spacing:var(--tracking-display);line-height:1.05;margin:clamp(40px,7vw,80px) 0 var(--sp-3)}
-.legal .updated{color:var(--muted);margin:0 0 var(--sp-7)}
-.legal section{padding:var(--sp-6) 0;border-top:1px solid var(--line);scroll-margin-top:84px}
-.legal [id]{scroll-margin-top:84px}
-.legal h2{font-size:var(--fs-h3);margin:0 0 var(--sp-3)}
-.legal p,.legal li{color:var(--ink-2);margin:0 0 var(--sp-3)}
-.legal p b,.legal li b{color:var(--ink);font-weight:800}
-.legal ul{padding-left:20px;margin:0 0 var(--sp-3)}.legal li{margin:6px 0}
-.lcard{background:var(--bg-soft);border-radius:var(--r-lg);padding:var(--sp-5) var(--sp-5) var(--sp-2);margin:var(--sp-4) 0;box-shadow:inset 0 0 0 1px var(--line)}
-.lnav{display:flex;gap:2px;margin-left:auto}
-.lnav a{display:inline-flex;align-items:center;min-height:44px;padding:0 12px;border-radius:var(--r-pill);color:var(--ink-2);text-decoration:none;font-size:15px}
-.lnav a:hover{background:var(--surface-2);color:var(--ink)}
-@media (max-width:640px){.lnav a{padding:0 7px;font-size:14px}.lnav a.hide-sm{display:none}}
-</style>
 </head>
-<body>
+<body class="inner">
 <a class="skip" href="#main">Skip to content</a>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><symbol id="k-mark" viewBox="0 0 64 64"><rect x="9" y="8" width="10.5" height="48" rx="5.25" fill="#39c9be"/><path d="M27 28.5 44 11.5" stroke="currentColor" stroke-width="10" stroke-linecap="round" opacity=".42" fill="none"/><path d="M27 35.5 40 48.5" stroke="currentColor" stroke-width="10" stroke-linecap="round" fill="none"/><path d="M51 50.2l6.3 6.3-6.3 6.3-6.3-6.3z" fill="#f5a524"/></symbol></svg>
-<header class="nav"><div class="wrap">
-  <a class="logo" href="./" aria-label="Keelson home"><svg aria-hidden="true"><use href="#k-mark"/></svg>Keelson</a>
-  <nav class="lnav" aria-label="On this page"><a href="#licence">Licence</a><a href="#refunds">Refunds</a><a href="#privacy">Privacy</a><a class="hide-sm" href="#contact">Contact</a></nav>
-</div></header>
+<!-- Icon set: 24px grid, 1.75 stroke, round caps/joins. Drawn for Keelson (docs/DESIGN-SYSTEM.md §6). -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15V4m0 0L7.5 8.5M12 4l4.5 4.5"/><path d="M4 14v3a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-3"/></symbol>
+  <symbol id="i-report" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 17v-3m3 3v-5m3 5v-2"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/><path d="M12 14.5v2"/></symbol>
+  <symbol id="i-columns" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><path d="M3.5 9.5h17M9.5 9.5v10"/></symbol>
+  <symbol id="i-gauge" viewBox="0 0 24 24"><path d="M4.5 17a8 8 0 1 1 15 0"/><path d="M12 14l4-4"/><circle cx="12" cy="14" r="1.2"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4m8-4v4"/><path d="M8 14h2m4 0h2m-8 3h2"/></symbol>
+  <symbol id="i-gantt" viewBox="0 0 24 24"><path d="M4 4v16h16"/><path d="M8 8h6M10 12h7M8 16h4"/></symbol>
+  <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5.5 21V4"/><path d="M5.5 4.5h11l-2 4 2 4h-11"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></symbol>
+  <symbol id="i-brush" viewBox="0 0 24 24"><path d="M14.5 4.5l5 5L11 18l-5-5z"/><path d="M6 13l-2 6 6-2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2m0 15v2M2.5 12h2m15 0h2M5.3 5.3l1.4 1.4m10.6 10.6 1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M19.5 14.5A8 8 0 0 1 9.5 4.5a8 8 0 1 0 10 10z"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8.5" r="3.5"/><path d="M3 19.5a6 6 0 0 1 12 0"/><path d="M15.5 5.2a3.5 3.5 0 0 1 0 6.6M18 14.5a6 6 0 0 1 3 5"/></symbol>
+  <symbol id="i-box" viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></symbol>
+  <symbol id="i-tool" viewBox="0 0 24 24"><rect x="4" y="3.5" width="16" height="17" rx="2.5"/><path d="M8 8h8M8 12.5h2m2 0h4M8 16.5h2m2 0h4"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5.5c0 4.5-3 8-7 9.5-4-1.5-7-5-7-9.5V6z"/><path d="M9 12l2 2 4-4"/></symbol>
+  <symbol id="i-swap" viewBox="0 0 24 24"><path d="M4 8h13m-3-3 3 3-3 3M20 16H7m3-3-3 3 3 3"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 4 2.8 19.5h18.4z"/><path d="M12 10v4.5m0 2.5v.01"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5"/><path d="M4 16v1a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-1"/></symbol>
+  <symbol id="i-trend" viewBox="0 0 24 24"><path d="M4 19.5h16"/><path d="M4.5 15.5l5-5 3.5 3.5 6.5-7"/><path d="M15 7h4.5v4.5"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".8"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11m0-11-11 11"/></symbol>
+  <symbol id="k-mark" viewBox="0 0 64 64"><rect x="9" y="8" width="10.5" height="48" rx="5.25" fill="#39c9be"/><path d="M27 28.5 44 11.5" stroke="currentColor" stroke-width="10" stroke-linecap="round" opacity=".42" fill="none"/><path d="M27 35.5 40 48.5" stroke="currentColor" stroke-width="10" stroke-linecap="round" fill="none"/><path d="M51 50.2l6.3 6.3-6.3 6.3-6.3-6.3z" fill="#f5a524"/></symbol>
+</svg>
 
-<main class="wrap legal" id="main" tabindex="-1">
-  <h1>Terms, privacy and refunds</h1>
-  <p class="updated">Last updated 25 October 2026</p>
+<!-- ============ NAV ============ -->
+<header class="nav">
+  <div class="wrap">
+    <a class="logo" href="./" aria-label="Keelson home"><svg aria-hidden="true"><use href="#k-mark"/></svg>Keelson</a>
+    <nav aria-label="Main">
+      <ul class="nav-links">
+        <li><button type="button" aria-expanded="false" aria-controls="prodmenu" id="prodbtn">Product <svg class="ic sm" aria-hidden="true"><use href="#i-chev"/></svg></button>
+          <div class="nav-pop" id="prodmenu" hidden>
+            <div class="mega">
+              <div class="mega-col">
+                <a class="mega-item" href="app.html"><span class="mi-ic"><svg class="ic" aria-hidden="true"><use href="#i-report"/></svg></span><span><b>Reports app</b><span>Seven reports, from one-pager to finish forecast, as PDF or Word</span></span></a>
+                <a class="mega-item" href="./#changes"><span class="mi-ic"><svg class="ic" aria-hidden="true"><use href="#i-swap"/></svg></span><span><b>What changed</b><span>Last week's plan compared with this week's, on one page</span></span></a>
+                <a class="mega-item" href="./#trend"><span class="mi-ic"><svg class="ic" aria-hidden="true"><use href="#i-trend"/></svg></span><span><b>Slip trend</b><span>How milestone dates moved, week by week</span></span></a>
+                <a class="mega-item" href="./#forecast"><span class="mi-ic"><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg></span><span><b>Finish forecast</b><span>Likely finish dates, based on how the plan has gone so far</span></span></a>
+              </div>
+              <div class="mega-side">
+                <h4>Free</h4>
+                <a href="./#try"><svg class="ic sm" aria-hidden="true"><use href="#i-gauge"/></svg>Quick check</a>
+                <a href="templates.html"><svg class="ic sm" aria-hidden="true"><use href="#i-box"/></svg>Template packs</a>
+                <a href="tools.html"><svg class="ic sm" aria-hidden="true"><use href="#i-tool"/></svg>Free tools</a>
+                <h4 style="margin-top:10px">Works with</h4>
+                <p>Excel and CSV files from MS Project, Jira, Smartsheet and client trackers.</p>
+              </div>
+            </div>
+          </div>
+        </li>
+        <li><a href="templates.html">Templates</a></li>
+        <li><a href="tools.html">Free tools</a></li>
+        <li><a href="./#pricing">Pricing</a></li>
+        <li><a href="./#faq">FAQ</a></li>
+      </ul>
+    </nav>
+    <div class="nav-right">
+      <button class="icon-btn" type="button" id="theme" aria-label="Switch to dark theme"><svg class="ic theme-light" aria-hidden="true"><use href="#i-moon"/></svg><svg class="ic theme-dark" aria-hidden="true"><use href="#i-sun"/></svg></button>
+      <a class="btn btn-primary btn-sm" href="app.html#upload"><span class="hide-sm">Upload your plan</span><span class="show-sm">Upload plan</span></a>
+      <button class="icon-btn menu-btn" type="button" id="menubtn" aria-label="Open menu" aria-expanded="false" aria-controls="mnav"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg></button>
+    </div>
+    <nav class="mnav" id="mnav" aria-label="Menu" hidden>
+      <h4>Product</h4>
+      <a href="app.html">Reports app</a>
+      <a href="./#changes">What changed</a>
+      <a href="./#trend">Slip trend</a>
+      <a href="./#forecast">Finish forecast</a>
+      <a href="./#try">Quick check</a>
+      <a href="templates.html">Template packs</a>
+      <a href="tools.html">Free tools</a>
+      <h4>Keelson</h4>
+      <a href="./#pricing">Pricing</a>
+      <a href="./#faq">FAQ</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main" tabindex="-1">
+<section class="page-hero" aria-labelledby="h-legal">
+  <div class="wrap">
+    <div class="ph-copy">
+      <h1 id="h-legal">Terms, privacy and refunds</h1>
+      <p class="ph-lead">Last updated 25 October 2026</p>
+      <nav aria-label="On this page"><ul class="legal-toc"><li><a href="#contact">Contact</a></li><li><a href="#licence">Licence</a></li><li><a href="#refunds">Refunds</a></li><li><a href="#privacy">Privacy</a></li></ul></nav>
+    </div>
+  </div>
+</section>
+<div class="wrap"><div class="legal">
 
   <section id="contact">
     <h2>Contact</h2>
@@ -86,12 +157,24 @@
     <p><b>Emails.</b> We send order and product-update emails about what you downloaded. We send news and offers only if you opted in at checkout, and every email has an unsubscribe link.</p>
     <p>We don't sell or share your personal data with anyone else. To see, correct or delete what we hold about you, email <a href="mailto:support@keelson.co.in">support@keelson.co.in</a>.</p>
   </section>
+</div></div>
 </main>
 
-<footer class="foot" style="margin-top:0">
+<!-- ============ FOOTER ============ -->
+<footer class="foot">
   <div class="wrap">
-    <div class="foot-base" style="margin-top:0;padding-top:0;border-top:0"><span>© 2026 Keelson · <a href="https://www.linkedin.com/company/https-keelson.co.in/" target="_blank" rel="noopener me">LinkedIn<span class="sr"> (opens in a new tab)</span></a> · <a href="./">Home</a> · <a href="app.html">Reports app</a> · <a href="templates.html">Templates</a> · <a href="tools.html">Free tools</a></span><span>No cookies. No trackers. No third-party requests. Hosted on GitHub Pages (<a href="#hosting">see Hosting</a>).</span></div>
+    <div class="foot-grid">
+      <div><a class="logo" href="./"><svg aria-hidden="true"><use href="#k-mark"/></svg>Keelson</a><p class="tag">Turn your project plan into a status report. Your plan stays on your computer.</p><a class="social" href="https://www.linkedin.com/company/https-keelson.co.in/" target="_blank" rel="noopener me"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>Follow Keelson on LinkedIn<span class="sr"> (opens in a new tab)</span></a></div>
+      <div><h4>Product</h4><ul><li><a href="app.html">Reports app</a></li><li><a href="./#changes">What changed</a></li><li><a href="./#trend">Slip trend</a></li><li><a href="./#forecast">Finish forecast</a></li><li><a href="./#pricing">Pricing</a></li></ul></div>
+      <div><h4>Free</h4><ul><li><a href="./#try">Quick check</a></li><li><a href="./#pricing" data-store="dashboard">Excel dashboard</a></li><li><a href="tools.html#wd">Working days</a></li><li><a href="tools.html#gng">Go / No-Go</a></li></ul></div>
+      <div><h4>Learn</h4><ul><li><a href="templates.html">Template packs</a></li><li><a href="templates.html#frameworks">Methods</a></li><li><a href="templates.html#compare">Compare</a></li><li><a href="./#faq">FAQ</a></li></ul></div>
+      <div><h4>Company</h4><ul><li><a href="mailto:support@keelson.co.in">Contact</a></li><li><a href="#licence">Licence</a></li><li><a href="#refunds">Refunds</a></li><li><a href="#privacy">Privacy</a></li></ul></div>
+    </div>
+    <p class="foot-tm">Microsoft, Excel and Project are trademarks of Microsoft Corporation; Google Sheets is a trademark of Google LLC; Jira is a trademark of Atlassian; Smartsheet and Asana are trademarks of their owners. Keelson is independent and not affiliated with or endorsed by any of them.</p>
+    <div class="foot-base"><span>© 2026 Keelson · Templates v1.0.0</span><span>No cookies. No trackers. No third-party requests. Hosted on GitHub Pages, which keeps server logs like any web host (<a href="#hosting">details</a>).</span></div>
   </div>
 </footer>
+
+<script src="index.js"></script>
 </body>
 </html>

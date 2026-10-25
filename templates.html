@@ -22,7 +22,7 @@
 <meta property="og:image:height" content="627">
 <meta name="twitter:card" content="summary_large_image">
 </head>
-<body>
+<body class="inner">
 <a class="skip" href="#main">Skip to content</a>
 
 <!-- Icon set: 24px grid, 1.75 stroke, round caps/joins. Drawn for Keelson (docs/DESIGN-SYSTEM.md §6). -->
@@ -112,25 +112,35 @@
 
 <main id="main" tabindex="-1">
 <!-- ============ TEMPLATE PACKS: formats, scheduling, runbook ============ -->
-<section class="section soft" id="packs" aria-labelledby="h-packs">
+<section class="page-hero" id="packs" aria-labelledby="h-packs">
   <div class="wrap">
-    <div class="head">
-      <span class="eyebrow"><svg class="ic sm" aria-hidden="true"><use href="#i-box"/></svg>Template packs for Excel and Google Sheets</span>
-      <h1 id="h-packs">One plan. Every format.</h1>
-      <p class="lead">Project plans that update their own dates, RAID logs and go-live runbooks. Share them in your client's template, MS Project, Google Sheets, CSV or PDF.</p>
+    <div class="ph-split">
+      <h1 id="h-packs">Template packs for Excel and Google Sheets</h1>
+      <p class="ph-lead">Project plans that update their own dates, RAID logs and go-live runbooks. Share them as your client's template, MS Project, Google Sheets, CSV or PDF.</p>
+    </div>
+    <div class="ph-act">
       <p class="avail" data-when="presale" data-for="packSaas"><b>Not on sale yet.</b> The Software / SaaS pack will be $9 and all five packs $29. Leave your email and we will tell you when they are on sale. Nothing else.</p>
       <p class="avail" data-when="sale" data-for="packSaas" hidden><b>On sale now.</b> The Software / SaaS pack is $9, one-time, through Lemon Squeezy, our merchant of record.</p>
-      <div class="row center-row"><a class="btn btn-primary" href="mailto:support@keelson.co.in?subject=Notify%20me%3A%20Keelson%20template%20packs" data-buy="packSaas">Notify me <svg class="ic sm arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a><a class="btn btn-secondary" href="./#try">Try the free Quick check</a></div>
+      <div class="row"><a class="btn btn-primary" href="mailto:support@keelson.co.in?subject=Notify%20me%3A%20Keelson%20template%20packs" data-buy="packSaas">Notify me <svg class="ic sm arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a><a class="btn btn-secondary" href="./#try">Try the free Quick check</a></div>
     </div>
-    <div class="tablist" role="tablist" aria-label="Hand-over formats">
-      <button class="tab" type="button" role="tab" id="ft1" aria-controls="fp1" aria-selected="true">Your plan</button>
-      <button class="tab" type="button" role="tab" id="ft2" aria-controls="fp2" aria-selected="false" tabindex="-1">Client's template</button>
-      <button class="tab" type="button" role="tab" id="ft3" aria-controls="fp3" aria-selected="false" tabindex="-1">MS Project</button>
-      <button class="tab" type="button" role="tab" id="ft4" aria-controls="fp4" aria-selected="false" tabindex="-1">Google Sheets</button>
-      <button class="tab" type="button" role="tab" id="ft5" aria-controls="fp5" aria-selected="false" tabindex="-1">PDF and CSV</button>
+  </div>
+</section>
+
+<!-- ============ HAND-OVER FORMATS: the page's one tab component ============ -->
+<section class="section soft" id="formats" aria-labelledby="h-formats">
+  <div class="wrap">
+    <div class="intro">
+      <h2 id="h-formats">One plan, handed over in the format they ask for</h2>
+    </div>
+    <div class="qtabs" role="tablist" aria-label="Hand-over formats">
+      <button class="qtab" type="button" role="tab" id="ft1" aria-controls="fp1" aria-selected="true">Your plan</button>
+      <button class="qtab" type="button" role="tab" id="ft2" aria-controls="fp2" aria-selected="false" tabindex="-1">Client's template</button>
+      <button class="qtab" type="button" role="tab" id="ft3" aria-controls="fp3" aria-selected="false" tabindex="-1">MS Project</button>
+      <button class="qtab" type="button" role="tab" id="ft4" aria-controls="fp4" aria-selected="false" tabindex="-1">Google Sheets</button>
+      <button class="qtab" type="button" role="tab" id="ft5" aria-controls="fp5" aria-selected="false" tabindex="-1">PDF and CSV</button>
     </div>
     <div class="tabpanel" role="tabpanel" id="fp1" aria-labelledby="ft1" tabindex="0">
-      <div><h3>One plan to keep up to date.</h3><p class="lead">Dates, totals and status all calculate from the tasks you type. This is the only place you update.</p></div>
+      <div><h3>One plan to keep up to date</h3><p class="lead">Dates, totals and status all calculate from the tasks you type. This is the only place you update.</p></div>
       <div class="tp-visual"><div class="doc"><div class="doc-h"><i aria-hidden="true">X</i>Your plan<span>Keelson-Project-Plan.xlsx</span></div>
         <div class="scroll"><table class="tb t-ours"><thead><tr><th scope="col">ID</th><th scope="col">WBS</th><th scope="col">Task</th><th scope="col">Start</th><th scope="col">Finish</th><th scope="col">%</th></tr></thead><tbody>
           <tr class="s"><td class="num">54</td><td>8</td><td>Testing</td><td>14-Dec-26</td><td>17-Mar-27</td><td class="num">20%</td></tr>
@@ -140,7 +150,7 @@
           <tr><td class="num">61</td><td>8.7</td><td class="in2">UAT sign-off</td><td>17-Mar-27</td><td>17-Mar-27</td><td class="num">0%</td></tr></tbody></table></div></div></div>
     </div>
     <div class="tabpanel" role="tabpanel" id="fp2" aria-labelledby="ft2" tabindex="0" hidden>
-      <div><h3>Their columns, their order, their dates.</h3><p class="lead">Describe the client's template once. Every week, copy the Client Format tab into their file.<sup><a href="#n3" aria-label="Note 3">3</a></sup></p></div>
+      <div><h3>Your client's columns, order and date style</h3><p class="lead">Describe the client's template once. Every week, copy the Client Format tab into their file.<sup><a href="#n3" aria-label="Note 3">3</a></sup></p></div>
       <div class="tp-visual"><div class="doc"><div class="doc-h"><i aria-hidden="true">C</i>Client's template<span>Brightwater PMO standard (fictional)</span></div>
         <div class="scroll"><table class="tb t-client"><thead><tr><th scope="col">Ref</th><th scope="col">Activity</th><th scope="col">Responsible</th><th scope="col">End Date</th><th scope="col">RAG Status</th></tr></thead><tbody>
           <tr class="s"><td>8</td><td>Testing</td><td></td><td>17/03/2027</td><td>In Progress</td></tr>
@@ -150,7 +160,7 @@
           <tr><td>8.7</td><td class="in2">UAT sign-off</td><td>Avery Singh</td><td>17/03/2027</td><td>Not Started</td></tr></tbody></table></div></div></div>
     </div>
     <div class="tabpanel" role="tabpanel" id="fp3" aria-labelledby="ft3" tabindex="0" hidden>
-      <div><h3>Ready for Project, links intact.</h3><p class="lead">Hierarchy, durations, baselines and dependencies, renumbered for Project's own task IDs.<sup><a href="#n2" aria-label="Note 2">2</a></sup></p></div>
+      <div><h3>Opens in MS Project with its links intact</h3><p class="lead">Hierarchy, durations, baselines and dependencies, renumbered for Project's own task IDs.<sup><a href="#n2" aria-label="Note 2">2</a></sup></p></div>
       <div class="tp-visual"><div class="doc"><div class="doc-h"><i aria-hidden="true">P</i>MS Project<span>Keelson-Project-Plan-MSProject.xml</span></div>
         <div class="scroll"><table class="tb t-msp"><thead><tr><th scope="col">ID</th><th scope="col">Task Name</th><th scope="col">Duration</th><th scope="col">Predecessors</th></tr></thead><tbody>
           <tr class="s"><td class="num">54</td><td>Testing</td><td>62 days</td><td></td></tr>
@@ -160,7 +170,7 @@
           <tr><td class="num">59</td><td class="in2">User acceptance testing (UAT)</td><td>10 days</td><td>56,52</td></tr></tbody></table></div></div></div>
     </div>
     <div class="tabpanel" role="tabpanel" id="fp4" aria-labelledby="ft4" tabindex="0" hidden>
-      <div><h3>Upload it. It still calculates.</h3><p class="lead">No macros means nothing to convert. The plan keeps scheduling in the browser.<sup><a href="#n1" aria-label="Note 1">1</a></sup></p></div>
+      <div><h3>Upload it to Google Sheets and it still calculates</h3><p class="lead">No macros means nothing to convert. The plan keeps scheduling in the browser.<sup><a href="#n1" aria-label="Note 1">1</a></sup></p></div>
       <div class="tp-visual"><div class="doc"><div class="doc-h"><i aria-hidden="true">S</i>Google Sheets<span>Uploaded .xlsx, formulas live</span></div>
         <div class="scroll"><table class="tb t-gs"><thead><tr><th scope="col"><span class="sr">Row</span></th><th scope="col">A</th><th scope="col">B</th><th scope="col">C</th><th scope="col">D</th><th scope="col">E</th></tr></thead><tbody>
           <tr class="s"><td class="rn">58</td><td class="num">54</td><td>8</td><td>Testing</td><td>14-Dec-26</td><td>17-Mar-27</td></tr>
@@ -169,16 +179,19 @@
           <tr><td class="rn">63</td><td class="num">59</td><td>8.5</td><td class="in2">User acceptance testing</td><td>04-Mar-27</td><td>17-Mar-27</td></tr></tbody></table></div></div></div>
     </div>
     <div class="tabpanel" role="tabpanel" id="fp5" aria-labelledby="ft5" tabindex="0" hidden>
-      <div><h3>Print it, or use it in other tools.</h3><p class="lead">Pages ready to print for the steering committee, and CSV files for Jira, Power BI or your own database.</p></div>
+      <div><h3>Print it, or load it into other tools</h3><p class="lead">Pages ready to print for the steering committee, and CSV files for Jira, Power BI or your own database.</p></div>
       <div class="tp-visual" aria-hidden="true"><div class="paper printpage"><div class="ph">Project Dashboard</div>
         <div class="ts"><div class="a">Amber</div><div>14 Apr</div><div>+2 days</div><div>73%</div><div>7 of 11</div><div>2</div></div>
         <div class="ln t" style="width:90%"></div><div class="ln" style="width:70%"></div><div class="ln t" style="width:80%"></div><div class="ln" style="width:60%"></div><div class="ln t" style="width:85%"></div></div></div>
-    </div>
+  </div>
+</section>
 
-    <div class="split" id="schedule" style="margin-top:var(--section-y)">
+<!-- ============ SCHEDULING AND GO-LIVE ============ -->
+<section class="section" aria-label="Scheduling and go-live">
+  <div class="wrap stack">
+    <div class="split" id="schedule">
       <div class="copy">
-        <span class="eyebrow">It schedules itself</span>
-        <h2>Drag one duration. Watch go-live move.</h2>
+        <h2>Change one duration and every later date moves</h2>
         <p class="lead">Successors, phases, the Gantt and the dashboard recalculate around weekends and your holidays.</p>
         <p class="fine">Every position comes from the Keelson scheduler run on the sample plan. Presidents' Day (15 Feb) is in its holiday list, which is why some days of delay move go-live more than others.</p>
       </div>
@@ -194,13 +207,12 @@
       </div>
     </div>
 
-    <div class="night split" id="golive" style="margin-top:var(--section-y)">
+    <div class="split flip" id="golive">
       <div class="copy">
-        <span class="eyebrow">Go-live, under control</span>
-        <h2>The cutover weekend, minute by minute.</h2>
+        <h2>A timed runbook for the cutover weekend</h2>
         <p class="lead">Enter the actual time when each step finishes. Later steps update their forecast times. The Go/No-Go uses your criteria. Hypercare tracks SLAs from the first ticket.</p>
       </div>
-      <div>
+      <div class="app-card rbook">
         <div class="rbl">
           <div class="rb"><span class="no">8</span><span>Load work orders and 24 months of history</span><time>ended 07:20</time><span class="chip chip-warn">+35 min</span></div>
           <div class="rb"><span class="no">9</span><span>Reconcile counts and totals</span><time>ended 08:20</time><span class="chip chip-ok">Done</span></div>
@@ -216,8 +228,13 @@
       </div>
     </div>
 
-    <div id="specs" style="margin-top:var(--section-y)">
-      <h3 style="font-size:var(--fs-h3);margin-bottom:var(--sp-5)">The details</h3>
+  </div>
+</section>
+
+<!-- ============ SPECS ============ -->
+<section class="section soft" id="specs" aria-labelledby="h-specs">
+  <div class="wrap">
+    <div class="intro"><h2 id="h-specs">What is in each pack</h2></div>
       <div class="specs">
         <div class="spec"><h3>Workbooks</h3><div><b>Project Plan &amp; Gantt · RAID &amp; Change Log · Go-Live Runbook</b><span>Each one twice: blank for your project, and filled with a worked example.</span></div></div>
         <div class="spec"><h3>Plan</h3><div><span>500 tasks, up to 3 predecessors each, 52-week Gantt.</span><span>Finish-to-start and start-to-start with leads and lags in working days. FF and SF links are flagged and treated as finish-to-start.</span><span>Monday to Friday plus your own holiday list.</span></div></div>
@@ -228,17 +245,15 @@
         <div class="spec"><h3>Requirements</h3><div><span>Excel for Microsoft 365 or Excel 2021 and later, on Windows or Mac. Or Google Sheets.<sup><a href="#n1" aria-label="Note 1">1</a></sup></span><span>No macros, add-ins or passwords.</span></div></div>
         <div class="spec"><h3>Licence</h3><div><span>Unlimited own and client projects. One licence per person. Share filled-in files freely; don't resell the templates.</span></div></div>
       </div>
-    </div>
   </div>
 </section>
 
 <!-- ============ FRAMEWORKS ============ -->
 <section class="section" id="frameworks" aria-labelledby="h-fw">
   <div class="wrap">
-    <div class="head">
-      <span class="eyebrow">Uses the terms of your method</span>
-      <h2 id="h-fw">PMBOK, PRINCE2, agile and ITIL. Already in the right places.</h2>
-      <p class="lead">If you trained for the PMP, PRINCE2, PMI-ACP, ITIL or CISM, you will know every document and where to find it.</p>
+    <div class="intro">
+      <h2 id="h-fw">Uses the terms of PMBOK, PRINCE2, agile and ITIL</h2>
+      <p>If you trained for the PMP, PRINCE2, PMI-ACP, ITIL or CISM, you will know every document and where to find it.</p>
     </div>
     <div class="tbl-wrap">
       <table class="cmp fw">
@@ -265,17 +280,16 @@
         </tbody>
       </table>
     </div>
-    <p class="fine center" style="margin-top:var(--sp-4)">Keelson is independent and not endorsed or certified by any of these bodies.<sup><a href="#n5" aria-label="Note 5">5</a></sup></p>
+    <p class="fine tbl-note">Keelson is independent and not endorsed or certified by any of these bodies.<sup><a href="#n5" aria-label="Note 5">5</a></sup></p>
   </div>
 </section>
 
 <!-- ============ COMPARISON (moved from the homepage) ============ -->
 <section class="section soft" id="compare" aria-labelledby="h-compare">
   <div class="wrap">
-    <div class="head">
-      <span class="eyebrow">Where Keelson fits</span>
-      <h2 id="h-compare">Built for the person who reports on plans other people keep.</h2>
-      <p class="lead">Keelson does not replace your planning tool. It reads the files your tool exports, and answers the questions your sponsor asks each week.</p>
+    <div class="intro">
+      <h2 id="h-compare">Where Keelson fits</h2>
+      <p>Keelson is for the person who reports on plans other people keep. Keelson does not replace your planning tool. It reads the files your tool exports, and answers the questions your sponsor asks each week.</p>
     </div>
     <div class="tbl-wrap">
       <table class="cmp vs">
@@ -292,14 +306,17 @@
         </tbody>
       </table>
     </div>
-    <p class="fine center" style="margin-top:var(--sp-4)">General categories, not specific products. Capabilities vary by product and edition; check with the vendor.</p>
+    <p class="fine tbl-note">General categories, not specific products. Capabilities vary by product and edition; check with the vendor.</p>
   </div>
 </section>
 
 <!-- ============ FAQ ============ -->
 <section class="section" id="faq" aria-labelledby="h-faq">
-  <div class="wrap">
-    <div class="head"><h2 id="h-faq">More questions.</h2></div>
+  <div class="wrap faq-wrap">
+    <div class="faq-side">
+      <h2 id="h-faq">More questions</h2>
+      <p><a href="./#faq">Common questions on the home page</a></p>
+    </div>
     <div class="faq">
       <p class="faq-grp">Reports app</p>
       <details><summary>How many weekly reports do I need for the slip trend?<svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Three for the milestone trend (how milestone dates moved week by week), two for the baseline log. You can also add older files. Keelson sorts them by status date, not by the order you add them.</p></details>

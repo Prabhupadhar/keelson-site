@@ -22,7 +22,7 @@
 <meta property="og:image:height" content="627">
 <meta name="twitter:card" content="summary_large_image">
 </head>
-<body>
+<body class="inner">
 <a class="skip" href="#main">Skip to content</a>
 
 <!-- Icon set: 24px grid, 1.75 stroke, round caps/joins. Drawn for Keelson (docs/DESIGN-SYSTEM.md §6). -->
@@ -112,19 +112,22 @@
 
 <main id="main" tabindex="-1">
 <!-- ============ FREE TOOLS ============ -->
-<section class="section" id="tools" aria-labelledby="h-tools">
+<section class="page-hero" aria-labelledby="h-tools">
   <div class="wrap">
-    <div class="head">
-      <span class="eyebrow"><svg class="ic sm" aria-hidden="true"><use href="#i-tool"/></svg>Free tools · No sign-up</span>
-      <h1 id="h-tools">Small tools for everyday project maths.</h1>
-      <p class="lead">They run in your browser, and each one shows the Excel formula behind it.</p>
+    <div class="ph-split">
+      <h1 id="h-tools">Free tools for everyday project maths</h1>
+      <p class="ph-lead">They run in your browser with no sign-up, and each one shows the Excel formula behind it.</p>
     </div>
+  </div>
+</section>
+<section class="section soft" id="tools" aria-label="Free tools">
+  <div class="wrap">
     <div class="tools">
       <div class="tool" id="wd">
-        <div class="tool-h"><span class="mi-ic"><svg class="ic" aria-hidden="true"><use href="#i-calendar"/></svg></span><h3>Working-day calculator</h3></div>
+        <h2>Working-day calculator</h2>
         <p>When does a 15-day task finish? Weekends and your holidays are skipped.</p>
         <div class="seg" role="group" aria-label="Calculation" style="justify-self:start">
-          <button type="button" aria-pressed="true" data-m="add">Add working days</button><button type="button" aria-pressed="false" data-m="count">Count between dates</button></div>
+          <button type="button" aria-pressed="true" data-m="add">Add working days</button><button type="button" aria-pressed="false" data-m="count"><span class="hide-sm">Count between dates</span><span class="show-sm">Count days</span></button></div>
         <div class="two">
           <label>Start date<input type="date" id="wd-a"></label>
           <label id="wd-n-l">Working days<input type="number" id="wd-n" value="15" min="-2000" max="2000" inputmode="numeric"></label>
@@ -135,7 +138,7 @@
         <p class="bm"><svg class="ic sm" aria-hidden="true"><use href="#i-flag"/></svg>Bookmark this page. Once loaded, it keeps working offline while this tab stays open.</p>
       </div>
       <div class="tool" id="gng">
-        <div class="tool-h"><span class="mi-ic"><svg class="ic" aria-hidden="true"><use href="#i-flag"/></svg></span><h3>Go / No-Go check</h3></div>
+        <h2>Go / No-Go check</h2>
         <p>The criteria from the Keelson go-live runbook. Mark each one and get a result you can paste into the go-live meeting.</p>
         <div class="verdict" id="gng-v" aria-live="polite"><b>—</b><span></span></div>
         <div class="pg-row"><button class="btn btn-primary btn-sm" type="button" id="gng-copy">Copy result</button><button class="btn btn-secondary btn-sm" type="button" id="gng-reset">Reset</button><span class="copied" id="gng-copied" role="status"></span></div>

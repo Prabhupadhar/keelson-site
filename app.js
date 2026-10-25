@@ -42,11 +42,11 @@
   const KH = window.KeelsonHistory, KD = window.KeelsonDiff, KT = window.KeelsonTrend, KF = window.KeelsonForecast;
   // v2 reports: built from this plan's saved versions, not from k alone
   const V2 = [
-    { id: "changes", name: "What changed", orientation: "portrait", tint: "teal", icon: "swap", mod: KD,
+    { id: "changes", name: "What changed", orientation: "portrait", mod: KD,
       description: "Every task added, removed, moved or re-baselined since the last report, with the one sentence your sponsor needs." },
-    { id: "trend", name: "Slip trend", orientation: "landscape", tint: "rose", icon: "trend", mod: KT,
+    { id: "trend", name: "Slip trend", orientation: "landscape", mod: KT,
       description: "How milestone dates moved report by report, the phases that keep slipping, and every re-baseline on record." },
-    { id: "forecast", name: "Finish-date confidence", orientation: "portrait", tint: "blue", icon: "target", mod: KF,
+    { id: "forecast", name: "Finish-date confidence", orientation: "portrait", mod: KF,
       description: "P50 and P80 finish dates from this plan's own track record, explained in one sentence." },
   ].filter(r => r.mod && KH);
   const ALL = [...REPORTS, ...V2];
@@ -213,7 +213,7 @@
     }
     if (lic && lic.key && lic.instanceId && lic.instanceId !== r.instance) release(lic.key, lic.instanceId); // replacing a key frees the old slot
     lic = record(key, r, r.instance); store.set("keelson-licence", lic);
-    $("key").value = ""; msg.className = "status ok"; msg.textContent = "Pro is unlocked. Enjoy.";
+    $("key").value = ""; msg.className = "status ok"; msg.textContent = "Pro is unlocked.";
     paintPro(); refresh();
     setTimeout(() => dlg.open && dlg.close(), 1100);
     toast("Keelson Pro unlocked");
@@ -226,11 +226,8 @@
 
   // ---------- step 1: upload ----------
   const SAMPLES = (window.KEELSON_SAMPLES || { plans: [] }), SH = window.KEELSON_SAMPLE_HISTORY;
-  const TINTS = ["t-teal", "t-amber", "t-blue"];
-  $("samples").innerHTML = (SH && KH ? `<button class="sample feat" type="button" role="listitem" data-sample="history"><span class="tile t-violet">${icon("history", "ic sm")}</span>` +
-      `<span><b>${esc(SH.label)} <span class="chip chip-new">New</span></b><span class="n">${esc(SH.note)}</span></span>${icon("arrow", "ic sm go")}</button>` : "") +
-    SAMPLES.plans.map((p, i) =>
-      `<button class="sample" type="button" role="listitem" data-sample="${i}"><span class="tile ${TINTS[i % 3]}" aria-hidden="true">${esc(p.label.split(" ").map(w => w[0]).join("").slice(0, 2))}</span><span><b>${esc(p.label)}</b><span class="n">${esc(p.note)}</span></span>${icon("arrow", "ic sm go")}</button>`).join("");
+  const sampleBtn = (id, label, note) => `<button class="sample" type="button" role="listitem" data-sample="${id}"><span><b>${esc(label)}</b><span class="n">${esc(note)}</span></span>${icon("arrow", "ic sm go")}</button>`;
+  $("samples").innerHTML = (SH && KH ? sampleBtn("history", SH.label, SH.note) : "") + SAMPLES.plans.map((p, i) => sampleBtn(i, p.label, p.note)).join("");
   $("samples").addEventListener("click", e => {
     const b = e.target.closest("[data-sample]"); if (!b) return;
     if (b.dataset.sample === "history") { // the current plan plus five earlier weekly versions, kept in memory
@@ -622,7 +619,6 @@
   const page = (d, edit, forPrint) => H.html(d, { brand: S.brand, watermark: !isPro() && !forPrint, footer: !isPro(), editable: edit });
 
   // ---------- step 3: gallery ----------
-  const ICONS = { onepager: "doc", weekly: "report", roadmap: "gantt", variance: "gauge" };
   // what a v2 card still needs before it says much, shown on the card
   function need(id, d) {
     if (id === "changes") return prevVersion() ? "" : "Needs an earlier version";
@@ -635,8 +631,8 @@
     const land = (d?.orientation || r.orientation) === "landscape", v2 = isV2(r.id);
     const locked = !isPro() && r.id !== "onepager", nd = v2 ? need(r.id, d) : "";
     return `<li><a class="rc${v2 ? " v2" : ""}" href="#report/${esc(r.id)}" aria-label="${esc(r.name)}${r.description ? ". " + esc(r.description) : ""}${nd ? ". " + esc(nd) : ""}">
-      <div class="thumbbox" aria-hidden="true"${v2 ? ` style="--tbg:var(--tint-${r.tint})"` : ""}><div class="thumb ${land ? "landscape" : "portrait"}"><div class="thumb-in" inert style="width:${land ? 1123 : 794}px">${d ? page(d, false) : ""}</div></div></div>
-      <div class="rc-b"><h3><span><span class="tile ${v2 ? "t-" + r.tint : "t-violet"}">${icon(r.icon || ICONS[r.id] || "doc")}</span>${esc(r.name)}</span>${locked ? '<span class="lock">Pro</span>' : ""}</h3>${r.description ? `<p>${esc(r.description)}</p>` : ""}</div>
+      <div class="thumbbox" aria-hidden="true"><div class="thumb ${land ? "landscape" : "portrait"}"><div class="thumb-in" inert style="width:${land ? 1123 : 794}px">${d ? page(d, false) : ""}</div></div></div>
+      <div class="rc-b"><h3><span>${esc(r.name)}</span>${locked ? '<span class="lock">Pro</span>' : ""}</h3>${r.description ? `<p>${esc(r.description)}</p>` : ""}</div>
       <div class="meta"><span>${land ? "Landscape" : "Portrait"}</span><span>${isPro() ? "PDF · Word · PowerPoint" : r.id === "onepager" ? "Free PDF" : "Preview"}</span>${nd ? `<span class="need">${esc(nd)}</span>` : ""}</div></a>` +
       (r.id === "changes" && nd ? `<button class="btn fill block" type="button" id="g-cmp">${icon("plus")}Add last week's export to see what changed</button>` : "") + `</li>`;
   }
@@ -842,9 +838,9 @@
   const span = c => ["ownerChanged", "renamed", "phaseMoved"].includes(c.type) ? `${c.from || "—"} → ${c.to || "—"}`
     : c.type === "reopened" ? `Done → ${pctT(c.to)}` : c.type === "pctBackwards" ? `${pctT(c.from)} → ${pctT(c.to)}`
     : c.type === "added" ? `Due ${Ds(c.to)}` : ["removed", "cancelled"].includes(c.type) ? `Was due ${Ds(c.from)}` : `${Ds(c.from)} → ${Ds(c.to)}`;
-  const toolHead = (r, title, sub, extra = "") => `<div class="tool-h"><span class="tile t-${r.tint}">${icon(r.icon)}</span><div class="grow"><h3>${title}</h3><p>${sub}</p></div>${extra}</div>`;
+  const toolHead = (r, title, sub, extra = "") => `<div class="tool-h"><div class="grow"><h3>${title}</h3><p>${sub}</p></div>${extra}</div>`;
   const cmpDrop = () => `<label class="minidrop" for="cmp-file" id="cmp-drop"><input type="file" id="cmp-file" accept=".xlsx,.csv,.tsv,.txt">
-      <span class="tile t-teal">${icon("swap", "ic sm")}</span><span><b>Compare with another file</b><span>${S.cmp ? "Drop a different export to compare with instead." : "Last week's export of this plan, as .xlsx or CSV. Read here, never uploaded."}</span></span></label>`;
+      ${icon("swap", "ic sm")}<span><b>Compare with another file</b><span>${S.cmp ? "Drop a different export to compare with instead." : "Last week's export of this plan, as .xlsx or CSV. Read here, never uploaded."}</span></span></label>`;
   function toolChanges(r) {
     const p = prevVersion(), cur = curVersion();
     const src = S.cmp ? `Comparing with <b>${esc(S.cmp.name)}</b>` : p ? `Comparing with your saved version of <b>${esc(F(fromIso(p.asOf)))}</b>` : "There is no earlier version of this project yet.";
