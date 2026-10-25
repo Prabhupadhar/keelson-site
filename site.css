@@ -594,6 +594,8 @@ table.cmp{width:100%;border-collapse:collapse;min-width:640px;font-size:15px}
 .foot a{color:var(--muted);text-decoration:none;font-size:14.5px}
 .foot a:hover{color:var(--ink);text-decoration:underline}
 .foot .tag{color:var(--muted);font-size:14.5px;margin-top:var(--sp-3);max-width:320px}
+.foot .social{display:inline-flex;align-items:center;gap:8px;min-height:44px;margin-top:var(--sp-2);color:var(--ink);font-weight:600;font-size:14.5px;text-decoration:none}
+.foot .social:hover{color:var(--accent-text)} .foot .social .ic{width:18px;height:18px}
 .foot-base{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;margin-top:var(--sp-7);padding-top:var(--sp-5);border-top:1px solid var(--line);color:var(--faint);font-size:13px}
 .foot-tm{color:var(--faint);font-size:12.5px;margin-top:var(--sp-4);max-width:900px}
 
