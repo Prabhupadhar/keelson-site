@@ -80,6 +80,21 @@
   };
   const saveBrand = () => store.set("keelson-brand", { color: S.brand.color, client: S.client, preparedBy: S.prep });
 
+  // ---------- working week and holidays (KeelsonEngine.setCalendar; hidden when this engine has none) ----------
+  const CAL_OK = typeof E?.setCalendar === "function" && !!E.WEEKENDS;
+  const calOf = c => ({ week: CAL_OK && c && Object.hasOwn(E.WEEKENDS, c.week) ? c.week : "sat-sun", hol: clean(c && typeof c.hol === "string" ? c.hol : "").slice(0, 5000) });
+  const calDefault = () => calOf(store.get("keelson-calendar", null)); // the last calendar used, for a new project
+  S.cal = calDefault(); S.calMine = false; // calMine: this project has its own calendar saved
+  // set the engine's calendar from S.cal; holidays are typed one per line, read like the plan's dates
+  function applyCal() {
+    if (!CAL_OK) return null;
+    const lines = S.cal.hol.split(/\r?\n/).map(x => x.trim()).filter(Boolean), df = !!(S.k && S.k.dayFirst);
+    const hol = lines.map(l => E.parseDate(l, df)).filter(v => v != null).map(E.iso);
+    try { const c = E.setCalendar({ weekend: E.WEEKENDS[S.cal.week], holidays: hol }); return { n: c.holidays.length, ignored: lines.length - c.holidays.length }; }
+    catch (e) { console.error("Keelson: calendar", e); return null; }
+  }
+  const comp = (text, o) => { applyCal(); return E.compute(text, o); };
+
   // ---------- licence (a convenience, not security: the reports are built in this tab either way) ----------
   let lic = store.get("keelson-licence", null);
   // a record that was tampered with (or written by a clock set ahead) is dropped, not trusted
@@ -225,6 +240,7 @@
     const p = SAMPLES.plans[+b.dataset.sample];
     load({ file: p.label + " sample", text: p.text, title: "FieldFlow Service Cloud Implementation", sd: fromIso(SAMPLES.statusDate), msKey: (p.msKeys || [])[0] || "", sample: true });
   });
+  $("try-sample").addEventListener("click", () => $("samples").querySelector("[data-sample]")?.click()); // the first sample: the one with history
   const upErr = msg => { const el = $("up-err"); el.hidden = !msg; el.textContent = msg || ""; };
   const dropT = $("drop-t").textContent, dropS = $("drop-s").innerHTML;
   const busy = on => { $("drop-t").innerHTML = on ? `<span class="busy"><span class="spin" aria-hidden="true"></span>Reading your plan…</span>` : dropT; $("drop-s").innerHTML = on ? "" : dropS; };
@@ -279,7 +295,7 @@
       S.text = toText(S.sheets[S.sheet].rows);
     } else S.text = o.text;
     S.title = clean(o.title);
-    S.rules = null; S.call = null; S.msExclude = []; S.msSupported = null;
+    S.rules = null; S.call = null; S.msExclude = []; S.msSupported = null; S.cal = calDefault(); S.calMine = false;
     $("cols").open = false;
     compute();
     if (!S.title || /^(sheet\d*|plan|export|download|untitled)$/i.test(S.title)) S.title = clean(guessTitle()) || S.title || "Project status";
@@ -289,7 +305,7 @@
     // a sample's earlier versions live in memory until a report is downloaded; a real plan uses this browser's saved history
     if (KH) { if (S.histMem) { KH.use(null); S.histMem = false; } if (o.history) memHistory(o.history).then(loadHist); else loadHist(); }
     paintCheck();
-    go("check");
+    go(confident() ? "reports" : "check"); // nothing to fix: straight to the reports ("Columns detected · Change" leads back)
   }
   const guessTitle = () => { // a title row above the headers, e.g. "Brightwater — FieldFlow programme tracker"
     const g = E.parseTable(S.text).slice(0, S.k.hdrRow - 1).map(r => r.filter(Boolean)).filter(r => r.length === 1);
@@ -303,17 +319,20 @@
   function compute() {
     const base = { statusDate: S.sd, cols: S.cols, msKeys: msKeys(), ...(S.rules ? { rules: { ...S.rules } } : {}) };
     const call = S.call && callOk() ? { rag: S.call.rag, reason: S.call.reason.trim() } : null;
-    let k = E.compute(S.text, base);
+    let k = comp(S.text, base);
     S.msAll = Array.isArray(k.tasks) && k.tasks.some(t => t.ms) ? k.tasks.filter(t => t.ms) : k.msList || []; // every milestone (msList may be shortened)
     if (S.msSupported == null && S.msAll.length) { // does this engine honour msExclude? (probe once per plan)
-      const t = E.compute(S.text, { ...base, msExclude: [msId(S.msAll[0])] });
+      const t = comp(S.text, { ...base, msExclude: [msId(S.msAll[0])] });
       S.msSupported = t.nMs < k.nMs;
     }
     const ex = S.msSupported ? S.msExclude.filter(x => S.msAll.some(m => msId(m) === x)) : [];
-    if (call || ex.length) k = E.compute(S.text, { ...base, ...(call ? { ragOverride: call } : {}), ...(ex.length ? { msExclude: ex } : {}) });
+    if (call || ex.length) k = comp(S.text, { ...base, ...(call ? { ragOverride: call } : {}), ...(ex.length ? { msExclude: ex } : {}) });
     if (call && k.ragCalc === undefined) { k.ragCalc = k.rag; k.rag = call.rag; k.ragReason = call.reason; } // engine without ragOverride yet
     S.k = k;
     S.body = E.parseTable(S.text).slice(S.k.hdrRow).filter(r => r.some(c => c)).length; // data rows under the headers
+    // no date settles day-first vs month-first: ambiguous when reading them the other way gives different dates
+    const dates = x => JSON.stringify((x.tasks || []).map(t => [t.start, t.finish, t.bfin]));
+    S.ambig = !k.evidence && usable() && dates(E.compute(S.text, { ...base, dateOrder: "day" })) !== dates(k);
     return S.k;
   }
 
@@ -332,6 +351,7 @@
     $("title").value = S.title; $("client").value = S.client; $("prep").value = S.prep; $("mskey").value = S.msKey;
     $("sd").value = E.iso(S.sd);
     $("call").value = S.call ? S.call.rag : ""; $("call-why").value = S.call ? S.call.reason : "";
+    $("cal-week").value = S.cal.week; if (document.activeElement !== $("cal-hol")) $("cal-hol").value = S.cal.hol;
     paintFound();
   }
   // ---------- per-project settings: status rules, your call, milestone keywords and exclusions ----------
@@ -345,10 +365,11 @@
     if (p.call && /^(Green|Amber|Red)$/.test(p.call.rag)) S.call = { rag: p.call.rag, reason: clean(p.call.reason).slice(0, 160) };
     if (typeof p.msKey === "string") S.msKey = clean(p.msKey);
     if (Array.isArray(p.msExclude)) S.msExclude = p.msExclude.map(String);
+    if (p.cal && typeof p.cal === "object") { S.cal = calOf(p.cal); S.calMine = true; }
   }
   function saveProject() {
-    const all = store.get("keelson-projects", {}), v = { rules: S.rules, call: S.call, msKey: S.msKey, msExclude: S.msExclude };
-    if (!S.rules && !S.call && !S.msKey && !S.msExclude.length) delete all[projKey()]; else all[projKey()] = v;
+    const all = store.get("keelson-projects", {}), v = { rules: S.rules, call: S.call, msKey: S.msKey, msExclude: S.msExclude, ...(S.calMine ? { cal: S.cal } : {}) };
+    if (!S.rules && !S.call && !S.msKey && !S.msExclude.length && !S.calMine) delete all[projKey()]; else all[projKey()] = v;
     store.set("keelson-projects", all);
   }
   function paintRules() {
@@ -374,6 +395,29 @@
         : `<li><span class="nm">${esc(m.name)}</span>${d}</li>`;
     }).join("");
   }
+  // what the Check step flags: [kind, text, help]; any "warn" or "bad" means the read needs a look before the reports
+  function checkMsgs() {
+    const k = S.k, c = k.checks, m = [];
+    if (usable()) {
+      const unread = c.capped ? 0 : S.body - k.rows - (k.nCancel || 0);
+      if (S.sheets && S.scores && S.scores.filter(x => x === S.scores[S.sheet]).length > 1) m.push(["warn", `More than one sheet looks like a plan. We used ${S.sheets[S.sheet].name}`, "Pick another under Sheet if that's wrong."]);
+      if (unread > 0) m.push(["warn", `${plural(unread, "row")} ${unread === 1 ? "has" : "have"} no task name, so ${unread === 1 ? "it was" : "they were"} left out`, "Check the Task name column under Columns found."]);
+      if (S.ambig) m.push(["warn", `Dates could be day first or month first. We read them ${k.dayFirst ? "day first (31/12)" : "month first (12/31)"}`, "Check one date you know in the reports."]);
+      if (c.noFinish) m.push(["warn", `${plural(c.noFinish, "task")} ${c.noFinish === 1 ? "has" : "have"} no finish date`, "They're left off timelines and due lists."]);
+      if (c.badDates) m.push(["warn", `${plural(c.badDates, "row")} ${c.badDates === 1 ? "has a date" : "have dates"} we couldn't read`, "Dates like 31/12/2026, 2026-12-31 or 31 Dec 2026 work best."]);
+      if (c.order) m.push(["warn", `${plural(c.order, "task")} ${c.order === 1 ? "finishes" : "finish"} before ${c.order === 1 ? "it starts" : "they start"}`, "Worth a look in your plan."]);
+      if (c.mismatch) m.push(["warn", `${plural(c.mismatch, "task")} ${c.mismatch === 1 ? "has a status that doesn't match its" : "have a status that doesn't match their"} % complete`, "For example Done but 80%. We go by the status."]);
+      if (c.capped) m.push(["warn", "Only the first 1,000 rows were read", "Split very large plans by phase for the best reports."]);
+      if (k.cols.bfin < 0) m.push(["info", "No baseline column", "Reports can't show slippage against the original plan. Add a Baseline Finish column if you have one."]);
+      if (!k.nPhases) m.push(["info", "No phases found", "Add a Phase column, WBS numbers or outline levels to group the work."]);
+      if (!k.nMs) m.push(["info", "No milestones found", "Mark 0-day tasks, add a Milestone column, or type a keyword under Milestones."]);
+      if (k.nCancel) m.push(["info", `${plural(k.nCancel, "cancelled task")} left out`, ""]);
+      if (!m.some(x => x[0] === "warn")) m.unshift(["ok", `${plural(k.rows, "row")} read cleanly`, ""]);
+    } else if (S.body) m.push(["bad", `We couldn't find a ${k.cols.name < 0 ? "task name" : "finish or due date"} column`, "Choose it under Columns found."]);
+    return m;
+  }
+  // a confident read: required columns found, nothing warned, milestones found, no status call waiting for a reason
+  const confident = () => usable() && callOk() && S.k.nMs > 0 && !checkMsgs().some(x => x[0] === "warn" || x[0] === "bad");
   function paintFound() {
     const k = S.k, ok = usable();
     const called = S.call && callOk() && k.ragCalc && k.ragCalc !== "—";
@@ -382,21 +426,9 @@
       : `<span class="rag none">—</span><div><b>${S.body ? "One column needs you" : "We couldn't find a plan in this"}</b><p>${S.body ? `Pick the ${k.cols.name < 0 ? "task name" : "finish or due date"} column below.` : "Check the file has a header row with task names and dates."}</p></div>`;
     $("facts").innerHTML = ok ? [[k.nTask, "task"], [k.nMs, "milestone"], [k.nPhases, "phase"]].map(([n, w]) => `<li><b>${n}</b> ${w}${n === 1 ? "" : "s"}</li>`).join("") +
       `<li>Headers in row <b>${k.hdrRow}</b></li>` + (k.evidence ? `<li>Dates read <b>${k.dayFirst ? "day first" : "month first"}</b></li>` : "") : "";
-    const c = k.checks, m = [];
-    if (ok) {
-      if (c.noFinish) m.push(["warn", `${plural(c.noFinish, "task")} ${c.noFinish === 1 ? "has" : "have"} no finish date`, "They're left off timelines and due lists."]);
-      if (c.badDates) m.push(["warn", `${plural(c.badDates, "row")} ${c.badDates === 1 ? "has a date" : "have dates"} we couldn't read`, "Dates like 31/12/2026, 2026-12-31 or 31 Dec 2026 work best."]);
-      if (c.order) m.push(["warn", `${plural(c.order, "task")} ${c.order === 1 ? "finishes" : "finish"} before ${c.order === 1 ? "it starts" : "they start"}`, "Worth a look in your plan."]);
-      if (c.mismatch) m.push(["warn", `${plural(c.mismatch, "task")} ${c.mismatch === 1 ? "has a status that doesn't match its" : "have a status that doesn't match their"} % complete`, "For example Done but 80%. We go by the status."]);
-      if (c.capped) m.push(["warn", "Only the first 1,000 rows were read", "Split very large plans by phase for the best reports."]);
-      if (k.cols.bfin < 0) m.push(["info", "No baseline column", "Reports can't show slippage against the original plan. Add a Baseline Finish column if you have one."]);
-      if (!k.nPhases) m.push(["info", "No phases found", "Add a Phase column, WBS numbers or outline levels to group the work."]);
-      if (!k.nMs) m.push(["info", "No milestones found", "Mark 0-day tasks, add a Milestone column, or type a keyword under Columns found."]);
-      if (k.nCancel) m.push(["info", `${plural(k.nCancel, "cancelled task")} left out`, ""]);
-      if (!m.some(x => x[0] === "warn")) m.unshift(["ok", `${plural(k.rows, "row")} read cleanly`, ""]);
-    } else if (S.body) m.push(["bad", `We couldn't find a ${k.cols.name < 0 ? "task name" : "finish or due date"} column`, "Choose it under Columns found."]);
+    const m = checkMsgs();
     $("msgs").innerHTML = m.map(([t, a, b]) => `<li class="msg ${t}"><div>${esc(a)}${b ? `<br><span>${esc(b)}</span>` : ""}</div></li>`).join("");
-    colMap(k); paintRules(); paintMs();
+    colMap(k); paintRules(); paintMs(); paintCal();
     if (!ok && S.body) $("cols").open = true;
     const to = $("to-reports");
     to.setAttribute("aria-disabled", String(!ok || !callOk()));
@@ -419,8 +451,8 @@
   $("sheet").addEventListener("change", e => { S.sheet = +e.target.value; S.cols = {}; S.text = toText(S.sheets[S.sheet].rows); compute(); paintCheck(); });
   $("title").addEventListener("input", e => { S.title = clean(e.target.value); });
   $("title").addEventListener("change", () => { // a project name used before brings back its settings and unsaved commentary
-    if (store.get("keelson-projects", {})[projKey()]) { S.rules = null; S.call = null; S.msExclude = []; loadProject(); compute(); paintCheck(); }
-    else if (S.rules || S.call || S.msKey || S.msExclude.length) saveProject();
+    if (store.get("keelson-projects", {})[projKey()]) { S.rules = null; S.call = null; S.msExclude = []; S.cal = calDefault(); S.calMine = false; loadProject(); compute(); paintCheck(); }
+    else if (S.rules || S.call || S.msKey || S.msExclude.length || S.calMine) saveProject();
     const ed = sess.get("keelson-edits", {})[projKey()];
     if (ed && Object.keys(ed).length) S.edits = ed; else saveEdits();
     withNotes(); paintCrumb();
@@ -452,6 +484,15 @@
     saveProject(); compute(); paintFound();
     $("mslist").querySelector(`[data-ms="${CSS.escape(id)}"]`)?.focus();
   });
+  // working week: saved with this project, and remembered as the default for the next new one
+  $("cal-f").hidden = !CAL_OK;
+  function paintCal() {
+    const r = applyCal(); if (!r) return;
+    $("cal-hol-n").textContent = !S.cal.hol.trim() ? "" : `${plural(r.n, "holiday")} used${r.ignored ? ` · ${plural(r.ignored, "line")} ignored (not a date, or a repeat)` : ""}`;
+  }
+  const calChanged = () => { S.calMine = true; store.set("keelson-calendar", S.cal); saveProject(); compute(); paintFound(); };
+  $("cal-week").addEventListener("change", e => { if (Object.hasOwn(E.WEEKENDS || {}, e.target.value)) { S.cal.week = e.target.value; calChanged(); } });
+  $("cal-hol").addEventListener("input", e => { S.cal.hol = clean(e.target.value).slice(0, 5000); calChanged(); });
   $("sd").addEventListener("change", e => { const v = fromIso(e.target.value); if (v != null) { S.sd = v; compute(); paintFound(); } });
   $("to-reports").addEventListener("click", e => {
     if (!usable()) { e.preventDefault(); $("cols").open = true; $("colmap").querySelector(".miss + select")?.focus(); }
@@ -516,7 +557,7 @@
   async function memHistory(versions) { // the sample's earlier weeks: computed here, stored in a memory store, never in IndexedDB
     KH.use(KH.memoryStore()); S.histMem = true; S.memSnaps = [];
     for (const v of versions) {
-      const k = E.compute(v.text, { statusDate: fromIso(v.asOf), msKeys: msKeys() });
+      const k = comp(v.text, { statusDate: fromIso(v.asOf), msKeys: msKeys() });
       await KH.put(projKey(), KH.makeVersion(k, { project: projKey(), asOf: v.asOf, file: v.file, savedAt: v.asOf + "T09:00:00.000Z" }));
       if (R.snapshot) S.memSnaps.push(R.snapshot(k, S.memSnaps[S.memSnaps.length - 1] || null));
     }
@@ -558,6 +599,7 @@
     return c.res;
   }
   function doc(id) {
+    applyCal();
     if (!isV2(id)) return R.build(id, S.k, opts(id));
     const o = opts(id), base = { title: o.title, client: o.client, preparedBy: o.preparedBy, edits: o.edits };
     if (id === "trend") return KT.report(trendVersions(), base);
@@ -598,14 +640,23 @@
       <div class="meta"><span>${land ? "Landscape" : "Portrait"}</span><span>${isPro() ? "PDF · Word" : r.id === "onepager" ? "Free PDF" : "Preview"}</span>${nd ? `<span class="need">${esc(nd)}</span>` : ""}</div></a>` +
       (r.id === "changes" && nd ? `<button class="btn fill block" type="button" id="g-cmp">${icon("plus")}Add last week's export to see what changed</button>` : "") + `</li>`;
   }
+  const LEAD = ["onepager", "changes", "forecast"]; // the three reports most PMs want first; the rest sit under More reports
+  // "Columns detected: … · Change": a wrong mapping is one click from Check
+  function paintDetected() {
+    const used = E.FIELDS.filter(([key]) => S.k.cols[key] >= 0).map(([, l]) => l.split(" / ")[0]);
+    $("detected").innerHTML = `${icon("check")}<span>Columns detected: ${esc(used.slice(0, 6).join(", "))}${used.length > 6 ? `, +${used.length - 6} more` : ""}` +
+      `${CAL_OK && E.calText ? ` · Working week: <span style="white-space:nowrap">${esc(E.calText())}</span>` : ""}</span> <span style="white-space:nowrap">· <a href="#check" id="detected-change" aria-label="Change columns${CAL_OK ? " or working week" : ""}">Change</a></span>`;
+  }
+  $("detected").addEventListener("click", e => { if (e.target.closest("#detected-change")) { $("cols").open = true; toCols = true; } });
+  let toCols = false;
   function paintGallery() {
     $("loop-hint").hidden = isPro();
     $("reports-sub").innerHTML = `${nWord(ALL.length)} reports for <b>${esc(S.title || "Your project")}</b> as of ${F(S.sd)}. Open one to edit the commentary and download it.${isPro() ? "" : ` ${esc(FREE_RULE)}.`}`;
-    const n = trendVersions().length;
-    $("gallery").innerHTML = `<h3 class="ghead">Status reports</h3><ul class="gallery">${REPORTS.map(card).join("")}</ul>` +
-      (V2.length ? `<h3 class="ghead">Change, trend and forecast <span class="chip chip-new">New</span></h3>` +
-        `<p>Built from this project's saved versions: ${n === 1 ? "only this plan so far" : `${n} reports from ${F(fromIso(trendVersions()[0].asOf))}`}. Press Save version (or download a Word report) to keep this week's; older exports can be added under Version history.</p>` +
-        `<ul class="gallery three">${V2.map(card).join("")}</ul>` : "");
+    const n = trendVersions().length, lead = LEAD.map(id => ALL.find(r => r.id === id)).filter(Boolean), more = ALL.filter(r => !lead.includes(r));
+    $("gallery").innerHTML = `<h3 class="ghead" id="g-lead">Start here</h3><ul class="gallery three" aria-labelledby="g-lead">${lead.map(card).join("")}</ul>` +
+      (V2.length ? `<p class="hint gnote">What changed, Slip trend and Finish-date confidence use this project's saved versions: ${n === 1 ? "only this plan so far" : `${n} reports from ${F(fromIso(trendVersions()[0].asOf))}`}. Press Save version (or download a Word report) to keep this week's. Add older exports under Version history.</p>` : "") +
+      `<h3 class="ghead" id="g-more">More reports</h3><ul class="gallery" aria-labelledby="g-more">${more.map(card).join("")}</ul>`;
+    paintDetected();
     fitThumbs();
   }
   // one version only: last week's export goes straight into What changed (read here, compared, never uploaded)
@@ -700,7 +751,7 @@
       S.hist = []; S.memSnaps = []; S.cmp = null; paintHistBtn();
     }
     if (lic) release(lic.key, lic.instanceId);
-    lic = null; S.brand = { color: "#1a7f86", logo: null }; S.client = S.prep = ""; S.edits = {}; S.dirty = false; S.rules = null; S.call = null; S.msExclude = []; S.msKey = "";
+    lic = null; S.brand = { color: "#1a7f86", logo: null }; S.client = S.prep = ""; S.edits = {}; S.dirty = false; S.rules = null; S.call = null; S.msExclude = []; S.msKey = ""; S.cal = calOf(null); S.calMine = false;
     $("client").value = $("prep").value = "";
     if (S.k) compute();
     paintPro(); refresh(); toast(cleared ? "Saved data cleared" : "Version history couldn't be cleared. Close other Keelson tabs, then try again.");
@@ -873,7 +924,7 @@
   const dayOf = ms => Math.floor((ms - new Date(ms).getTimezoneOffset() * 6e4) / DAY_MS);
   const guessAsOf = f => { const d = f.lastModified ? dayOf(f.lastModified) : null; return d != null && d < S.sd ? d : S.sd - 7; }; // the file's date, if it is older than this plan
   function cmpVersion(text, asOf, file, sheet) {
-    const k = E.compute(text, { statusDate: asOf, msKeys: msKeys() });
+    const k = comp(text, { statusDate: asOf, msKeys: msKeys() });
     if (!(k.rows > 0 && k.cols.name >= 0 && k.cols.finish >= 0)) throw plainErr("We couldn't find task names and finish dates in that file. Check it's an export of this plan.");
     return KH.makeVersion(k, { project: projKey(), file, sheet, asOf: E.iso(asOf) });
   }
@@ -926,7 +977,7 @@
     const d = fromIso($("bf-date").value);
     if (!bf) return;
     if (d == null) { bfMsg("Pick the date this file's figures were as of.", "bad"); $("bf-date").focus(); return; }
-    const k = E.compute(bf.text, { statusDate: d, msKeys: msKeys() });
+    const k = comp(bf.text, { statusDate: d, msKeys: msKeys() });
     if (!(k.rows > 0 && k.cols.name >= 0 && k.cols.finish >= 0)) { bfMsg("We couldn't find task names and finish dates in that file.", "bad"); return; }
     try { await KH.put(projKey(), KH.fromFile(k, E.iso(d), { project: projKey(), file: bf.file, sheet: bf.sheet })); }
     catch (err) { console.error("Keelson: older file", err); bfMsg("That version couldn't be saved in this browser.", "bad"); return; }
@@ -995,20 +1046,24 @@
     });
     if (v === "check") paintCheck();
     refresh(); paintCrumb();
+    if (v !== "check") toCols = false;
+    if (first && v === "upload" && cta) { $("file").focus({ preventScroll: true }); $("drop").scrollIntoView({ block: "nearest" }); } // the website's main button
     if (changed && !first) { // move focus to the new view, never on first load (Tab must start at the skip link)
       const h = $(VIEWS[v]).querySelector("h1, h2");
       scrollTo({ top: 0, behavior: reduce.matches ? "auto" : "instant" });
-      if (v === "check" && usable()) $("to-reports").focus({ preventScroll: true }); // Enter goes straight on: ten seconds when detection is right
+      if (v === "check" && toCols) $("cols").querySelector("summary").focus({ preventScroll: true });
+      else if (v === "check" && usable()) $("to-reports").focus({ preventScroll: true }); // Enter goes straight on: ten seconds when detection is right
       else h?.focus({ preventScroll: true });
+      toCols = false;
       document.title = { upload: "Keelson Pro · Stakeholder reports from your plan", check: "Check your plan · Keelson Pro", reports: "Your reports · Keelson Pro", report: `${$("h-report").textContent} · Keelson Pro` }[v];
     }
   }
   addEventListener("hashchange", route);
-  const buyer = location.hash === "#pro"; // Lemon Squeezy sends buyers back to app.html#pro after checkout
+  const buyer = location.hash === "#pro", cta = location.hash === "#upload"; // Lemon Squeezy sends buyers back to app.html#pro after checkout
   if (buyer) history.replaceState(null, "", "#upload");
   route();
   if (buyer) openPro();
 
   if (missing.length) upErr(`Part of the app didn't load (${missing.join(", ")}). Reload the page; if it keeps happening, tell us at keelson.co.in.`);
-  window.KeelsonApp = { S, load, isPro, rasterize, safeName, loadHist, curVersion }; // for tests
+  window.KeelsonApp = { S, load, confident, isPro, rasterize, safeName, loadHist, curVersion }; // for tests
 })();

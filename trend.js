@@ -113,12 +113,12 @@
       const all = V.filter(v => v.finish != null);
       let k = 1; while (k < all.length && all[all.length - 1 - k].finish === lp.finish) k++;
       const latest = k >= 2 ? { held: k, since: E.iso(all[all.length - k].asOf), moved: 0 } : { held: 1, since: null, moved: all.length > 1 ? E.wdiff(all[all.length - 2].finish, lp.finish) : 0 };
-      drift = { slope: s, slopeWdPerWeek: s * 5, n: pts.length, r2, timePace: s >= TIME_PACE, verdict: pts.length >= VERDICT_N, from: E.iso(pts[0].asOf), to: E.iso(lp.asOf), landing, noLanding, latest };
+      drift = { slope: s, slopeWdPerWeek: s * (7 - E.calendar().weekend.length), n: pts.length, r2, timePace: s >= TIME_PACE, verdict: pts.length >= VERDICT_N, from: E.iso(pts[0].asOf), to: E.iso(lp.asOf), landing, noLanding, latest };
     }
     return { ok: true, n, nMs, milestones: ms.map(({ key, name, points }) => ({ key, name, points: points.map(({ asOf, finish }) => ({ asOf, finish })) })),
       phases, rebaselines: rb, drift, versions: V.map(v => E.iso(v.asOf)), latest: { asOf: E.iso(last.asOf), finish: E.iso(last.finish), rag: last.rag } };
   }
-  const wdAdd = (d, n) => { while (E.wd(d) >= 5) d--; for (; n > 0;) { d++; if (E.wd(d) < 5) n--; } return d; };
+  const wdAdd = (d, n) => { while (!E.isWd(d)) d--; return E.addWd(d, n); };
 
   function driftText(dr) {
     if (!dr) return null;
@@ -247,7 +247,7 @@
           wdS(p.cumulativeWd), p.latestMove == null ? "—" : { text: wdS(p.latestMove), tone: p.latestMove > 0 ? "amber" : p.latestMove < 0 ? "green" : null }, F(day(p.finish))]),
         empty: "No phase finish moved later between reports." },
       ...audit,
-      { type: "note", text: "Moves are working days (Mon–Fri) between consecutive saved reports, matched on the plan's ID column where it has one, else on phase and task name. Drift is a least-squares slope over up to the last 6 reports." },
+      { type: "note", text: `Moves are working days (${E.calText()}) between consecutive saved reports, matched on the plan's ID column where it has one, else on phase and task name. Drift is a least-squares slope over up to the last 6 reports.` },
     ].filter(Boolean) };
   }
 

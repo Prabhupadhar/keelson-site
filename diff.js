@@ -272,7 +272,7 @@
     blocks.push({ type: "note", text: `Compares the plan as of ${since} with the plan as of ${fmtIso(cur.asOf)}. ` +
       (d.by === "id" ? "Tasks are matched on phase and task name, then on task ID." : "Tasks are matched on phase and task name.") +
       (probable ? ` ${plural(probable, "rename")} matched on similar names ${probable === 1 ? "is" : "are"} marked "To confirm".` : "") +
-      " Working days are Monday to Friday." });
+      ` Working days are ${E.calText(true)}.` });
     return { id: "changes", name: `Changes since ${since}`, title: clean(opts.title || "Plan changes"),
       subtitle: clean(["What changed in the plan", opts.client && `for ${opts.client}`].filter(Boolean).join(" ") + (opts.preparedBy ? ` · Prepared by ${opts.preparedBy}` : "")),
       asOf: cur.asOf, rag: cur.rag || "—", orientation: "portrait", blocks };

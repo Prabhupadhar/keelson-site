@@ -126,7 +126,14 @@ main { padding-bottom: var(--sp-9) }
 .drop > .tile .ic { width: 30px; height: 30px }
 .drop b { font-size: clamp(1.25rem, 1.1rem + .6vw, 1.5rem); font-weight: 800; letter-spacing: -.02em }
 .drop .or { color: var(--muted) } .drop .or u { color: var(--link); text-underline-offset: 3px; font-weight: 800 }
-.drop small { color: var(--muted); font-size: 14px }
+.drop small { color: var(--muted); font-size: 14px } .drop small b { color: var(--ink); font-size: inherit; letter-spacing: 0 }
+.gnote { margin: -20px 0 28px; max-width: 75ch }
+.try { display: flex; justify-content: center; margin-top: 12px }
+textarea.in { resize: vertical; font: 500 16px/1.5 var(--font-sans) }
+.opt { color: var(--muted); font-weight: 500 }
+.vh .detected { max-width: 80ch; color: var(--muted); font-size: 15px; line-height: 1.5 }
+.detected .ic { width: 18px; height: 18px; color: var(--ok); vertical-align: -4px; margin-right: 6px }
+.detected a { display: inline-flex; align-items: center; min-height: 44px; min-width: 44px; padding: 0 4px; vertical-align: middle; font-weight: 800; text-underline-offset: 3px }
 .busy { display: inline-flex; gap: 10px; align-items: center; color: var(--muted) }
 .spin { display: inline-block; width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--line-strong); border-top-color: var(--primary); animation: spin .8s linear infinite }
 @keyframes spin { to { transform: rotate(360deg) } }
@@ -449,8 +456,10 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
       <span class="tile t-violet"><svg class="ic" aria-hidden="true"><use href="#i-upload"/></svg></span>
       <b id="drop-t">Drop your plan here</b>
       <span class="or" id="drop-s">or <u>choose a file</u></span>
-      <small>Excel .xlsx, CSV or TSV · exported from MS Project, Smartsheet, Jira, Asana or your own tracker</small>
+      <small>Accepted: Excel <b>.xlsx</b>, <b>.csv</b>, <b>.tsv</b>, or a table pasted below</small>
+      <small>From MS Project, Smartsheet, Jira, Asana or your own tracker</small>
     </label>
+    <div class="try"><button class="btn line" type="button" id="try-sample"><svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg>No file? Try a sample plan</button></div>
     <div class="err" id="up-err" role="alert" hidden></div>
     <div class="alt">
       <div class="card">
@@ -489,6 +498,13 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
           <div class="field"><label for="prep">Prepared by</label><input class="in" type="text" id="prep" autocomplete="name" placeholder="Optional"></div>
         </div>
         <div class="field"><label for="sd">Status date</label><input class="in" type="date" id="sd" required><small>Reports show the plan as of this day. Usually today.</small></div>
+        <div class="field" id="cal-f" hidden><label for="cal-week">Working week</label>
+          <select class="in" id="cal-week" aria-describedby="cal-week-h">
+            <option value="sat-sun">Mon–Fri (weekend Sat–Sun)</option><option value="fri-sat">Sun–Thu (weekend Fri–Sat)</option><option value="thu-fri">Sat–Wed (weekend Thu–Fri)</option><option value="sun">Mon–Sat (weekend Sun)</option><option value="fri">Sat–Thu (weekend Fri)</option>
+          </select><small id="cal-week-h">Days late and slips count working days only.</small>
+          <label for="cal-hol" style="margin-top:8px">Holidays <span class="opt">(optional)</span></label>
+          <textarea class="in" id="cal-hol" rows="3" spellcheck="false" autocomplete="off" aria-describedby="cal-hol-h cal-hol-n" placeholder="25 Dec 2026&#10;2027-01-01"></textarea>
+          <small id="cal-hol-h">One date per line. Holidays don't count as working days.</small><small id="cal-hol-n" aria-live="polite"></small></div>
       </div>
       <div class="card" aria-labelledby="h-found">
         <h3 id="h-found">What we found</h3>
@@ -525,7 +541,7 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
   <!-- 3 REPORTS -->
   <section class="view wrap" id="v-reports" aria-labelledby="h-reports" hidden>
     <div class="vh vh-row">
-      <div style="display:grid;gap:10px;flex:1 1 520px"><span class="eyebrow">Step 3 of 3</span><h2 id="h-reports" tabindex="-1">Your reports</h2><p id="reports-sub"></p><p class="hint loop" id="loop-hint" hidden><svg class="ic" aria-hidden="true"><use href="#i-swap"/></svg>Upload next week's export and Keelson shows what changed since this one.</p></div>
+      <div style="display:grid;gap:10px;flex:1 1 520px"><span class="eyebrow">Step 3 of 3</span><h2 id="h-reports" tabindex="-1">Your reports</h2><p id="reports-sub"></p><p class="detected" id="detected"></p><p class="hint loop" id="loop-hint" hidden><svg class="ic" aria-hidden="true"><use href="#i-swap"/></svg>Upload next week's export and Keelson shows what changed since this one.</p></div>
       <button class="btn line" type="button" id="hist-btn" data-hist><svg class="ic" aria-hidden="true"><use href="#i-history"/></svg><span id="hist-n">Version history</span></button>
     </div>
     <div class="compare" data-compare hidden></div>

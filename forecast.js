@@ -20,7 +20,7 @@
   const mkD = sd => v => v == null ? "—" : E.fmt(v, sd == null || yearOf(v) !== yearOf(sd)); // year only when it differs
   const F = v => v == null ? "—" : E.fmt(v, true);
   const x2 = f => f.toFixed(2) + "x";
-  const addWd = (d, n) => { for (n = Math.max(0, Math.round(n)); n > 0;) { d++; if (E.wd(d) < 5) n--; } return d; };
+  const addWd = (d, n) => E.addWd(d, Math.max(0, Math.round(n))); // on the engine's work calendar
 
   // same file -> same dates: the seed is a hash of the reference class (completed tasks the bootstrap resamples) in a canonical
   // order, plus the status date; column and row order do not matter, and open work does not change the random stream, so adding
@@ -195,7 +195,7 @@
     `then replayed the remaining ${plural(f.remaining, "working day")} of work 5,000 times. The order of that work comes from the plan's dates: a task that starts the working day after another finishes waits for it; ` +
     `one that starts straight after another phase ends waits for that whole phase. In each replay every remaining task overruns like a completed task picked at random` +
     `${f.censored ? ` (overdue open tasks included, at no less than they have run so far)` : ""}, at a pace resampled from the history with an allowance for the rest of the project running faster or slower. ` +
-    `Parallel work finishes when its slowest path does. P50 is the date half the replays finish by; P80 the date 8 in 10 finish by. Working days are Mon–Fri. ` +
+    `Parallel work finishes when its slowest path does. P50 is the date half the replays finish by; P80 the date 8 in 10 finish by. Working days are ${E.calText()}. ` +
     `Checked on ${BACKTEST.projects.toLocaleString("en-GB")} simulated projects (P80 held in ${BACKTEST.p80}%, P50 in ${BACKTEST.p50}%); not yet validated on real project histories. ` +
     `Dependencies are inferred from dates; a Predecessors column, if present, is not used yet.`;
 
@@ -239,7 +239,7 @@
         { type: "table", columns: [{ label: "Phase", align: "left", width: "50%" }, { label: "Tasks", align: "right", width: "18%" }, { label: "Actual / baseline", align: "right", width: "32%" }],
           rows: f.phases.map(p => [p.name, String(p.n), p.factor == null ? { text: `Under ${PHASE_N} tasks`, tone: "grey" } : { text: x2(p.factor), tone: p.factor > 1.1 ? "amber" : null, bold: true }]),
           empty: "No completed tasks by phase." }]] },
-      { type: "note", text: `A range, not a promise: P50 and P80 describe how this project has behaved so far, not what it will do. +n wd = working days (Mon–Fri) later than the plan date.` },
+      { type: "note", text: `A range, not a promise: P50 and P80 describe how this project has behaved so far, not what it will do. +n wd = working days (${E.calText()}) later than the plan date.` },
     ].filter(Boolean) };
   }
 

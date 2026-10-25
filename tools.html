@@ -68,9 +68,9 @@
             <div class="mega">
               <div class="mega-col">
                 <a class="mega-item" href="app.html"><span class="mi-ic"><svg class="ic" aria-hidden="true"><use href="#i-report"/></svg></span><span><b>Reports app</b><span>Seven reports, from one-pager to finish forecast, as PDF or Word</span></span></a>
-                <a class="mega-item" href="./#changes"><span class="mi-ic"><svg class="ic" aria-hidden="true"><use href="#i-swap"/></svg></span><span><b>What changed <span class="chip chip-new">New</span></b><span>Last week's export vs this week's, on one page</span></span></a>
-                <a class="mega-item" href="./#trend"><span class="mi-ic"><svg class="ic" aria-hidden="true"><use href="#i-trend"/></svg></span><span><b>Slip trend <span class="chip chip-new">New</span></b><span>Every slipped milestone and re-baseline, on record</span></span></a>
-                <a class="mega-item" href="./#forecast"><span class="mi-ic"><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg></span><span><b>Finish forecast <span class="chip chip-new">New</span></b><span>P50 and P80 from your plan's own track record</span></span></a>
+                <a class="mega-item" href="./#changes"><span class="mi-ic"><svg class="ic" aria-hidden="true"><use href="#i-swap"/></svg></span><span><b>What changed <span class="chip chip-new">New</span></b><span>Last week's plan compared with this week's, on one page</span></span></a>
+                <a class="mega-item" href="./#trend"><span class="mi-ic"><svg class="ic" aria-hidden="true"><use href="#i-trend"/></svg></span><span><b>Slip trend <span class="chip chip-new">New</span></b><span>How milestone dates moved, week by week</span></span></a>
+                <a class="mega-item" href="./#forecast"><span class="mi-ic"><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg></span><span><b>Finish forecast <span class="chip chip-new">New</span></b><span>Likely finish dates, based on how the plan has gone so far</span></span></a>
               </div>
               <div class="mega-side">
                 <h4>Free</h4>
@@ -78,7 +78,7 @@
                 <a href="templates.html"><svg class="ic sm" aria-hidden="true"><use href="#i-box"/></svg>Template packs</a>
                 <a href="tools.html" aria-current="page"><svg class="ic sm" aria-hidden="true"><use href="#i-tool"/></svg>Free tools</a>
                 <h4 style="margin-top:10px">Works with</h4>
-                <p>Excel and CSV exports from MS Project, Jira, Smartsheet and client trackers.</p>
+                <p>Excel and CSV files from MS Project, Jira, Smartsheet and client trackers.</p>
               </div>
             </div>
           </div>
@@ -91,7 +91,7 @@
     </nav>
     <div class="nav-right">
       <button class="icon-btn" type="button" id="theme" aria-label="Switch to dark theme"><svg class="ic theme-light" aria-hidden="true"><use href="#i-moon"/></svg><svg class="ic theme-dark" aria-hidden="true"><use href="#i-sun"/></svg></button>
-      <a class="btn btn-primary btn-sm" href="app.html"><span class="hide-sm">Try it with a sample plan</span><span class="show-sm">Try a sample</span></a>
+      <a class="btn btn-primary btn-sm" href="app.html#upload"><span class="hide-sm">Upload your plan</span><span class="show-sm">Upload plan</span></a>
       <button class="icon-btn menu-btn" type="button" id="menubtn" aria-label="Open menu" aria-expanded="false" aria-controls="mnav"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg></button>
     </div>
     <nav class="mnav" id="mnav" aria-label="Menu" hidden>
@@ -122,7 +122,7 @@
     <div class="tools">
       <div class="tool" id="wd">
         <div class="tool-h"><span class="mi-ic"><svg class="ic" aria-hidden="true"><use href="#i-calendar"/></svg></span><h3>Working-day calculator</h3></div>
-        <p>When does a 15-day task really finish? Weekends and your holidays skipped.</p>
+        <p>When does a 15-day task finish? Weekends and your holidays are skipped.</p>
         <div class="seg" role="group" aria-label="Calculation" style="justify-self:start">
           <button type="button" aria-pressed="true" data-m="add">Add working days</button><button type="button" aria-pressed="false" data-m="count">Count between dates</button></div>
         <div class="two">
@@ -136,7 +136,7 @@
       </div>
       <div class="tool" id="gng">
         <div class="tool-h"><span class="mi-ic"><svg class="ic" aria-hidden="true"><use href="#i-flag"/></svg></span><h3>Go / No-Go check</h3></div>
-        <p>The criteria from the Keelson go-live runbook. Mark each one and get a verdict you can paste into the cutover call.</p>
+        <p>The criteria from the Keelson go-live runbook. Mark each one and get a result you can paste into the go-live meeting.</p>
         <div class="verdict" id="gng-v" aria-live="polite"><b>—</b><span></span></div>
         <div class="pg-row"><button class="btn btn-primary btn-sm" type="button" id="gng-copy">Copy result</button><button class="btn btn-secondary btn-sm" type="button" id="gng-reset">Reset</button><span class="copied" id="gng-copied" role="status"></span></div>
         <div class="gng" id="gng-list"></div>
@@ -151,7 +151,7 @@
 <footer class="foot">
   <div class="wrap">
     <div class="foot-grid">
-      <div><a class="logo" href="./"><svg aria-hidden="true"><use href="#k-mark"/></svg>Keelson</a><p class="tag">What changed, whether it's getting worse, and when it will really finish. Your plan stays on your device.</p></div>
+      <div><a class="logo" href="./"><svg aria-hidden="true"><use href="#k-mark"/></svg>Keelson</a><p class="tag">Turn your project plan into a status report. Your plan stays on your computer.</p></div>
       <div><h4>Product</h4><ul><li><a href="app.html">Reports app</a></li><li><a href="./#changes">What changed</a></li><li><a href="./#trend">Slip trend</a></li><li><a href="./#forecast">Finish forecast</a></li><li><a href="./#pricing">Pricing</a></li></ul></div>
       <div><h4>Free</h4><ul><li><a href="./#try">Quick check</a></li><li><a href="./#pricing" data-store="dashboard">Excel dashboard</a></li><li><a href="#wd">Working days</a></li><li><a href="#gng">Go / No-Go</a></li></ul></div>
       <div><h4>Learn</h4><ul><li><a href="templates.html">Template packs</a></li><li><a href="templates.html#frameworks">Methods</a></li><li><a href="templates.html#compare">Compare</a></li><li><a href="./#faq">FAQ</a></li></ul></div>

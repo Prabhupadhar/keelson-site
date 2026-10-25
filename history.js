@@ -1,6 +1,8 @@
 /* Keelson version history: one compact Version per project per report date (format: docs/PRO-ARCHITECTURE.md section 5).
    IndexedDB db "keelson", store "versions", key [project, asOf]; in-memory when IndexedDB is unavailable (private mode).
-   Nothing leaves the browser: export/import is a local .keelson.json file. Tested by tests/web/history.test.js. */
+   Nothing leaves the browser: export/import is a local .keelson.json file. Tested by tests/web/history.test.js.
+   Versions keep dates, not the work calendar: What changed and trend count working days with the calendar active now
+   (KeelsonEngine.setCalendar), so every saved version is compared on the same calendar. The stored headline var is as saved. */
 (function (root) {
   const E = root.KeelsonEngine || (typeof require !== "undefined" ? require("./engine.js") : null);
   const MAX = 52, FORMAT = "keelson-history";

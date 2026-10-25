@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'; worker-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Keelson · What changed, is it getting worse, when will it really finish</title>
-<meta name="description" content="Keelson tells your sponsor what changed, whether it's getting worse, and when it will really finish, from the plan exports you already have. Client-ready PDF and Word reports. Your file never leaves your browser.">
+<title>Keelson · Turn your project plan into a status report</title>
+<meta name="description" content="Upload your plan from MS Project, Jira, Smartsheet or Excel. Keelson shows what changed since last week, flags delays, and creates a report you can send to your client. Free, no sign-up, and your file stays on your computer.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preload" href="fonts/plus-jakarta-sans-800.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/plus-jakarta-sans-500.woff2" as="font" type="font/woff2" crossorigin>
@@ -14,8 +14,8 @@
 <script src="theme.js"></script>
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Keelson">
-<meta property="og:title" content="Keelson · What changed, is it getting worse, when will it really finish">
-<meta property="og:description" content="Week-on-week changes, slip trend and honest finish dates from the plan exports you already have. Client-ready reports. Nothing uploaded.">
+<meta property="og:title" content="Keelson · Turn your project plan into a status report in minutes">
+<meta property="og:description" content="See what changed since last week, flag delays and send a status report to your client. From the plan files you already have. Nothing uploaded.">
 <meta property="og:url" content="https://keelson.co.in/">
 <meta property="og:image" content="https://keelson.co.in/og.png">
 <meta property="og:image:width" content="1200">
@@ -68,9 +68,9 @@
             <div class="mega">
               <div class="mega-col">
                 <a class="mega-item" href="app.html"><span class="mi-ic"><svg class="ic" aria-hidden="true"><use href="#i-report"/></svg></span><span><b>Reports app</b><span>Seven reports, from one-pager to finish forecast, as PDF or Word</span></span></a>
-                <a class="mega-item" href="#changes"><span class="mi-ic"><svg class="ic" aria-hidden="true"><use href="#i-swap"/></svg></span><span><b>What changed <span class="chip chip-new">New</span></b><span>Last week's export vs this week's, on one page</span></span></a>
-                <a class="mega-item" href="#trend"><span class="mi-ic"><svg class="ic" aria-hidden="true"><use href="#i-trend"/></svg></span><span><b>Slip trend <span class="chip chip-new">New</span></b><span>Every slipped milestone and re-baseline, on record</span></span></a>
-                <a class="mega-item" href="#forecast"><span class="mi-ic"><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg></span><span><b>Finish forecast <span class="chip chip-new">New</span></b><span>P50 and P80 from your plan's own track record</span></span></a>
+                <a class="mega-item" href="#changes"><span class="mi-ic"><svg class="ic" aria-hidden="true"><use href="#i-swap"/></svg></span><span><b>What changed <span class="chip chip-new">New</span></b><span>Last week's plan compared with this week's, on one page</span></span></a>
+                <a class="mega-item" href="#trend"><span class="mi-ic"><svg class="ic" aria-hidden="true"><use href="#i-trend"/></svg></span><span><b>Slip trend <span class="chip chip-new">New</span></b><span>How milestone dates moved, week by week</span></span></a>
+                <a class="mega-item" href="#forecast"><span class="mi-ic"><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg></span><span><b>Finish forecast <span class="chip chip-new">New</span></b><span>Likely finish dates, based on how the plan has gone so far</span></span></a>
               </div>
               <div class="mega-side">
                 <h4>Free</h4>
@@ -78,7 +78,7 @@
                 <a href="templates.html"><svg class="ic sm" aria-hidden="true"><use href="#i-box"/></svg>Template packs</a>
                 <a href="tools.html"><svg class="ic sm" aria-hidden="true"><use href="#i-tool"/></svg>Free tools</a>
                 <h4 style="margin-top:10px">Works with</h4>
-                <p>Excel and CSV exports from MS Project, Jira, Smartsheet and client trackers.</p>
+                <p>Excel and CSV files from MS Project, Jira, Smartsheet and client trackers.</p>
               </div>
             </div>
           </div>
@@ -91,7 +91,7 @@
     </nav>
     <div class="nav-right">
       <button class="icon-btn" type="button" id="theme" aria-label="Switch to dark theme"><svg class="ic theme-light" aria-hidden="true"><use href="#i-moon"/></svg><svg class="ic theme-dark" aria-hidden="true"><use href="#i-sun"/></svg></button>
-      <a class="btn btn-primary btn-sm" href="app.html"><span class="hide-sm">Try it with a sample plan</span><span class="show-sm">Try a sample</span></a>
+      <a class="btn btn-primary btn-sm" href="app.html#upload"><span class="hide-sm">Upload your plan</span><span class="show-sm">Upload plan</span></a>
       <button class="icon-btn menu-btn" type="button" id="menubtn" aria-label="Open menu" aria-expanded="false" aria-controls="mnav"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg></button>
     </div>
     <nav class="mnav" id="mnav" aria-label="Menu" hidden>
@@ -114,20 +114,20 @@
 <!-- ============ HERO ============ -->
 <section class="hero" aria-labelledby="h-hero">
   <div class="wrap">
-    <a class="hero-pill rise" href="#changes"><span class="chip chip-new">New</span> <span>What changed, slip trend <span class="hide-sm">and finish forecast</span></span> <svg class="ic sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
-    <h1 id="h-hero" class="rise d1">Tell your sponsor <span class="grad-text nb">what changed</span><br class="hide-sm"> and when it will really finish.</h1>
-    <p class="lead rise d2">Drop in this week's export from MS Project, Jira, Smartsheet or the client's Excel tracker. Keelson shows what changed, whether it's getting worse and when it will really finish, then writes the client-ready report. The file never leaves your browser.</p>
+    <a class="hero-pill rise" href="#changes"><span class="chip chip-new">New</span> <span>See what changed <span class="hide-sm">since last week, and the likely finish date</span></span> <svg class="ic sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+    <h1 id="h-hero" class="rise d1">Turn your project plan into a <span class="grad-text nb">status report</span> in minutes.</h1>
+    <p class="lead rise d2">Upload your plan from MS Project, Jira, Smartsheet or Excel. Keelson shows what changed since last week, flags delays, and creates a report you can send to your client.</p>
     <div class="hero-ctas rise d3">
-      <a class="btn btn-primary btn-lg" href="app.html">Try it with a sample plan <svg class="ic arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a>
-      <a class="btn btn-secondary btn-lg" href="#try">Quick check on this page</a>
+      <a class="btn btn-primary btn-lg" href="app.html#upload"><svg class="ic" aria-hidden="true"><use href="#i-upload"/></svg>Upload your plan</a>
+      <a class="btn btn-secondary btn-lg" href="samples/keelson-sample-onepager.pdf" target="_blank" rel="noopener" type="application/pdf">See a sample report</a>
     </div>
-    <div class="samples-hero rise d3"><p class="samples"><span>See a real report <span class="fine">(fictional sample, PDF)</span></span> <a href="samples/keelson-sample-onepager.pdf" target="_blank" rel="noopener" type="application/pdf">One-pager</a><a href="samples/keelson-sample-what-changed.pdf" target="_blank" rel="noopener" type="application/pdf">What changed</a><a href="samples/keelson-sample-finish-forecast.pdf" target="_blank" rel="noopener" type="application/pdf">Finish forecast</a></p></div>
+    <p class="hero-trust rise d3">Free · No sign-up · Your file stays on your computer</p>
     <div class="loop rise d3">
-      <p class="loop-h">Your Friday report in 10 minutes, every week.</p>
+      <p class="loop-h">Every week:</p>
       <ol>
-        <li><span class="n" aria-hidden="true">1</span>Upload this week's export</li>
-        <li><span class="n" aria-hidden="true">2</span>Keelson compares it with last week's</li>
-        <li><span class="n" aria-hidden="true">3</span>Send a branded PDF or Word report</li>
+        <li><span class="n" aria-hidden="true">1</span>Upload the new plan</li>
+        <li><span class="n" aria-hidden="true">2</span>See what changed</li>
+        <li><span class="n" aria-hidden="true">3</span>Send the report</li>
       </ol>
     </div>
   </div>
@@ -158,7 +158,7 @@
         <div class="main">
           <div class="kpis">
             <div class="kpi"><small>Overall status</small><span class="chip chip-warn"><span class="dot"></span>Amber</span><em>by your rules</em></div>
-            <div class="kpi"><small>Plan finish</small><b>3 Jun</b><em class="bad">13 wd late</em></div>
+            <div class="kpi"><small>Plan finish</small><b>3 Jun</b><em class="bad">13 working days late</em></div>
             <div class="kpi"><small>P80 finish</small><b>23 Jul</b><em>P50 9 Jul</em></div>
             <div class="kpi"><small>Since 16 Feb</small><b>28</b><em>changes</em></div>
           </div>
@@ -223,27 +223,27 @@
 <section class="section soft qsec" id="why" aria-labelledby="h-why">
   <div class="wrap">
     <div class="head">
-      <span class="eyebrow">For delivery PMs and consultants who report to a sponsor</span>
-      <h2 id="h-why">Every steering meeting asks the same three questions.</h2>
-      <p class="lead">Your plan holds the answers, spread across last week's export, this week's export and the baseline nobody remembers changing. Keelson puts them on one page.</p>
+      <span class="eyebrow">For project managers who report to a sponsor or client</span>
+      <h2 id="h-why">Every sponsor asks the same three questions.</h2>
+      <p class="lead">Your plan has the answers. They are spread across last week's file, this week's file and the baseline. Keelson puts them on one page.</p>
     </div>
     <nav class="qnav" aria-label="The three questions">
       <a href="#changes"><span class="qn">1</span>What changed since last week?</a>
       <a href="#trend"><span class="qn">2</span>Is it getting worse?</a>
-      <a href="#forecast"><span class="qn">3</span>When will it really finish?</a>
+      <a href="#forecast"><span class="qn">3</span>When will it finish?</a>
     </nav>
     <div class="qpanels">
     <article class="qp split" id="changes" aria-labelledby="h-changes">
     <div class="copy">
       <span class="eyebrow"><span class="chip chip-new">New</span>What changed</span>
-      <h3 id="h-changes">Two weekly exports in. What changed out.</h3>
-      <p class="lead">Drop in both files, or compare against the version Keelson saved last time. Get the sentence your sponsor actually reads, and the table behind it, in seconds.</p>
+      <h3 id="h-changes">Upload two weekly plans. See what changed.</h3>
+      <p class="lead">Add both files, or compare with the version Keelson saved last week. You get one short summary for your sponsor, and the table behind it.</p>
       <ul class="ticks">
-        <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Added, removed, moved later or earlier, owner changed, progress gone backwards, renamed</span></li>
-        <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Baseline edits flagged in red, every time</span></li>
-        <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Matches rows even when the columns are re-ordered or the date format changes</span></li>
+        <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Tasks added, removed, moved later or earlier, new owner, progress gone down, renamed</span></li>
+        <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Baseline changes are always shown in red</span></li>
+        <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Works even if the columns or the date format change between files</span></li>
       </ul>
-      <div class="row"><a class="btn btn-primary" href="app.html">Compare two exports <svg class="ic sm arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a></div>
+      <div class="row"><a class="btn btn-primary" href="app.html#upload">Compare two plans <svg class="ic sm arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a></div>
     </div>
     <div class="well">
       <div class="app-card" role="img" aria-label="Changes report for the fictional FieldFlow sample: since 16 February the finish moved from 1 to 3 June and go-live from 18 to 20 May, driven by Testing; 1 task added, 1 removed, 18 finish later and 6 earlier; no baseline changes.">
@@ -261,21 +261,22 @@
             <tr><td><span class="chip chip-mute">Removed</span></td><td>Archive legacy reports</td><td class="hide-sm">Data migration</td><td class="r">removed</td></tr>
           </tbody>
         </table>
+        <p class="fine" style="margin-top:var(--sp-3)">wd = working days (Monday to Friday)</p>
         <p class="excl" aria-hidden="true"><span class="box on"><svg class="ic"><use href="#i-check"/></svg></span>Show in the client version · 27 of 28 changes</p>
       </div>
     </div>
     </article>
     <article class="qp split flip" id="trend" aria-labelledby="h-trend">
     <div class="copy">
-      <span class="eyebrow"><span class="chip chip-new">New</span>Slip trend and audit trail</span>
-      <h3 id="h-trend">An audit trail no one can quietly reset.</h3>
-      <p class="lead">Each weekly export is saved as a version on your machine. Keelson plots where every key milestone was forecast, week by week, and logs every re-baseline with its date.</p>
+      <span class="eyebrow"><span class="chip chip-new">New</span>Slip trend: how dates moved over time</span>
+      <h3 id="h-trend">See how milestone dates moved, week by week.</h3>
+      <p class="lead">Keelson saves each weekly plan on your computer. It shows the forecast date of each key milestone, week by week. It also records every time the baseline was changed, with the date.</p>
       <ul class="ticks">
-        <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Milestone trend for up to 8 milestones, and the phases that keep slipping</span></li>
-        <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Drift rate in plain words: how many working days the finish slips per week, and where it lands if that continues</span></li>
+        <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Trend for up to 8 milestones, and the phases that keep moving later</span></li>
+        <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>In plain words: how many working days the finish moves later each week, and where it lands if that continues</span></li>
         <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Every re-baseline Keelson sees is logged and stays flagged until you record why. Older files can be dropped in to backfill</span></li>
       </ul>
-      <p class="fine">Needs 3 saved reports for the trend, 2 for the re-baseline log. History stays in this browser and exports to a file you keep.</p>
+      <p class="fine">Needs 3 saved reports for the trend, 2 for the baseline log. History stays in this browser. You can export it to a file.</p>
     </div>
     <div class="well">
       <div class="app-card trend">
@@ -313,7 +314,7 @@
           </g>
         </svg>
         <div class="legend" aria-hidden="true"><span><i class="l5"></i>Build complete</span><span><i class="l4"></i>SIT exit</span><span><i class="l2"></i>UAT sign-off</span><span><i class="l1"></i>Go-live</span><span><i class="l3"></i>Hypercare exit</span><span><i class="d"></i>Re-baseline</span></div>
-        <div class="drift"><b>+1.7 wd/week</b><span>The forecast finish is slipping 1.7 wd per week over the last 6 reports (19 Jan to 23 Feb 2027) (slower than time passes); if that continues it lands around 26 Jul 2027. Latest: 2 wd later than the report before.</span></div>
+        <div class="drift"><b>+1.7 working days a week</b><span>The forecast finish is slipping 1.7 wd per week over the last 6 reports (19 Jan to 23 Feb 2027) (slower than time passes); if that continues it lands around 26 Jul 2027. Latest: 2 wd later than the report before.</span></div>
         <div class="audit" aria-label="Re-baseline log">
           <div><time>9 Feb</time><span>Baseline finish 3 → 17 May; 19 task baselines changed</span><span class="chip chip-bad"><span class="dot"></span>No note</span></div>
           <div><time>23 Feb</time><span>Phase “Testing” later in 3 of 5 reports</span><span class="chip chip-warn"><span class="dot"></span>+8 wd</span></div>
@@ -323,21 +324,21 @@
     </article>
     <article class="qp split" id="forecast" aria-labelledby="h-forecast">
     <div class="copy">
-      <span class="eyebrow"><span class="chip chip-new">New</span>Finish-date confidence</span>
-      <h3 id="h-forecast">Finish dates with honest odds.</h3>
-      <p class="lead">Keelson looks at how your completed tasks actually ran against their baselines, and asks what happens if the rest of the plan behaves the same way. You get a P50, a P80 and one sentence a sponsor can repeat.</p>
+      <span class="eyebrow"><span class="chip chip-new">New</span>Finish forecast</span>
+      <h3 id="h-forecast">A likely finish date, with honest odds.</h3>
+      <p class="lead">Keelson checks how long your finished tasks took compared with their baseline. Then it asks: what if the rest of the plan goes the same way? You get two dates (P50 and P80) and one clear sentence for your sponsor.</p>
       <ul class="ticks">
-        <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>From your plan's own track record: no three-point estimates, no add-ins</span></li>
-        <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Refuses when the data is too thin, or when the baseline looks reset to actuals</span></li>
+        <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Based on your plan's own history. No extra estimates, no add-ins</span></li>
+        <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Gives no forecast when there is too little data, or when the baseline looks reset to actual dates</span></li>
         <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>You can hide the card, but not edit its numbers</span></li>
       </ul>
-      <p class="fine">Needs Baseline Start and Baseline Finish columns and at least 10 completed tasks. New scope and named risks aren't modelled, and the report says so. Checked on 1,000 simulated projects; not yet validated on real project histories (<a href="#faq-forecast">how</a>).</p>
+      <p class="fine">Needs Baseline Start and Baseline Finish columns and at least 10 completed tasks. New scope and known risks are not included, and the report says so. Checked on 1,000 simulated projects; not yet validated on real project histories (<a href="#faq-forecast">how</a>).</p>
     </div>
     <div class="well">
       <div class="app-card">
-        <div class="app-card-h"><b>When will it really finish?</b><span>FieldFlow rollout · status 23 Feb 2027</span></div>
+        <div class="app-card-h"><b>When will it finish?</b><span>FieldFlow rollout · status 23 Feb 2027</span></div>
         <div class="fc-tiles">
-          <div class="kpi"><small>Plan date</small><b>3 Jun</b><em>72 wd left</em></div>
+          <div class="kpi"><small>Plan date</small><b>3 Jun</b><em>72 working days left</em></div>
           <div class="kpi"><small>P50 · 50/50 date</small><b>9 Jul</b><em>+26 working days</em></div>
           <div class="kpi"><small>P80 · 8 in 10</small><b>23 Jul</b><em>+36 working days</em></div>
         </div>
@@ -363,8 +364,8 @@
   <div class="wrap">
     <div class="head">
       <span class="eyebrow"><svg class="ic sm" aria-hidden="true"><use href="#i-report"/></svg>One export in, every report out</span>
-      <h2 id="h-tour">From messy export to steering-committee pack.</h2>
-      <p class="lead">Keelson reads the plan you already maintain, checks it, compares it with last week, and writes the reports your sponsor expects.</p>
+      <h2 id="h-tour">From your plan file to a steering committee report.</h2>
+      <p class="lead">Keelson reads the plan you already have. It checks it, compares it with last week and writes the reports your sponsor expects.</p>
     </div>
     <div class="tablist" role="tablist" aria-label="Product tour">
       <button class="tab" type="button" role="tab" id="t1" aria-controls="p1" aria-selected="true"><svg class="ic sm" aria-hidden="true"><use href="#i-columns"/></svg>Map columns</button>
@@ -376,11 +377,11 @@
     <div class="tabpanel" role="tabpanel" id="p1" aria-labelledby="t1" tabindex="0">
       <div>
         <h3>It finds your columns, so you don't retype them.</h3>
-        <p class="lead">Finish, End Date, Due Date, Resource Names, Assignee, Epic Link: over 100 header names from the tools PMs actually use. Anything it misses, you pick once.</p>
+        <p class="lead">Finish, End Date, Due Date, Resource Names, Assignee, Epic Link: it knows over 100 column names from common PM tools. If it misses one, you choose it once.</p>
         <ul class="ticks">
           <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Reads <code>Mon 3/17/27</code>, <code>17/03/2027</code>, <code>17-Mar-27</code> and real Excel dates</span></li>
           <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Works out day-first or month-first from your own data</span></li>
-          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Flags missing dates before your sponsor does</span></li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Shows missing dates before you send the report</span></li>
         </ul>
       </div>
       <div class="tp-visual" aria-hidden="true">
@@ -397,14 +398,14 @@
     <div class="tabpanel" role="tabpanel" id="p2" aria-labelledby="t2" tabindex="0" hidden>
       <div>
         <h3>A status colour you can defend.</h3>
-        <p class="lead">Finish slip, overdue milestones, overdue tasks and progress against plan decide it, against tolerances you set once. Override it if you must; your reason prints right beside it.</p>
+        <p class="lead">Four rules decide the colour: finish delay, late milestones, late tasks and progress against plan. You set the limits once. You can change the colour, and your reason is printed next to it.</p>
         <ul class="ticks">
           <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Every Green, Amber or Red comes with the rule that set it</span></li>
           <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Readers see both the calculated colour and yours</span></li>
         </ul>
       </div>
       <div class="tp-visual" aria-hidden="true"><div class="rules">
-        <div><span><span class="mk n"><svg class="ic"><use href="#i-alert"/></svg></span>Finish within 5 wd of baseline</span><b>+13 wd</b></div>
+        <div><span><span class="mk n"><svg class="ic"><use href="#i-alert"/></svg></span>Finish within 5 working days of baseline</span><b>+13 days</b></div>
         <div><span><span class="mk y"><svg class="ic"><use href="#i-check"/></svg></span>Fewer than 2 overdue milestones</span><b>0</b></div>
         <div><span><span class="mk y"><svg class="ic"><use href="#i-check"/></svg></span>Fewer than 3 overdue tasks</span><b>0</b></div>
         <div><span><span class="mk y"><svg class="ic"><use href="#i-check"/></svg></span>Progress within 10 points of plan</span><b>48% vs 48%</b></div>
@@ -414,10 +415,10 @@
     <div class="tabpanel" role="tabpanel" id="p3" aria-labelledby="t3" tabindex="0" hidden>
       <div>
         <h3>This week against last week, task by task.</h3>
-        <p class="lead">Rows are matched on Unique ID or Issue key, so MS Project renumbering and re-sorted Jira exports don't fake a change. Probable renames wait for you to confirm.</p>
+        <p class="lead">Tasks are matched by Unique ID or Issue key. So new row numbers or a new sort order do not show as false changes. Possible renames wait for you to confirm.</p>
         <ul class="ticks">
           <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Moves under one working day go to an appendix</span></li>
-          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Untick anything you'd rather not show the client</span></li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Untick anything you do not want the client to see</span></li>
         </ul>
       </div>
       <div class="tp-visual" aria-hidden="true"><div class="map">
@@ -433,7 +434,7 @@
     <div class="tabpanel" role="tabpanel" id="p4" aria-labelledby="t4" tabindex="0" hidden>
       <div>
         <h3>The weekly status, written for you.</h3>
-        <p class="lead">Narrative, milestones, overdue work and what changed since last week. Click any sentence to rewrite it, then download PDF or editable Word.</p>
+        <p class="lead">Summary, milestones, late work and what changed since last week. Click any sentence to change it. Then download a PDF or a Word file you can edit.</p>
       </div>
       <div class="tp-visual" aria-hidden="true"><div class="mini-kpis">
         <div class="kpi"><small>Status</small><span class="chip chip-warn"><span class="dot"></span>Amber</span></div>
@@ -445,7 +446,7 @@
     <div class="tabpanel" role="tabpanel" id="p5" aria-labelledby="t5" tabindex="0" hidden>
       <div>
         <h3>A roadmap the client can read in ten seconds.</h3>
-        <p class="lead">Phases, milestones and today's line on one landscape page, in your brand colour.</p>
+        <p class="lead">Phases, milestones and today's date on one page, in your brand colour.</p>
       </div>
       <div class="tp-visual" aria-hidden="true"><div class="map gantt">
         <div class="g-row"><span>Discovery</span><div><i class="c1" style="left:0;width:20%;--p:100%"></i></div></div>
@@ -458,13 +459,63 @@
   </div>
 </section>
 
+<!-- ============ REPORT GALLERY ============ -->
+<section class="section" id="reports" aria-labelledby="h-reports">
+  <div class="wrap">
+    <div class="head">
+      <span class="eyebrow"><svg class="ic sm" aria-hidden="true"><use href="#i-doc"/></svg>Seven client-ready reports</span>
+      <h2 id="h-reports">Every report you send each week.</h2>
+      <p class="lead">Seven reports from one plan file, with your logo and colour, as PDF or Word. Four use this week's plan. Three use the weeks you saved before. Reports always print on a white page.</p>
+    </div>
+    <div class="gal">
+      <article class="gi">
+        <div class="gwell" aria-hidden="true"><div class="paper" style="width:100%">
+          <div class="paper-h"><b>One-pager</b><span>23 Feb</span></div>
+          <div class="ptiles"><i class="a"></i><i></i><i></i></div>
+          <div class="p-line"></div><div class="p-line" style="width:80%"></div>
+          <div class="p-sec"><h6>Phases</h6><div class="p-bars" style="height:34px"><i style="height:100%"></i><i style="height:100%"></i><i style="height:96%"></i><i style="height:40%"></i><i style="height:10%"></i></div></div>
+          <div class="p-sec"><h6>Milestones</h6><table class="p-tbl"><tr><td>UAT sign-off</td><td class="late">13 May</td></tr><tr><td>Go-live</td><td class="late">20 May</td></tr></table></div>
+        </div></div>
+        <h3>One-pager</h3><p>A short summary: status, finish date, milestones and late work, on one page.</p>
+      </article>
+      <article class="gi">
+        <div class="gwell" aria-hidden="true"><div class="paper" style="width:100%">
+          <div class="paper-h"><b>Weekly status</b><span>23 Feb</span></div>
+          <div class="p-sec"><h6>Summary</h6><div class="p-line"></div><div class="p-line" style="width:86%"></div><div class="p-line" style="width:64%"></div></div>
+          <div class="p-sec"><h6>Next milestones</h6><table class="p-tbl"><tr><td>SIT exit</td><td>19 Apr</td></tr><tr><td>UAT sign-off</td><td>13 May</td></tr><tr><td>Go-live</td><td>20 May</td></tr></table></div>
+          <div class="p-sec"><h6>Since last week</h6><div class="p-line"></div><div class="p-line" style="width:72%"></div></div>
+        </div></div>
+        <h3>Weekly status</h3><p>A summary you can edit, milestones, risks and what changed since last week.</p>
+      </article>
+      <article class="gi">
+        <div class="gwell" aria-hidden="true"><div class="paper" style="width:100%">
+          <div class="paper-h"><b>Roadmap</b><span>Oct to Jun</span></div>
+          <div class="pg-gantt"><i style="width:30%"></i><i style="width:40%;margin-left:18%"></i><i style="width:32%;margin-left:24%"></i><i style="width:30%;margin-left:52%"></i><i style="width:18%;margin-left:74%"></i><i style="width:14%;margin-left:86%"></i><i style="width:22%;margin-left:30%"></i><i style="width:26%;margin-left:60%"></i></div>
+          <div class="p-sec"><h6>Key dates</h6><table class="p-tbl"><tr><td>Build complete</td><td>16 Feb</td></tr><tr><td>Go-live</td><td>20 May</td></tr><tr><td>Hypercare exit</td><td>3 Jun</td></tr></table></div>
+        </div></div>
+        <h3>Roadmap</h3><p>Phases, milestones and today's date on one wide page. Easy for the client to read.</p>
+      </article>
+      <article class="gi">
+        <div class="gwell" aria-hidden="true"><div class="paper" style="width:100%">
+          <div class="paper-h"><b>Variance</b><span>vs baseline</span></div>
+          <div class="pvar"><div><i style="width:100%"></i><b class="late">+21</b></div><div><i style="width:62%"></i><b class="late">+13</b></div><div><i style="width:62%"></i><b class="late">+13</b></div><div><i style="width:62%"></i><b class="late">+13</b></div><div><i style="width:57%"></i><b class="late">+12</b></div><div><i style="width:52%"></i><b class="late">+11</b></div><div><i style="width:52%"></i><b class="late">+11</b></div></div>
+          <div class="p-sec"><h6>Commentary</h6><div class="p-line"></div><div class="p-line" style="width:80%"></div><div class="p-line" style="width:55%"></div></div>
+        </div></div>
+        <h3>Variance</h3><p>Each phase and task compared with its baseline, in working days, biggest delay first.</p>
+      </article>
+    </div>
+    <p class="center" style="margin-top:var(--sp-6)"><span class="chip chip-new">New</span> <span style="color:var(--ink-2)">Plus <a href="#changes"><b>What changed</b></a>, <a href="#trend"><b>Slip trend</b></a> and <a href="#forecast"><b>Finish forecast</b></a>: seven reports in all.</span></p>
+    <p class="samples"><span>See a real report <span class="fine">(PDF, fictional sample)</span></span> <a href="samples/keelson-sample-onepager.pdf" target="_blank" rel="noopener" type="application/pdf">One-pager</a><a href="samples/keelson-sample-what-changed.pdf" target="_blank" rel="noopener" type="application/pdf">What changed</a><a href="samples/keelson-sample-finish-forecast.pdf" target="_blank" rel="noopener" type="application/pdf">Finish forecast</a></p>
+  </div>
+</section>
+
 <!-- ============ LIVE DEMO: the real dashboard rules, run in this tab ============ -->
 <section class="section soft" id="try" aria-labelledby="h-try">
   <div class="wrap">
     <div class="head">
       <span class="eyebrow"><svg class="ic sm" aria-hidden="true"><use href="#i-lock"/></svg>Quick check · Free · Nothing uploaded</span>
-      <h2 id="h-try">Quick check: paste any plan, get its status.</h2>
-      <p class="lead">From MS Project, Jira, Smartsheet or the client's own Excel. It opens on the FieldFlow sample's latest export. Your plan stays in this browser tab, and the same rules run inside the free Excel dashboard.</p>
+      <h2 id="h-try">Check any plan without leaving this page.</h2>
+      <p class="lead">Paste a plan from MS Project, Jira, Smartsheet or Excel, and see its status. It starts with a sample plan. Your plan stays in this browser tab. The free Excel dashboard uses the same rules.</p>
     </div>
     <div class="pg" id="pg">
       <div class="pg-top">
@@ -498,61 +549,11 @@
       </div>
     </div>
     <div class="pg-3">
-      <div><h3><span class="mi-ic"><svg class="ic sm" aria-hidden="true"><use href="#i-columns"/></svg></span>Finds your columns.</h3><p>Over 100 header names from the tools PMs actually use. Anything it misses, you pick once from a dropdown.</p></div>
+      <div><h3><span class="mi-ic"><svg class="ic sm" aria-hidden="true"><use href="#i-columns"/></svg></span>Finds your columns.</h3><p>It knows over 100 column names from common PM tools. If it misses one, you choose it once from a list.</p></div>
       <div><h3><span class="mi-ic"><svg class="ic sm" aria-hidden="true"><use href="#i-calendar"/></svg></span>Reads messy dates.</h3><p><code>Mon 3/17/27</code>, <code>17/03/2027</code>, <code>17-Mar-27</code> or real Excel dates. It works out day-or-month-first from your own data.</p></div>
       <div><h3><span class="mi-ic"><svg class="ic sm" aria-hidden="true"><use href="#i-gauge"/></svg></span>Shows its working.</h3><p>Green, Amber or Red from rules you can change, or your own call with a reason. A data check flags missing dates first.</p></div>
     </div>
     <p class="fine center" style="margin-top:var(--sp-5)">Sample company, people and project are fictional.<sup><a href="#n1" aria-label="Note 1">1</a></sup> The demo reads pasted text and CSV; the reports app also opens .xlsx and .tsv files.</p>
-  </div>
-</section>
-
-<!-- ============ REPORT GALLERY ============ -->
-<section class="section" id="reports" aria-labelledby="h-reports">
-  <div class="wrap">
-    <div class="head">
-      <span class="eyebrow"><svg class="ic sm" aria-hidden="true"><use href="#i-doc"/></svg>Seven client-ready reports</span>
-      <h2 id="h-reports">Everything a delivery PM sends on a Friday.</h2>
-      <p class="lead">Seven reports from the same export, in your logo and colour, as PDF or editable Word. Four from this week's plan, three from its saved history. Reports always print paper-white.</p>
-    </div>
-    <div class="gal">
-      <article class="gi">
-        <div class="gwell" aria-hidden="true"><div class="paper" style="width:100%">
-          <div class="paper-h"><b>One-pager</b><span>23 Feb</span></div>
-          <div class="ptiles"><i class="a"></i><i></i><i></i></div>
-          <div class="p-line"></div><div class="p-line" style="width:80%"></div>
-          <div class="p-sec"><h6>Phases</h6><div class="p-bars" style="height:34px"><i style="height:100%"></i><i style="height:100%"></i><i style="height:96%"></i><i style="height:40%"></i><i style="height:10%"></i></div></div>
-          <div class="p-sec"><h6>Milestones</h6><table class="p-tbl"><tr><td>UAT sign-off</td><td class="late">13 May</td></tr><tr><td>Go-live</td><td class="late">20 May</td></tr></table></div>
-        </div></div>
-        <h3>One-pager</h3><p>The executive summary: status, finish, milestones and what's overdue, on one page.</p>
-      </article>
-      <article class="gi">
-        <div class="gwell" aria-hidden="true"><div class="paper" style="width:100%">
-          <div class="paper-h"><b>Weekly status</b><span>23 Feb</span></div>
-          <div class="p-sec"><h6>Summary</h6><div class="p-line"></div><div class="p-line" style="width:86%"></div><div class="p-line" style="width:64%"></div></div>
-          <div class="p-sec"><h6>Next milestones</h6><table class="p-tbl"><tr><td>SIT exit</td><td>19 Apr</td></tr><tr><td>UAT sign-off</td><td>13 May</td></tr><tr><td>Go-live</td><td>20 May</td></tr></table></div>
-          <div class="p-sec"><h6>Since last week</h6><div class="p-line"></div><div class="p-line" style="width:72%"></div></div>
-        </div></div>
-        <h3>Weekly status</h3><p>Narrative you can rewrite, milestones, risks and what changed since last week.</p>
-      </article>
-      <article class="gi">
-        <div class="gwell" aria-hidden="true"><div class="paper" style="width:100%">
-          <div class="paper-h"><b>Roadmap</b><span>Oct to Jun</span></div>
-          <div class="pg-gantt"><i style="width:30%"></i><i style="width:40%;margin-left:18%"></i><i style="width:32%;margin-left:24%"></i><i style="width:30%;margin-left:52%"></i><i style="width:18%;margin-left:74%"></i><i style="width:14%;margin-left:86%"></i><i style="width:22%;margin-left:30%"></i><i style="width:26%;margin-left:60%"></i></div>
-          <div class="p-sec"><h6>Key dates</h6><table class="p-tbl"><tr><td>Build complete</td><td>16 Feb</td></tr><tr><td>Go-live</td><td>20 May</td></tr><tr><td>Hypercare exit</td><td>3 Jun</td></tr></table></div>
-        </div></div>
-        <h3>Roadmap</h3><p>Phases, milestones and today's line on a landscape page the client reads in ten seconds.</p>
-      </article>
-      <article class="gi">
-        <div class="gwell" aria-hidden="true"><div class="paper" style="width:100%">
-          <div class="paper-h"><b>Variance</b><span>vs baseline</span></div>
-          <div class="pvar"><div><i style="width:100%"></i><b class="late">+21</b></div><div><i style="width:62%"></i><b class="late">+13</b></div><div><i style="width:62%"></i><b class="late">+13</b></div><div><i style="width:62%"></i><b class="late">+13</b></div><div><i style="width:57%"></i><b class="late">+12</b></div><div><i style="width:52%"></i><b class="late">+11</b></div><div><i style="width:52%"></i><b class="late">+11</b></div></div>
-          <div class="p-sec"><h6>Commentary</h6><div class="p-line"></div><div class="p-line" style="width:80%"></div><div class="p-line" style="width:55%"></div></div>
-        </div></div>
-        <h3>Variance</h3><p>Every phase and task against its baseline, in working days, worst first.</p>
-      </article>
-    </div>
-    <p class="center" style="margin-top:var(--sp-6)"><span class="chip chip-new">New</span> <span style="color:var(--ink-2)">Plus <a href="#changes"><b>What changed</b></a>, <a href="#trend"><b>Slip trend</b></a> and <a href="#forecast"><b>Finish-date confidence</b></a>: seven reports in all.</span></p>
-    <p class="samples"><span>See a real report <span class="fine">(PDF, fictional sample)</span></span> <a href="samples/keelson-sample-onepager.pdf" target="_blank" rel="noopener" type="application/pdf">One-pager</a><a href="samples/keelson-sample-what-changed.pdf" target="_blank" rel="noopener" type="application/pdf">What changed</a><a href="samples/keelson-sample-finish-forecast.pdf" target="_blank" rel="noopener" type="application/pdf">Finish forecast</a></p>
   </div>
 </section>
 
@@ -580,13 +581,13 @@
         </ul>
       </article>
       <article class="plan pop">
-        <h3>Pro <span class="chip chip-brand">Best for consultants</span></h3><p class="for">Your Friday report in 10 minutes, every week.</p>
+        <h3>Pro <span class="chip chip-brand">Best for consultants</span></h3><p class="for">Your weekly report in 10 minutes, every week.</p>
         <p class="price"><b data-m="$12" data-y="$8">$8</b><span>/ month</span></p><p class="price-note" data-m="billed monthly" data-y="billed yearly ($96)">billed yearly ($96)</p>
-        <p class="value">Less than an hour of your billable time a month.</p>
+        <p class="value">Less than an hour of your time a month.</p>
         <a class="btn btn-primary" href="mailto:support@keelson.co.in?subject=Keelson%20Pro%20waitlist" data-buy="proYearly" data-buy-m="proMonthly" data-buy-y="proYearly">Join the Pro waitlist</a>
         <p class="buy-note" data-when="sale" data-for="proMonthly proYearly" hidden>Invoice for expense claims · Cancel any time · <a class="nb" href="legal.html#refunds">14-day refund</a></p>
         <ul>
-          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Upload, compare with last week, send: the weekly loop</span></li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Every week: upload the new plan, see what changed, send the report</span></li>
           <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>All seven reports, PDF and Word</span></li>
           <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Your logo and brand colour; no watermark, no Keelson footer</span></li>
           <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>What changed, slip trend and finish forecast <span class="chip chip-new" style="padding:1px 7px;font-size:11px">New</span></span></li>
@@ -611,7 +612,7 @@
     <div class="head"><h2 id="h-faq">Questions, answered.</h2></div>
     <div class="faq">
       <p class="faq-grp">Privacy</p>
-      <details><summary>When I try it on this site, is my plan uploaded?<svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>No. The page reads what you paste with JavaScript inside your browser tab, and there is no server it could send it to. Load the page, switch off Wi-Fi, and it still works. The demo saves nothing: close the tab and it's gone.</p></details>
+      <details><summary>When I try it on this site, is my plan uploaded?<svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>No. The page reads your plan inside your browser tab. There is no server to send it to. Load the page, turn off Wi-Fi, and it still works. The quick check saves nothing: close the tab and it is gone.</p></details>
       <details><summary>Where is my version history kept?<svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>In your browser's own storage on this device. A version is saved when you download a Word report or press Save version: one per report date, up to 52 per project. You can export it as a .keelson.json file and import it on another machine; anyone you give that file to can read the plan in it. Nothing is sent to us. Clearing this site's data in your browser removes it.</p></details>
       <details><summary>Does anything go online at all?<svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Only a Pro licence key, checked with our reseller when you enter it and about once a week after. No plan data is included. This website itself makes no network requests after it loads: no cookies, no analytics, no third-party scripts or fonts. Loading the pages does reach our host, GitHub Pages, which sees your IP address and browser type like any web host (<a href="legal.html#hosting">details</a>).</p></details>
       <p class="faq-grp">The new features</p>
@@ -620,22 +621,22 @@
       <p class="faq-grp">Your plan</p>
       <details><summary>Will the dashboard read my plan?<svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>If it has one row per task with a name and a finish or due date, yes. It recognises the usual column names from MS Project, Smartsheet, Jira, Asana, Monday and most client trackers, and title rows above the headers are fine. Phases come from a Phase or Workstream column, or from your outline levels or WBS. Everything happens inside the Excel file: nothing is uploaded.</p></details>
     </div>
-    <p class="center" style="margin-top:var(--sp-5)"><a href="templates.html#faq">More questions: slip trend history, client templates, wording, PMBOK and PRINCE2</a></p>
+    <p class="center" style="margin-top:var(--sp-5)"><a href="templates.html#faq">More questions: slip trend, client templates, wording, PMBOK and PRINCE2</a></p>
   </div>
 </section>
 
 <!-- ============ CTA BAND ============ -->
 <section class="wrap" aria-labelledby="h-cta">
   <div class="cta">
-    <h2 id="h-cta">Your next steering pack is one export away.</h2>
-    <p>Try it on a real plan. Nothing to install, nothing uploaded.</p>
-    <div class="row"><a class="btn btn-primary btn-lg" href="#try">Try it free <svg class="ic arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a><a class="btn btn-secondary btn-lg" href="#pricing">See pricing</a></div>
+    <h2 id="h-cta">Your next sponsor report starts with one upload.</h2>
+    <p>Try it on your own plan. Nothing to install. Your file stays on your computer.</p>
+    <div class="row"><a class="btn btn-primary btn-lg" href="app.html#upload">Upload your plan <svg class="ic arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a><a class="btn btn-secondary btn-lg" href="#pricing">See pricing</a></div>
   </div>
 </section>
 
 <div class="wrap notes" aria-label="Notes"><ol>
   <li id="n1">Sample company, people and project are fictional. The figures in the product views on this page are what Keelson calculates from the fictional FieldFlow sample's six weekly exports (19 Jan to 23 Feb 2027), the same sample the app and the Quick check open on.</li>
-  <li id="n2">The dashboard is checked on each build by pasting the same plan in five shapes (MS Project export, MS Project text paste, Jira CSV, a client tracker with title rows and day-first dates, and Keelson's own plan) and comparing every figure with an independent reference calculation. Up to 1,000 rows. Working days are Monday to Friday.</li>
+  <li id="n2">The dashboard is checked on each build by pasting the same plan in five shapes (MS Project export, MS Project text paste, Jira CSV, a client tracker with title rows and day-first dates, and Keelson's own plan) and comparing every figure with an independent reference calculation. Up to 1,000 rows. Working days are Monday to Friday; “wd” means working days.</li>
 </ol></div>
 </main>
 
@@ -643,7 +644,7 @@
 <footer class="foot">
   <div class="wrap">
     <div class="foot-grid">
-      <div><a class="logo" href="#main"><svg aria-hidden="true"><use href="#k-mark"/></svg>Keelson</a><p class="tag">What changed, whether it's getting worse, and when it will really finish. Your plan stays on your device.</p></div>
+      <div><a class="logo" href="#main"><svg aria-hidden="true"><use href="#k-mark"/></svg>Keelson</a><p class="tag">Turn your project plan into a status report. Your plan stays on your computer.</p></div>
       <div><h4>Product</h4><ul><li><a href="app.html">Reports app</a></li><li><a href="#changes">What changed</a></li><li><a href="#trend">Slip trend</a></li><li><a href="#forecast">Finish forecast</a></li><li><a href="#pricing">Pricing</a></li></ul></div>
       <div><h4>Free</h4><ul><li><a href="#try">Quick check</a></li><li><a href="#pricing" data-store="dashboard">Excel dashboard</a></li><li><a href="tools.html#wd">Working days</a></li><li><a href="tools.html#gng">Go / No-Go</a></li></ul></div>
       <div><h4>Learn</h4><ul><li><a href="templates.html">Template packs</a></li><li><a href="templates.html#frameworks">Methods</a></li><li><a href="templates.html#compare">Compare</a></li><li><a href="#faq">FAQ</a></li></ul></div>

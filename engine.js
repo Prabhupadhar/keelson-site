@@ -34,13 +34,54 @@
   const ymd = v => { const d = new Date(v * DAY); return [d.getUTCFullYear(), d.getUTCMonth() + 1, d.getUTCDate()]; };
   const iso = v => v == null ? null : ymd(v).map((x, i) => String(x).padStart(i ? 2 : 4, "0")).join("-");
   const fmt = (v, year) => { if (v == null) return ""; const [y, m, d] = ymd(v); return `${d} ${MON[m - 1]}` + (year ? ` ${y}` : ""); };
-  const wd = v => (new Date(v * DAY).getUTCDay() + 6) % 7; // 0 = Monday
-  const nwd = (a, b) => { // Excel NETWORKDAYS, a <= b, Monday to Friday
+  const wd = v => (new Date(v * DAY).getUTCDay() + 6) % 7; // 0 = Monday (a weekday label, not a working-day test)
+
+  // work calendar: one module-level calendar that every working-day helper consults (default Sat+Sun weekend, no holidays)
+  const WEEKENDS = { "sat-sun": [6, 0], "fri-sat": [5, 6], "thu-fri": [4, 5], "sun": [0], "fri": [5] }; // JS getDay numbers, 0 = Sun
+  const dow = v => ((v + 4) % 7 + 7) % 7; // getUTCDay without a Date: 1970-01-01 was a Thursday
+  let CAL, OFF, HOL, HOLS; // OFF[getDay] = 1 on weekend days; HOL = holiday day numbers; HOLS = sorted holidays on working days
+  function setCalendar(c = {}) {
+    const we = c.weekend == null ? [6, 0] : c.weekend;
+    if (!Array.isArray(we) || we.length > 3 || new Set(we).size !== we.length || !we.every(d => Number.isInteger(d) && d >= 0 && d <= 6))
+      throw new Error("Weekend must be 0 to 3 different days, each 0 (Sunday) to 6 (Saturday).");
+    const hs = c.holidays == null ? [] : c.holidays;
+    if (!Array.isArray(hs)) throw new Error("Holidays must be a list of YYYY-MM-DD dates.");
+    const lo = fromYMD(1950, 1, 1), hi = fromYMD(2200, 12, 31), set = new Set();
+    for (const h of hs) {
+      if (set.size >= 500 || typeof h !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(h)) continue;
+      const v = fromYMD(...h.split("-").map(Number));
+      if (iso(v) === h && v >= lo && v <= hi) set.add(v);
+    }
+    const off = new Uint8Array(7); for (const d of we) off[d] = 1;
+    OFF = off; HOL = set; HOLS = [...set].filter(v => !off[dow(v)]).sort((a, b) => a - b);
+    CAL = { weekend: we.slice(), holidays: [...set].sort((a, b) => a - b).map(iso), ignored: hs.length - set.size };
+    return calendar();
+  }
+  const calendar = () => ({ weekend: CAL.weekend.slice(), holidays: CAL.holidays.slice(), ignored: CAL.ignored });
+  const isWd = v => !OFF[dow(v)] && !(HOLS.length && HOL.has(v));
+  // the working day n working days after d (d itself counts as day 0, whatever it is)
+  const addWd = (d, n) => { for (; n > 0;) { d++; if (isWd(d)) n--; } return d; };
+  const lowerB = (x) => { let l = 0, h = HOLS.length; while (l < h) { const m = (l + h) >> 1; if (HOLS[m] < x) l = m + 1; else h = m; } return l; };
+  // the working week for report text: "Mon–Fri" (long: "Monday to Friday"), "Sun–Thu, 12 holidays", or a list when not one run
+  const DN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"], DL = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  function calText(long) {
+    const N = long ? DL : DN, on = [0, 1, 2, 3, 4, 5, 6].filter(d => !OFF[d]);
+    let t;
+    if (on.length === 7) t = long ? "every day of the week" : "all 7 days";
+    else {
+      const first = on.find(d => OFF[(d + 6) % 7]); // a working day after a weekend day
+      const run = on.map((_, i) => (first + i) % 7), week = DN.map((_, i) => (first + i) % 7).filter(d => !OFF[d]);
+      t = run.every(d => !OFF[d]) ? `${N[run[0]]}${long ? " to " : "–"}${N[run[run.length - 1]]}` : week.map(d => N[d]).join(", ");
+    }
+    const n = CAL.holidays.length;
+    return n ? `${t}, ${n} holiday${n === 1 ? "" : "s"}` : t;
+  }
+  const nwd = (a, b) => { // Excel NETWORKDAYS(a, b, holidays) on the active calendar, a <= b
     if (b < a) return -nwd(b, a);
     const n = b - a + 1, full = Math.floor(n / 7);
-    let c = full * 5;
-    for (let i = 0, s = wd(a + full * 7); i < n % 7; i++) if ((s + i) % 7 < 5) c++;
-    return c;
+    let c = full * (7 - CAL.weekend.length);
+    for (let i = 0, s = dow(a + full * 7); i < n % 7; i++) if (!OFF[(s + i) % 7]) c++;
+    return HOLS.length ? c - (lowerB(b + 1) - lowerB(a)) : c;
   };
   // signed working days from a to b, counting b but not a (0 when equal, also when both fall on a weekend)
   const wdiff = (a, b) => a === b ? 0 : b > a ? nwd(a + 1, b) : -nwd(b + 1, a);
@@ -282,7 +323,9 @@
     return k;
   }
 
+  setCalendar();
   const parseDate = (t, dayFirst) => dateValue(dateParts(t), dayFirst);
-  root.KeelsonEngine = { compute, parseTable, detect, parseDate, FIELDS, RULES, DEFAULT_MS_KEYS, fromYMD, iso, fmt, nwd, wdiff, wd, DAY };
+  root.KeelsonEngine = { compute, parseTable, detect, parseDate, FIELDS, RULES, DEFAULT_MS_KEYS, fromYMD, iso, fmt, nwd, wdiff, wd, DAY,
+    setCalendar, calendar, calText, isWd, addWd, WEEKENDS };
   if (typeof module !== "undefined") module.exports = root.KeelsonEngine;
 })(typeof window !== "undefined" ? window : globalThis);

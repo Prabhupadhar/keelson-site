@@ -34,8 +34,7 @@
   const lead = n => n >= 1 && n <= 9 ? WORDS[n] : String(n);                       // a number that starts a sentence
   const Plural = (n, w, ws) => `${lead(n)} ${n === 1 ? w : (ws || w + "s")}`;
   const and = a => a.length < 2 ? a.join("") : a.slice(0, -1).join(", ") + " and " + a[a.length - 1];
-  // signed working days from a to b: the engine's rule (weekend-safe); local copy until the engine exports it
-  const wdiff = (a, b) => E.wdiff ? E.wdiff(a, b) : a === b ? 0 : b > a ? E.nwd(a + 1, b) : -E.nwd(b + 1, a);
+  const wdiff = E.wdiff; // signed working days on the engine's work calendar
   const wdT = n => n === 0 ? "on baseline" : n > 0 ? `+${plural(n, "working day")}` : `${plural(-n, "working day")} early`;
   const wd = n => n === 0 ? "0" : `${n > 0 ? "+" : ""}${n}\u00a0wd`;               // narrow cells and tiles; never wraps
   const pts = n => `${n > 0 ? "+" : ""}${n} ${Math.abs(n) === 1 ? "pt" : "pts"}`;
@@ -453,7 +452,7 @@
       k.rows && k.start != null && sd < k.start && `the status date ${F(sd)} is before the plan starts (${F(k.start)})`,
       k.rows && k.finish != null && sd > k.finish && open && `the status date ${F(sd)} is after the forecast finish (${F(k.finish)}) with ${plural(open, "task")} still open`].filter(Boolean);
     return { type: "note", text: (issues.length ? `Data check: ${plural(k.rows, "row")} read · ${issues.join(" · ")}.`
-      : `Data check: ${plural(k.rows, "row")} read cleanly${k.nCancel ? ` · ${k.nCancel} cancelled left out` : ""}.`) + " Days late and variances are working days (Mon–Fri)." };
+      : `Data check: ${plural(k.rows, "row")} read cleanly${k.nCancel ? ` · ${k.nCancel} cancelled left out` : ""}.`) + ` Days late and variances are working days (${E.calText()}).` };
   }
   // the tolerances behind the RAG, from k.rules, so a reader can check the status (M1)
   function rulesText(k, short) {
@@ -498,7 +497,7 @@
       { type: "columns", columns: [[cm.highlights], [cm.concerns], [cm.next]] },
       cm.decisions,
       tl || { type: "note", text: "No dates found to draw a timeline." },
-      { type: "note", text: [...notes, dc.text.replace(" Days late and variances are working days (Mon–Fri).", "").replace(/ read cleanly(.*)\.$/, ", no issues$1."), rulesText(k, true)].join(" ") }, // one footer note line: notes, data check, status rules
+      { type: "note", text: [...notes, dc.text.replace(` Days late and variances are working days (${E.calText()}).`, "").replace(/ read cleanly(.*)\.$/, ", no issues$1."), rulesText(k, true)].join(" ") }, // one footer note line: notes, data check, status rules
     ]);
   }
 
