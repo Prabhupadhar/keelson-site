@@ -1,6 +1,6 @@
 /* Keelson Pro app: upload -> check -> reports. Plain browser JS, no build step.
    Reads plans with KeelsonXlsx / KeelsonEngine, builds ReportDocs with KeelsonReports, renders with KeelsonRender,
-   exports Word with KeelsonDocx. v2: version history (KeelsonHistory, IndexedDB), What changed (KeelsonDiff), Slip trend
+   exports Word with KeelsonDocx and PowerPoint with KeelsonPptx. v2: version history (KeelsonHistory, IndexedDB), What changed (KeelsonDiff), Slip trend
    (KeelsonTrend) and Finish-date confidence (KeelsonForecast). The only network request it ever makes is the licence check (Lemon Squeezy). */
 (function () {
   "use strict";
@@ -170,7 +170,7 @@
     let d = null; try { d = doc(S.report); } catch (e) {}
     const land = d && d.orientation === "landscape";
     $("pro-thumb").innerHTML = d ? `<div class="thumb ${land ? "landscape" : "portrait"}"><div class="thumb-in" inert style="width:${land ? 1123 : 794}px">${page(d, false)}</div></div>` : "";
-    openPro(`Download it without the watermark, plus Word export and all ${nWord(ALL.length).toLowerCase()} reports — $12 a month or $96 a year.`, true);
+    openPro(`Download it without the watermark, plus Word and PowerPoint export and all ${nWord(ALL.length).toLowerCase()} reports — $12 a month or $96 a year.`, true);
     const t = $("pro-thumb").firstElementChild; if (t) fit(t);
   };
   const openPro = (why, ctx) => { if (!ctx) proCtx = ""; $("pro-why").textContent = why || ""; $("pro-why").hidden = !why || isPro(); $("key-msg").textContent = ""; $("key-msg").className = "status"; paintPro(); dlg.showModal(); ($("pro-buy").hidden ? $("key") : $("buy")).focus(); };
@@ -562,7 +562,7 @@
       if (R.snapshot) S.memSnaps.push(R.snapshot(k, S.memSnaps[S.memSnaps.length - 1] || null));
     }
   }
-  // Word download or Save version: this plan becomes a saved version (a sample's history is kept from then on). Never on PDF
+  // Word or PowerPoint download or Save version: this plan becomes a saved version (a sample's history is kept from then on). Never on PDF
   // print: afterprint also fires when the print dialog is cancelled.
   async function saveVersion() {
     if (!KH) return false;
@@ -613,7 +613,7 @@
         { type: "list", items: ["Tasks added, removed or cancelled.", "Finish dates that moved later or earlier, in working days, and milestone moves.", "Baselines that changed, flagged in red.",
           "Owner changes, renames, phase moves and progress that went backwards.", "One sentence that sums it up, for your sponsor."] },
         { type: "heading", text: "How to start" },
-        { type: "list", items: ["Compare with another file: drop last week's export of this plan above the page.", "Or press Save version today (a Word download saves one too): next week this one compares itself automatically.",
+        { type: "list", items: ["Compare with another file: drop last week's export of this plan above the page.", "Or press Save version today (a Word or PowerPoint download saves one too): next week this one compares itself automatically.",
           "Or add older exports under Version history; each is placed by its status date."] }] };
   }
   // re-baseline notes are an audit trail, so they are kept per project in localStorage (unsaved commentary is only per tab)
@@ -637,7 +637,7 @@
     return `<li><a class="rc${v2 ? " v2" : ""}" href="#report/${esc(r.id)}" aria-label="${esc(r.name)}${r.description ? ". " + esc(r.description) : ""}${nd ? ". " + esc(nd) : ""}">
       <div class="thumbbox" aria-hidden="true"${v2 ? ` style="--tbg:var(--tint-${r.tint})"` : ""}><div class="thumb ${land ? "landscape" : "portrait"}"><div class="thumb-in" inert style="width:${land ? 1123 : 794}px">${d ? page(d, false) : ""}</div></div></div>
       <div class="rc-b"><h3><span><span class="tile ${v2 ? "t-" + r.tint : "t-violet"}">${icon(r.icon || ICONS[r.id] || "doc")}</span>${esc(r.name)}</span>${locked ? '<span class="lock">Pro</span>' : ""}</h3>${r.description ? `<p>${esc(r.description)}</p>` : ""}</div>
-      <div class="meta"><span>${land ? "Landscape" : "Portrait"}</span><span>${isPro() ? "PDF · Word" : r.id === "onepager" ? "Free PDF" : "Preview"}</span>${nd ? `<span class="need">${esc(nd)}</span>` : ""}</div></a>` +
+      <div class="meta"><span>${land ? "Landscape" : "Portrait"}</span><span>${isPro() ? "PDF · Word · PowerPoint" : r.id === "onepager" ? "Free PDF" : "Preview"}</span>${nd ? `<span class="need">${esc(nd)}</span>` : ""}</div></a>` +
       (r.id === "changes" && nd ? `<button class="btn fill block" type="button" id="g-cmp">${icon("plus")}Add last week's export to see what changed</button>` : "") + `</li>`;
   }
   const LEAD = ["onepager", "changes", "forecast"]; // the three reports most PMs want first; the rest sit under More reports
@@ -654,7 +654,7 @@
     $("reports-sub").innerHTML = `${nWord(ALL.length)} reports for <b>${esc(S.title || "Your project")}</b> as of ${F(S.sd)}. Open one to edit the commentary and download it.${isPro() ? "" : ` ${esc(FREE_RULE)}.`}`;
     const n = trendVersions().length, lead = LEAD.map(id => ALL.find(r => r.id === id)).filter(Boolean), more = ALL.filter(r => !lead.includes(r));
     $("gallery").innerHTML = `<h3 class="ghead" id="g-lead">Start here</h3><ul class="gallery three" aria-labelledby="g-lead">${lead.map(card).join("")}</ul>` +
-      (V2.length ? `<p class="hint gnote">What changed, Slip trend and Finish-date confidence use this project's saved versions: ${n === 1 ? "only this plan so far" : `${n} reports from ${F(fromIso(trendVersions()[0].asOf))}`}. Press Save version (or download a Word report) to keep this week's. Add older exports under Version history.</p>` : "") +
+      (V2.length ? `<p class="hint gnote">What changed, Slip trend and Finish-date confidence use this project's saved versions: ${n === 1 ? "only this plan so far" : `${n} reports from ${F(fromIso(trendVersions()[0].asOf))}`}. Press Save version (or download a Word or PowerPoint report) to keep this week's. Add older exports under Version history.</p>` : "") +
       `<h3 class="ghead" id="g-more">More reports</h3><ul class="gallery" aria-labelledby="g-more">${more.map(card).join("")}</ul>`;
     paintDetected();
     fitThumbs();
@@ -683,8 +683,9 @@
     const pro = isPro(), pdfOk = pro || id === "onepager";
     $("dl-pdf").innerHTML = pdfOk ? "Download PDF" : 'Download PDF <span class="lock">Pro</span>';
     $("dl-docx").innerHTML = pro ? "Download Word" : 'Download Word <span class="lock">Pro</span>';
+    $("dl-pptx").innerHTML = pro ? "Download PowerPoint" : 'Download PowerPoint <span class="lock">Pro</span>';
     $("dl-note").hidden = pro;
-    $("dl-note").textContent = pro ? "" : `${FREE_RULE}${id === "onepager" ? ", with a small Keelson footer" : ""}. Pro removes the watermark and footer and unlocks every report as PDF and Word.`;
+    $("dl-note").textContent = pro ? "" : `${FREE_RULE}${id === "onepager" ? ", with a small Keelson footer" : ""}. Pro removes the watermark and footer and unlocks every report as PDF, Word and PowerPoint.`;
     paintBranding();
     paintTool();
   }
@@ -794,21 +795,24 @@
     addEventListener("afterprint", () => { pr.innerHTML = ""; document.body.classList.remove("printing"); document.title = t; }, { once: true });
     print();
   });
-  $("dl-docx").addEventListener("click", async () => {
+  // Word and PowerPoint: Pro only; the library loads on first use; a download also saves this version
+  const office = (id, mod, kind, ext, done) => $(id).addEventListener("click", async () => {
     if (!isPro()) return lockedPro();
-    const D = window.KeelsonDocx;
-    if (!D) return toast("Word export isn't available in this build.");
-    const b = $("dl-docx"), label = b.innerHTML;
-    b.disabled = true; b.innerHTML = `<span class="spin" aria-hidden="true"></span> Preparing Word…`;
+    const D = window[mod];
+    if (!D) return toast(`${kind} export isn't available in this build.`);
+    const b = $(id), label = b.innerHTML;
+    b.disabled = true; b.innerHTML = `<span class="spin" aria-hidden="true"></span> Preparing ${kind}…`;
     try {
       if (typeof D.load === "function") await D.load();
       const blob = await D.build(doc(S.report), { brand: { ...S.brand }, footer: !isPro(), rasterize });
-      saveBlob(blob, fileBase(".docx"));
-      await savePoint(); toast("Word document saved");
-    } catch (e) { console.error("Keelson: Word export", e); toast("The Word file couldn't be made. Try again, or download the PDF instead."); }
+      saveBlob(blob, fileBase(ext));
+      await savePoint(); toast(done);
+    } catch (e) { console.error(`Keelson: ${kind} export`, e); toast(`The ${kind} file couldn't be made. Try again, or download the PDF instead.`); }
     finally { b.disabled = false; b.innerHTML = label; }
   });
-  // svg -> Image -> canvas at 2x -> PNG bytes, for the Word export
+  office("dl-docx", "KeelsonDocx", "Word", ".docx", "Word document saved");
+  office("dl-pptx", "KeelsonPptx", "PowerPoint", ".pptx", "PowerPoint deck saved");
+  // svg -> Image -> canvas at 2x -> PNG bytes, for the Word and PowerPoint exports
   async function rasterize(svg, width, height) {
     if (svg && typeof svg === "object") ({ svg, width, height } = svg);
     const vb = /viewBox="[\d.\s-]*?([\d.]+)\s+([\d.]+)"/.exec(svg) || [];
@@ -947,7 +951,7 @@
     $("hlist").innerHTML = n ? S.hist.slice().reverse().map(v => `<li><span class="when">${esc(F(fromIso(v.asOf)))}</span>` +
       `<span class="what"><span class="chip ${RAGC[v.rag] || "chip-mute"}"><span class="dot"></span>${esc(v.rag === "—" ? "No status" : v.rag)}</span>${v.asOf === cur ? "This plan's date · " : ""}${v.backfilled ? "Added later · " : ""}${esc(v.file || "Saved report")}</span>` +
       `<button type="button" class="icon-x" data-del="${esc(v.asOf)}" aria-label="Delete the version of ${esc(F(fromIso(v.asOf)))}">${icon("trash")}</button></li>`).join("")
-      : `<li class="hempty" style="display:block">No saved versions yet. Press Save version (a Word download saves one too); you can also add older exports below.</li>`;
+      : `<li class="hempty" style="display:block">No saved versions yet. Press Save version (a Word or PowerPoint download saves one too); you can also add older exports below.</li>`;
     $("h-export").disabled = $("h-clear").disabled = !n;
   }
   function openHist(add) { if (!S.k) return; bfReset(); paintHist(); hd.showModal(); (add ? $("bf-file") : $("hist-h")).focus(); }

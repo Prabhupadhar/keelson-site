@@ -7,7 +7,7 @@
 <meta name="keelson-support" content="support@keelson.co.in">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Keelson Pro · Stakeholder reports from your plan</title>
-<meta name="description" content="Upload a project plan and get seven stakeholder reports filled with your own data: executive one-pager, weekly status, milestone roadmap, schedule variance, what changed, slip trend and finish-date confidence, as PDF or editable Word. Your plan stays on your device.">
+<meta name="description" content="Upload a project plan and get seven stakeholder reports filled with your own data: executive one-pager, weekly status, milestone roadmap, schedule variance, what changed, slip trend and finish-date confidence, as PDF or editable Word and PowerPoint. Your plan stays on your device.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preload" href="fonts/plus-jakarta-sans-800.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/plus-jakarta-sans-500.woff2" as="font" type="font/woff2" crossorigin>
@@ -450,7 +450,7 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
     <div class="vh hero">
       <p class="kicker"><span class="chip chip-new">New</span>What changed, slip trend and finish-date confidence</p>
       <h1 id="h-upload" tabindex="-1">Your plan in. <span class="grad-text"><span style="white-space:nowrap">Client-ready</span> reports out.</span></h1>
-      <p>Drop in the plan you already keep. Get seven reports: the executive one-pager, weekly status, milestone roadmap and schedule variance, plus what changed, the slip trend and finish-date confidence, ready as PDF or editable Word.</p>
+      <p>Drop in the plan you already keep. Get seven reports: the executive one-pager, weekly status, milestone roadmap and schedule variance, plus what changed, the slip trend and finish-date confidence, ready as PDF or editable Word and PowerPoint.</p>
     </div>
     <label class="drop" id="drop" for="file">
       <input type="file" id="file" accept=".xlsx,.csv,.tsv,.txt,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv,text/tab-separated-values,text/plain">
@@ -466,7 +466,7 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
       <div class="card">
         <h3 id="h-samples">No plan to hand? Try a sample</h3>
         <div class="samples" id="samples" role="list" aria-labelledby="h-samples"></div>
-        <p class="fict">Samples are a fictional project. Nothing you open here is saved unless you press Save version or download a Word report.</p>
+        <p class="fict">Samples are a fictional project. Nothing you open here is saved unless you press Save version or download a Word or PowerPoint report.</p>
       </div>
       <div class="card">
         <div><h3><label for="paste">Or paste it</label></h3></div>
@@ -574,8 +574,9 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
             <button class="btn fill block" type="button" id="dl-pdf">Download PDF</button>
             <p class="fine" id="dl-pdf-tip">In the print window, set <b>Destination</b> to <b>Save as PDF</b>. Other PDF printers, such as Microsoft Print to PDF, use their own paper size and shrink the page.</p>
             <button class="btn line block" type="button" id="dl-docx">Download Word</button>
+            <button class="btn line block" type="button" id="dl-pptx">Download PowerPoint</button>
             <p class="fine" id="dl-note"></p>
-            <p class="fine" id="dl-save">Printing a PDF saves nothing. Downloading a Word report or pressing Save version keeps this report's figures in this browser, so next week's report can show what changed.</p>
+            <p class="fine" id="dl-save">Printing a PDF saves nothing. Downloading a Word or PowerPoint report or pressing Save version keeps this report's figures in this browser, so next week's report can show what changed.</p>
           </div>
         </div>
         <div class="card">
@@ -612,7 +613,7 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
     <ul class="perks">
       <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>No preview watermark and no Keelson footer</li>
       <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>All seven reports as PDF, including What changed, Slip trend and Finish-date confidence</li>
-      <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Editable Word documents with your charts</li>
+      <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Editable Word and PowerPoint files with your charts</li>
       <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Your logo and brand colour on every page</li>
     </ul>
     <div id="pro-buy">
@@ -669,6 +670,7 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
 <script src="reports.js"></script>
 <script src="render-html.js"></script>
 <script src="export-docx.js"></script>
+<script src="export-pptx.js"></script>
 <script src="history.js"></script>
 <script src="diff.js"></script>
 <script src="trend.js"></script>

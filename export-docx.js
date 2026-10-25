@@ -245,7 +245,9 @@
     return typeof document !== "undefined" ? Packer.toBlob(d) : new Uint8Array(await Packer.toBuffer(d));
   }
 
-  const api = { load, build };
+  // shared with export-pptx.js so both exports clean text, pick colours and read logos the same way
+  const util = { str, forExport, fmtDate, brandHex, b64, logoImage, rasterizeSvg, INK, MUT, LINE, SOFT, RULE, TEXT, CHIP, SOLID };
+  const api = { load, build, util };
   root.KeelsonDocx = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);
