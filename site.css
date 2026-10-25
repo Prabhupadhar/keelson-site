@@ -689,3 +689,5 @@ table.cmp{width:100%;border-collapse:collapse;min-width:640px;font-size:15px}
 }
 .ctbl td b.late{color:var(--bad)}
 .cmp.vs tbody th{font-weight:800}
+
+.open-note{color:var(--ink);font-weight:600}

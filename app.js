@@ -9,6 +9,10 @@
   const CFG = window.KEELSON_STORE || {}, CO = CFG.checkout || {};
   const BUY_RE = /^https:\/\/[a-z0-9-]+\.lemonsqueezy\.com\/(checkout\/)?buy\/[0-9a-f-]{36}(\?.*)?$/;
   const buyUrl = k => typeof CO[k] === "string" && BUY_RE.test(CO[k]) ? CO[k] : "";
+  // open Pro: every feature free for everyone through the end of CFG.openUntil (YYYY-MM-DD, local time), then back to normal
+  const OPEN_END = (m => m ? new Date(+m[1], +m[2] - 1, +m[3] + 1).getTime() : 0)(/^(\d{4})-(\d\d)-(\d\d)$/.exec(CFG.openUntil || ""));
+  const openNow = () => Date.now() < OPEN_END;
+  const openLabel = () => new Date(OPEN_END - 1).toLocaleDateString(undefined, { day: "numeric", month: "short" });
   const PORTAL = typeof CFG.portal === "string" && /^https:\/\/([a-z0-9-]+\.)*lemonsqueezy\.com(\/[^\s"<>]*)?$/.test(CFG.portal) ? CFG.portal : "";
   const LS_API = "https://api.lemonsqueezy.com/v1/licenses/";
   // no store set = Pro isn't on sale: no key unlocks it (otherwise a key from any Lemon Squeezy store would)
@@ -100,7 +104,7 @@
   // a record that was tampered with (or written by a clock set ahead) is dropped, not trusted
   if (lic && (typeof lic !== "object" || typeof lic.key !== "string" || !Number.isFinite(lic.checkedAt) || lic.checkedAt > Date.now() || (lic.instanceId != null && typeof lic.instanceId !== "string"))) { lic = null; store.del("keelson-licence"); }
   const licAge = () => lic ? (Date.now() - lic.checkedAt) / DAY_MS : Infinity;
-  const isPro = () => !!(SELLING && lic && lic.valid && (!lic.expiresAt || Date.parse(lic.expiresAt) > Date.now()) && licAge() <= FRESH + GRACE);
+  const isPro = () => openNow() || !!(SELLING && lic && lic.valid && (!lic.expiresAt || Date.parse(lic.expiresAt) > Date.now()) && licAge() <= FRESH + GRACE);
   // The server counts as reached only for an answer it really gave: 2xx, or 400/404/422, with the JSON boolean the call
   // promises (valid / activated / deactivated). Anything else (429, a captive portal's HTML page, other errors, a blocked
   // request) is "unreachable", so the grace period applies.
@@ -143,7 +147,7 @@
   const proBtn = $("pro-btn");
   function paintPro() {
     const pro = isPro();
-    proBtn.textContent = pro ? "Pro" : "Unlock Pro";
+    proBtn.textContent = openNow() ? `Pro free until ${openLabel()}` : pro ? "Pro" : "Unlock Pro";
     proBtn.className = pro ? "btn line sm" : "btn fill sm";
     proBtn.setAttribute("aria-label", pro ? "Keelson Pro is active. Licence details" : "Unlock Keelson Pro");
     const act = $("pro-active");
@@ -158,7 +162,7 @@
     $("key-x").hidden = !lic;
     $("portal").hidden = !(lic && lic.key && PORTAL);
     document.querySelector(".perks").hidden = pro;
-    $("pro-h").textContent = pro ? "Keelson Pro" : proCtx || "Send reports that look like yours";
+    $("pro-h").textContent = openNow() ? `Pro is free for everyone until ${openLabel()}` : pro ? "Keelson Pro" : proCtx || "Send reports that look like yours";
     $("pro-thumb").hidden = pro || !proCtx;
   }
   const dlg = $("pro");

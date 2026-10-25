@@ -16,6 +16,11 @@ paintBtn();
 // [data-when="presale"] notes for the [data-when="sale"] ones (data-for names the links, space-separated; none = any link).
 document.querySelectorAll('[data-store="dashboard"]').forEach(a => { a.href = "downloads/Keelson-dashboard-v1.0.0.zip"; a.setAttribute("download", ""); });
 const CO = (window.KEELSON_STORE || {}).checkout || {};
+// open Pro: "Pro is free for everyone until <date>" while store-config.js openUntil (YYYY-MM-DD, inclusive) is in the future
+{ const m = /^(\d{4})-(\d\d)-(\d\d)$/.exec((window.KEELSON_STORE || {}).openUntil || ""), end = m ? new Date(+m[1], +m[2] - 1, +m[3] + 1) : 0;
+  if (end && Date.now() < end) document.querySelectorAll("[data-open]").forEach(el => {
+    el.textContent = ` · Pro free for everyone until ${new Date(end - 1).toLocaleDateString(undefined, { day: "numeric", month: "long" })}`;
+    el.hidden = false; }); }
 const buyUrl = k => typeof CO[k] === "string" && /^https:\/\/[a-z0-9-]+\.lemonsqueezy\.com\/(checkout\/)?buy\/[0-9a-f-]{36}(\?.*)?$/.test(CO[k]) ? CO[k] : "";
 const BUY_LABEL = { proMonthly: "Get Keelson Pro", proYearly: "Get Keelson Pro", packSaas: "Buy the pack · $9" };
 function paintBuy(bill = "m") {
