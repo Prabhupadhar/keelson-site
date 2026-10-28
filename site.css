@@ -691,3 +691,36 @@ table.cmp{width:100%;border-collapse:collapse;min-width:640px;font-size:15px}
 .cmp.vs tbody th{font-weight:800}
 
 .open-note{color:var(--ink);font-weight:600}
+
+/* ---------- motion layer: calm touches; reduced motion turns all of it off (see the rule at the top) ---------- */
+.hero{isolation:isolate}
+.hero .dots{position:absolute;inset:0;z-index:-1;pointer-events:none;-webkit-mask-image:radial-gradient(ellipse 75% 65% at 50% 30%,#000 30%,transparent 80%);mask-image:radial-gradient(ellipse 75% 65% at 50% 30%,#000 30%,transparent 80%)}
+@media (prefers-reduced-motion:no-preference){
+  .bw{display:inline-block;animation:bw .9s var(--ease-out) both;animation-delay:calc(var(--w) * 55ms + 60ms)}
+  @keyframes bw{from{opacity:0;filter:blur(10px);transform:translateY(10px)}}
+  .rv{opacity:0;transform:translateY(18px);transition:opacity .8s var(--ease-out),transform .8s var(--ease-out)} .rv.in{opacity:1;transform:none}
+  [data-magnet]{transition:transform .35s cubic-bezier(.3,1.4,.5,1),background var(--dur-2)}
+  [data-tilt]{transition:transform .5s cubic-bezier(.22,1,.36,1);transform-style:preserve-3d}
+}
+/* spotlight: a soft light under the pointer, tinted with the accent */
+[data-spot]{position:relative;isolation:isolate}
+[data-spot]::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:1;opacity:0;transition:opacity .35s;
+  background:radial-gradient(420px circle at var(--mx,50%) var(--my,50%),color-mix(in srgb,var(--accent) 9%,transparent),transparent 45%)}
+[data-spot]:hover::after{opacity:1}
+/* the product preview: a slow light travels round its edge */
+@property --ang{syntax:"<angle>";initial-value:0deg;inherits:false}
+.stage{border-radius:22px}
+.stage::before{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;pointer-events:none;z-index:2;
+  background:conic-gradient(from var(--ang),transparent 0 70%,color-mix(in srgb,var(--accent) 70%,transparent) 82%,transparent 94%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
+@media (prefers-reduced-motion:no-preference){.stage::before{animation:ang 9s linear infinite}@keyframes ang{to{--ang:360deg}}}
+/* tool names in a loop, faded at both ends */
+.tool-loop{display:flex;gap:clamp(16px,2.5vw,32px);overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)}
+.tool-loop .marks{flex:none;flex-wrap:nowrap;animation:loop 28s linear infinite} .tool-loop:hover .marks{animation-play-state:paused}
+@keyframes loop{to{transform:translateX(calc(-100% - clamp(16px,2.5vw,32px)))}}
+/* dashboard section */
+.dash-sec .wrap{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,7fr);gap:var(--sp-8);align-items:center}
+.dash-copy .lead{color:var(--muted);font-size:17px;margin:12px 0 22px}
+.dash-shot{margin:0;border-radius:20px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow-3),0 40px 80px -40px color-mix(in srgb,var(--accent) 35%,transparent)}
+.dash-shot img{display:block;width:100%;height:auto}
+@media (max-width:900px){.dash-sec .wrap{grid-template-columns:minmax(0,1fr)}}

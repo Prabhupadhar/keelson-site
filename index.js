@@ -358,3 +358,48 @@ $("gng-reset").addEventListener("click", () => { marks = {}; gngRun(); });
 $("gng-copy").addEventListener("click", () => copy(gngRun.text, $("gng-copied")));
 gngRun();
 }
+
+// ---------- motion: calm, pointer-aware touches; everything static with reduced motion ----------
+(() => {
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches, $$ = s => [...document.querySelectorAll(s)];
+  // headline: words arrive out of a soft blur, one after another
+  $$("[data-blur]").forEach(h => { if (still) return; h.classList.remove("rise"); let i = 0;
+    [...h.childNodes].forEach(n => { if (n.nodeType !== 3) { n.style?.setProperty("--w", i++); n.classList?.add("bw"); return; }
+      const f = document.createDocumentFragment(); n.textContent.split(/(\s+)/).forEach(w => { if (!w) return; if (/^\s+$/.test(w)) return f.append(w); const s = document.createElement("span"); s.className = "bw"; s.style.setProperty("--w", i++); s.textContent = w; f.append(s); }); n.replaceWith(f); }); });
+  // cards: a soft light follows the pointer
+  $$(".gi, .plan, .stage, .qpanel, .cta").forEach(c => c.setAttribute("data-spot", ""));
+  $$("[data-spot]").forEach(c => c.addEventListener("pointermove", e => { const r = c.getBoundingClientRect(); c.style.setProperty("--mx", `${e.clientX - r.left}px`); c.style.setProperty("--my", `${e.clientY - r.top}px`); }));
+  // primary buttons lean towards the pointer a little
+  if (!still && matchMedia("(pointer: fine)").matches) $$("[data-magnet]").forEach(b => {
+    b.addEventListener("pointermove", e => { const r = b.getBoundingClientRect(); b.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * .18}px, ${(e.clientY - r.top - r.height / 2) * .28}px)`; });
+    b.addEventListener("pointerleave", () => { b.style.transform = ""; }); });
+  // the dashboard image tilts with the pointer
+  if (!still && matchMedia("(pointer: fine)").matches) $$("[data-tilt]").forEach(f => {
+    f.addEventListener("pointermove", e => { const r = f.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5; f.style.transform = `perspective(1400px) rotateX(${(-y * 5).toFixed(2)}deg) rotateY(${(x * 7).toFixed(2)}deg)`; });
+    f.addEventListener("pointerleave", () => { f.style.transform = ""; }); });
+  // the tool names drift past in a loop; the copy is hidden from screen readers
+  $$("[data-loop]").forEach(ul => { if (still) return; const w = document.createElement("div"); w.className = "tool-loop"; ul.replaceWith(w); const c = ul.cloneNode(true); c.setAttribute("aria-hidden", "true"); w.append(ul, c); });
+  // section heads and figures rise in as they reach the viewport
+  $$(".section h2").forEach(h => (h.closest("[class*='head'], .wrap > div") || h).setAttribute("data-reveal", ""));
+  if (!still && "IntersectionObserver" in window) { const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { rootMargin: "0px 0px -8% 0px" });
+    $$("[data-reveal]").forEach(el => { el.classList.add("rv"); io.observe(el); }); }
+  // behind the hero: a quiet grid of dots that wakes up around the pointer
+  const cv = document.querySelector(".hero .dots"); if (!cv) return;
+  const ctx = cv.getContext("2d"), hero = cv.parentElement, ptr = { x: -999, y: -999, tx: -999, ty: -999 }; let W = 0, H = 0, raf = 0, vis = true, t0 = performance.now();
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const size = () => { const d = Math.min(2, devicePixelRatio || 1); W = hero.clientWidth; H = hero.clientHeight; cv.width = W * d; cv.height = H * d; cv.style.width = W + "px"; cv.style.height = H + "px"; ctx.setTransform(d, 0, 0, d, 0, 0); draw(performance.now()); };
+  const rgb = c => { const m = /^#?([0-9a-f]{6})$/i.exec(c); if (!m) return [128, 128, 128]; const n = parseInt(m[1], 16); return [n >> 16, n >> 8 & 255, n & 255]; };
+  function draw(now) {
+    const G = 24, base = rgb(css("--line-strong") || "#c9ced6"), acc = rgb(css("--accent") || "#1f4fd8"), t = (now - t0) / 1000;
+    ptr.x += (ptr.tx - ptr.x) * .12; ptr.y += (ptr.ty - ptr.y) * .12; ctx.clearRect(0, 0, W, H);
+    for (let y = G / 2; y < H; y += G) for (let x = G / 2; x < W; x += G) {
+      const dx = x - ptr.x, dy = y - ptr.y, d = Math.hypot(dx, dy), k = Math.max(0, 1 - d / 160), wave = still ? 0 : .5 + .5 * Math.sin(x / 140 + y / 190 - t * .8);
+      const px = x + (d > 0 ? dx / d * k * 6 : 0), py = y + (d > 0 ? dy / d * k * 6 : 0), r = 1 + k * 1.6, a = .35 + wave * .25 + k * .5, c = base.map((v, i) => Math.round(v + (acc[i] - v) * k));
+      ctx.fillStyle = `rgba(${c[0]},${c[1]},${c[2]},${Math.min(1, a)})`; ctx.beginPath(); ctx.arc(px, py, r, 0, 6.2832); ctx.fill(); }
+  }
+  const loop = now => { draw(now); raf = vis && !still ? requestAnimationFrame(loop) : 0; };
+  hero.addEventListener("pointermove", e => { const r = hero.getBoundingClientRect(); ptr.tx = e.clientX - r.left; ptr.ty = e.clientY - r.top; if (ptr.x < -900) { ptr.x = ptr.tx; ptr.y = ptr.ty; } });
+  hero.addEventListener("pointerleave", () => { ptr.tx = ptr.ty = -999; });
+  new ResizeObserver(size).observe(hero); new MutationObserver(() => draw(performance.now())).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+  new IntersectionObserver(([e]) => { vis = e.isIntersecting; if (vis && !raf && !still) raf = requestAnimationFrame(loop); }).observe(hero);
+})();

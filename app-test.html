@@ -12,6 +12,7 @@
 <link rel="preload" href="fonts/plus-jakarta-sans-800.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/plus-jakarta-sans-500.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="design/tokens.css">
+<link rel="stylesheet" href="studio.css">
 <script src="theme.js"></script>
 <style>
 /* Keelson Pro, design system v2 (docs/DESIGN-SYSTEM.md): light-first with a dark variant, tokens from design/tokens.css.
@@ -60,7 +61,7 @@ button, input, select, textarea { font: inherit; color: inherit }
 .theme svg { width: 20px; height: 20px }
 @media (max-width: 1100px) { .crumb { display: none } }
 @media (max-width: 760px) { .steps a span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap } .steps a { padding: 0 6px; min-width: 44px; justify-content: center } .nav .wrap { gap: 8px } .steps { margin-left: auto } }
-@media (max-width: 420px) { .brand b { display: none } }
+@media (max-width: 420px) { .brand b { display: none } .steps a { min-width: 40px; padding: 0 4px } }
 
 /* buttons */
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 20px; border: 0; border-radius: var(--r-pill); font: 800 15px/1.1 var(--font-sans);
@@ -410,6 +411,7 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
       <li><a href="#upload" data-step="upload"><i aria-hidden="true">1</i><span>Upload</span></a></li>
       <li><a href="#check" data-step="check"><i aria-hidden="true">2</i><span>Check</span></a></li>
       <li><a href="#reports" data-step="reports"><i aria-hidden="true">3</i><span>Reports</span></a></li>
+      <li><a href="#dash" data-step="dash"><i aria-hidden="true">4</i><span>Dashboard</span></a></li>
     </ol></nav>
     <span class="crumb" id="crumb" hidden></span>
     <div class="nav-r">
@@ -517,6 +519,12 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
     <div class="compare" data-compare hidden></div>
     <div id="gallery"></div>
     <input type="file" id="g-cmp-file" accept=".xlsx,.csv,.tsv,.txt" class="sr" tabindex="-1" aria-hidden="true">
+  </section>
+
+  <!-- DASHBOARD (studio.js, studio.css) -->
+  <section class="view st-wrap" id="v-dash" aria-labelledby="h-dash" hidden>
+    <h2 class="sr" id="h-dash" tabindex="-1">Dashboard</h2>
+    <div id="dash"></div>
   </section>
 
   <!-- REPORT -->
@@ -642,6 +650,7 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
 <script src="diff.js"></script>
 <script src="trend.js"></script>
 <script src="forecast.js"></script>
+<script src="studio.js"></script>
 <script src="store-config-test.js"></script>
 <script src="app.js"></script>
 </body>

@@ -1023,30 +1023,42 @@
   }
 
   // ---------- views and routing (hash, so Back works) ----------
-  const VIEWS = { upload: "v-upload", check: "v-check", reports: "v-reports", report: "v-report" };
+  const VIEWS = { upload: "v-upload", check: "v-check", reports: "v-reports", report: "v-report", dash: "v-dash" };
+  // the Dashboard tab (studio.js): mounted for the current plan, unmounted when you leave it (its canvases animate)
+  let dash = null;
+  function paintDash() {
+    dash?.destroy(); dash = null;
+    if (!window.KeelsonStudio) { $("dash").textContent = "The dashboard didn't load. Reload the page."; return; }
+    const prev = KH ? prevVersion() : null;
+    dash = window.KeelsonStudio.mount($("dash"), { k: S.k, prev, title: S.title, client: S.client, screen: S.dashScreen, brand: S.brand, fc: S.k ? forecastRes() : null,
+      hist: S.hist.map(v => ({ day: fromIso(v.asOf), pct: v.pct })) });
+  }
   function refresh() {
     if (!S.k) return;
     if (S.view === "reports") { paintCompare(); paintGallery(); }
     if (S.view === "report") { paintCompare(); paintReport(); }
+    if (S.view === "dash") paintDash();
   }
   function go(v) { const h = "#" + v; if (location.hash !== h) location.hash = h; else route(); }
   function route() {
     let [v, id] = location.hash.slice(1).split("/");
     if (!VIEWS[v]) v = "upload";
     if (v !== "upload" && !S.k) { history.replaceState(null, "", "#upload"); v = "upload"; }
-    if ((v === "reports" || v === "report") && (!usable() || !callOk())) { history.replaceState(null, "", "#check"); v = "check"; }
+    if ((v === "reports" || v === "report" || v === "dash") && (!usable() || !callOk())) { history.replaceState(null, "", "#check"); v = "check"; }
     if (v === "report") { S.report = ALL.some(r => r.id === id) ? id : REPORTS[0]?.id; }
+    if (v === "dash") S.dashScreen = id;
+    if (v !== "dash" && dash) { dash.destroy(); dash = null; }
     const changed = S.view !== v || v === "report", first = S.view == null;
     S.view = v; document.body.dataset.view = v;
     Object.entries(VIEWS).forEach(([k, el]) => { $(el).hidden = k !== v; });
-    const order = ["upload", "check", "reports"], at = order.indexOf(v === "report" ? "reports" : v);
+    const order = ["upload", "check", "reports", "dash"], at = order.indexOf(v === "report" ? "reports" : v);
     document.querySelectorAll("[data-step]").forEach(a => {
-      const i = order.indexOf(a.dataset.step), can = i === 0 || (i === 1 && S.k) || (i === 2 && usable());
+      const i = order.indexOf(a.dataset.step), can = i === 0 || (i === 1 && S.k) || (i >= 2 && usable());
       a.toggleAttribute("aria-current", i === at); if (i === at) a.setAttribute("aria-current", "step");
       a.setAttribute("aria-disabled", String(!can)); a.tabIndex = can ? 0 : -1;
       a.classList.toggle("done", i < at);
       a.querySelector("i").innerHTML = i < at ? icon("check") : String(i + 1);
-      a.setAttribute("aria-label", `Step ${i + 1} of 3: ${a.querySelector("span").textContent}${i < at ? ", done" : ""}`);
+      a.setAttribute("aria-label", `Step ${i + 1} of ${order.length}: ${a.querySelector("span").textContent}${i < at ? ", done" : ""}`);
     });
     if (v === "check") paintCheck();
     refresh(); paintCrumb();
@@ -1059,7 +1071,7 @@
       else if (v === "check" && usable()) $("to-reports").focus({ preventScroll: true }); // Enter goes straight on: ten seconds when detection is right
       else h?.focus({ preventScroll: true });
       toCols = false;
-      document.title = { upload: "Keelson Pro · Stakeholder reports from your plan", check: "Check your plan · Keelson Pro", reports: "Your reports · Keelson Pro", report: `${$("h-report").textContent} · Keelson Pro` }[v];
+      document.title = { upload: "Keelson Pro · Stakeholder reports from your plan", check: "Check your plan · Keelson Pro", reports: "Your reports · Keelson Pro", report: `${$("h-report").textContent} · Keelson Pro`, dash: "Dashboard · Keelson Pro" }[v];
     }
   }
   addEventListener("hashchange", route);

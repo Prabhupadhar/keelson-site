@@ -2,25 +2,25 @@
    text. Pure functions, no network. tests/web/engine.test.js checks it against the Python reference on five plan shapes. */
 (function (root) {
   const FIELDS = [ // key, label, required, header names (first match wins; a column claimed earlier is not reused)
-    ["name", "Task name", true, ["Task Name", "Name", "Task", "Activity", "Activity Name", "Task Title", "Title", "Deliverable", "Work Item", "Item", "Milestone / Task", "Description", "Summary"]],
-    ["finish", "Finish / due date", true, ["Finish", "Finish Date", "Finish_Date", "End", "End Date", "Due", "Due Date", "Due date", "Forecast Finish", "Scheduled Finish", "Planned Finish", "Planned End", "Target Date", "Target End", "Deadline", "Completion Date", "Date"]],
-    ["start", "Start date", false, ["Start", "Start Date", "Start_Date", "Begin", "Begin Date", "Forecast Start", "Scheduled Start", "Planned Start"]],
-    ["bfin", "Baseline finish", false, ["Baseline Finish", "Baseline_Finish", "Baseline Finish Date", "Baseline End", "Baseline Due", "Baseline", "Original Finish", "Original End", "Original Due Date", "Original Due"]],
-    ["pct", "% complete", false, ["% Complete", "Percent Complete", "Percent_Complete", "% Done", "Pct Complete", "Complete %", "Completion %", "Progress", "Completion", "% Work Complete"]],
-    ["status", "Status", false, ["Status", "Task Status", "State", "Progress Status", "Completed At", "Completed"]],
-    ["owner", "Owner", false, ["Owner", "Resource Names", "Resource_Names", "Resources", "Assigned To", "Assignee", "Responsible", "Task Owner", "Lead", "Person", "Accountable"]],
-    ["phase", "Phase / workstream", false, ["Phase", "Workstream", "Work Stream", "Stage", "Stream", "Epic Link", "Epic Name", "Epic", "Section", "Section/Column", "Swimlane", "Category"]],
-    ["wbs", "WBS / outline number", false, ["WBS", "WBS Code", "Outline Number", "Outline_Number", "WBS ID", "Ref", "No.", "#"]],
-    ["lvl", "Outline level", false, ["Outline Level", "Outline_Level", "Level", "Indent", "Hierarchy Level"]],
-    ["dur", "Duration", false, ["Duration", "Duration (days)", "Dur", "Days", "Work Days", "Planned Duration"]],
-    ["ms", "Milestone / type", false, ["Milestone", "Is Milestone", "Milestone?", "Milestone Flag", "Type", "Task Type", "Issue Type", "Item Type"]],
-    ["sumf", "Summary flag", false, ["Summary", "Is Summary", "Summary Task"]],
+    ["name", "Task name", true, ["Task Name", "Name", "Task", "Activity", "Activity Name", "Task Title", "Title", "Deliverable", "Work Item", "Item", "Milestone / Task", "Description", "Summary", "Work Item Title", "Item Name", "Subject", "Issue", "Story", "Ticket", "Card Name", "Action", "Step", "Requirement", "Feature", "Line Item", "Activity Description", "Task Description", "Deliverable Name", "Milestone Name"]],
+    ["finish", "Finish / due date", true, ["Finish", "Finish Date", "Finish_Date", "End", "End Date", "Due", "Due Date", "Due date", "Forecast Finish", "Scheduled Finish", "Planned Finish", "Planned End", "Target Date", "Target End", "Deadline", "Completion Date", "Date", "Due On", "Due By", "End Time", "Finish Time", "Target Finish", "Target Completion", "Planned Completion", "Planned End Date", "Planned Finish Date", "Expected Finish", "Expected End", "Estimated Finish", "Est Finish", "Forecast End", "Forecast Date", "Forecast Finish Date", "Committed Date", "Delivery Date", "Timeline End", "End On", "Finish By", "Closing Date"]],
+    ["start", "Start date", false, ["Start", "Start Date", "Start_Date", "Begin", "Begin Date", "Forecast Start", "Scheduled Start", "Planned Start", "Planned Start Date", "Start Time", "Start On", "Timeline Start", "Expected Start", "Estimated Start", "Target Start", "Kick-off", "Kickoff", "Kick off Date"]],
+    ["bfin", "Baseline finish", false, ["Baseline Finish", "Baseline_Finish", "Baseline Finish Date", "Baseline End", "Baseline Due", "Baseline", "Original Finish", "Original End", "Original Due Date", "Original Due", "Baseline1 Finish", "BL Finish", "Original Target Date", "Initial Due Date", "Baseline End Date", "Baseline Due Date", "BL Project Finish"]],
+    ["pct", "% complete", false, ["% Complete", "Percent Complete", "Percent_Complete", "% Done", "Pct Complete", "Complete %", "Completion %", "Progress", "Completion", "% Work Complete", "Percent Done", "% Progress", "Progress %", "Percentage Complete", "Percent", "Done %", "PctComplete", "Complete", "Physical % Complete"]],
+    ["status", "Status", false, ["Status", "Task Status", "State", "Progress Status", "Completed At", "Completed", "Workflow State", "Item Status", "Issue Status", "Current Status", "Status Category", "Is Done", "Done", "Completed?"]],
+    ["owner", "Owner", false, ["Owner", "Resource Names", "Resource_Names", "Resources", "Assigned To", "Assignee", "Responsible", "Task Owner", "Lead", "Person", "Accountable", "Assignees", "Assigned", "Owner Name", "Resource", "Resource Name", "Assigned Resource", "Responsible Person", "Team Member", "Action Owner", "Task Assignee", "People", "Who", "Assignee Name", "Owners", "Members"]],
+    ["phase", "Phase / workstream", false, ["Phase", "Workstream", "Work Stream", "Stage", "Stream", "Epic Link", "Epic Name", "Epic", "Section", "Section/Column", "Swimlane", "Category", "Workstream Name", "Work Package", "Project Phase", "Phase Name", "Stage Name", "Parent", "Parent Name", "Parent Summary", "Epic Summary", "Group", "List", "List Name", "Area Path", "Track", "Stream Name"]],
+    ["wbs", "WBS / outline number", false, ["WBS", "WBS Code", "Outline Number", "Outline_Number", "WBS ID", "Ref", "No.", "#", "WBS Number", "WBS No", "S.No", "Sl No", "Item No", "Outline"]],
+    ["lvl", "Outline level", false, ["Outline Level", "Outline_Level", "Level", "Indent", "Hierarchy Level", "Indent Level", "Depth"]],
+    ["dur", "Duration", false, ["Duration", "Duration (days)", "Dur", "Days", "Work Days", "Planned Duration", "Original Duration", "Estimated Duration", "Duration Days", "Planned Days"]],
+    ["ms", "Milestone / type", false, ["Milestone", "Is Milestone", "Milestone?", "Milestone Flag", "Type", "Task Type", "Issue Type", "Item Type", "Is a Milestone", "Key Milestone", "Work Item Type", "Activity Type", "Record Type"]],
+    ["sumf", "Summary flag", false, ["Summary", "Is Summary", "Summary Task", "Summary Row", "Is Parent"]],
     // v2 (plan diff, history, forecast): last, so they never take a column from the fields above
-    ["uid", "Task ID", false, ["Unique ID", "Unique_ID", "UID", "Issue key", "Issue Key", "Key", "ID"]],
-    ["afin", "Actual finish", false, ["Actual Finish", "Actual_Finish", "Actual End", "Actual Finish Date", "Resolved", "Resolution Date", "Completed Date", "Done Date"]],
-    ["bstart", "Baseline start", false, ["Baseline Start", "Baseline_Start", "Baseline Start Date", "Original Start"]],
+    ["uid", "Task ID", false, ["Unique ID", "Unique_ID", "UID", "Issue key", "Issue Key", "Key", "ID", "Task ID", "Issue id", "Work Item ID", "Activity ID", "Row ID", "Item ID", "Ticket ID", "Task Number"]],
+    ["afin", "Actual finish", false, ["Actual Finish", "Actual_Finish", "Actual End", "Actual Finish Date", "Resolved", "Resolution Date", "Completed Date", "Done Date", "Actual Completion", "Completed On", "Closed Date", "Date Completed", "Actual End Date", "Date Closed", "Finished At", "Resolved Date", "Done On", "Closed"]],
+    ["bstart", "Baseline start", false, ["Baseline Start", "Baseline_Start", "Baseline Start Date", "Original Start", "Baseline1 Start", "BL Start", "Original Start Date", "BL Project Start"]],
   ];
-  const DONE = ["Complete", "Completed", "Done", "Closed", "Finished", "Resolved", "Delivered", "Achieved", "Accepted", "Signed off", "Released", "Live"].map(s => s.toLowerCase());
+  const DONE = ["Complete", "Completed", "Done", "Closed", "Finished", "Resolved", "Delivered", "Achieved", "Accepted", "Signed off", "Released", "Live", "Yes", "Y", "True", "✓", "✔", "☑"].map(s => s.toLowerCase());
   const CANCEL = ["Cancelled", "Canceled", "Won't Do", "Wont Do", "Won't Fix", "Dropped", "Descoped", "Removed", "Not Required", "Duplicate", "N/A"].map(s => s.toLowerCase());
   const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const WEEKDAYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
@@ -109,23 +109,65 @@
     return rows;
   }
 
-  // header row = the row (1-10) with most recognised header names; columns by synonym order
+  // headers compare loosely: case, spaces, underscores, dots, dashes, colons, a trailing "?" and bracketed units like "(days)" don't matter
+  const norm = s => String(s ?? "").replace(/^\uFEFF/, "").toLowerCase().replace(/^\s*custom ?field\s*\(([^)]*)\)/, "$1").replace(/\([^)]*\)|\[[^\]]*\]/g, " ").replace(/[_./:\-–—?*]+/g, " ").replace(/%/g, " % ").replace(/\s+/g, " ").trim();
+  // a loose match (the header contains a synonym's words) must not take a column that belongs to a sibling field
+  const NOT = { finish: /\b(baseline|bl|original|actual|early|late|latest|earliest|float|slack|variance|duration|start|begin)\b/, start: /\b(baseline|bl|original|actual|early|late|latest|earliest|float|slack|variance|finish|end|due)\b/,
+    bfin: /\bstart\b/, bstart: /\b(finish|end)\b/, afin: /\bstart\b/, name: /\b(id|key|number|no|date|owner|status|type|code)\b/, pct: /\b(work|cost)\b/ };
+  const LOOSE = ["name", "finish", "start", "bfin", "pct", "status", "owner", "phase", "dur", "uid", "afin", "bstart"];
+  // header row = the row (1-10) with most recognised header names; columns by synonym order: exact, then loose, then by content
   function detect(grid) {
-    const syn = new Set(FIELDS.flatMap(f => f[3].map(low)));
+    const syn = new Set(FIELDS.flatMap(f => f[3].map(norm)));
     let best = 0, hdr = 0;
     for (let i = 0; i < Math.min(HDR_SCAN, grid.length); i++) {
-      const s = grid[i].filter(c => syn.has(low(c))).length;
+      const s = grid[i].filter(c => syn.has(norm(c))).length;
       if (s > best) { best = s; hdr = i; }
     }
-    const heads = grid[hdr] || [], cols = {}, used = [];
-    for (const [k, , , names] of FIELDS) {
-      let det = -1;
-      for (const n of names) { const j = heads.findIndex(h => low(h) === low(n)); if (j >= 0) { det = j; break; } }
-      cols[k] = det >= 0 && !used.includes(det) ? det : -1;
-      used.push(cols[k]);
+    const heads = grid[hdr] || [], H = heads.map(norm), cols = {}, guessed = [];
+    FIELDS.forEach(([k]) => { cols[k] = -1; });
+    const free = j => j >= 0 && !Object.values(cols).includes(j);
+    const pass = test => { for (const [k, , , names] of FIELDS) if (cols[k] < 0) for (const n of names) { const j = heads.findIndex((h, i) => free(i) && test(h, H[i], n, k)); if (j >= 0) { cols[k] = j; break; } } };
+    pass((h, _, n) => low(h) === low(n));
+    pass((_, h, n) => h !== "" && h === norm(n));
+    pass((_, h, n, k) => { const w = norm(n); if (!LOOSE.includes(k) || w.length < 5 || (NOT[k] && NOT[k].test(h))) return false; return ` ${h} `.includes(` ${w} `); });
+    // no name or finish header: read the columns themselves
+    const body = grid.slice(hdr + 1, hdr + 201).filter(r => r.some(c => String(c ?? "").trim()));
+    const vals = j => body.map(r => String(r[j] ?? "").trim()).filter(Boolean);
+    const dateShare = j => { const v = vals(j); return v.length < 3 ? 0 : v.filter(x => { const p = dateParts(x); return dateValue(p, false) != null || dateValue(p, true) != null; }).length / v.length; };
+    const dateMean = j => { const v = vals(j).map(x => { const p = dateParts(x); return dateValue(p, false) ?? dateValue(p, true); }).filter(x => x != null); return v.reduce((a, b) => a + b, 0) / (v.length || 1); };
+    if (cols.finish < 0) {
+      const ds = heads.map((_, j) => j).filter(j => free(j) && dateShare(j) >= .6).sort((a, b) => dateMean(b) - dateMean(a));
+      if (ds.length) { cols.finish = ds[0]; guessed.push("finish"); if (cols.start < 0 && ds.length > 1) { cols.start = ds[ds.length - 1]; guessed.push("start"); } }
     }
-    return { hdr, heads, cols };
+    if (cols.name < 0) {
+      const textish = j => { const v = vals(j); if (v.length < 3) return 0; const t = v.filter(x => /\p{L}{2}/u.test(x) && !isNum(x.replace(/[%,]/g, ""))).length / v.length; return t < .6 || dateShare(j) > .3 ? 0 : v.reduce((a, x) => a + x.length, 0) / v.length * (new Set(v).size / v.length); };
+      const j = heads.map((_, i) => i).filter(free).sort((a, b) => textish(b) - textish(a))[0];
+      if (j != null && textish(j) > 3) { cols.name = j; guessed.push("name"); }
+    }
+    return { hdr, heads, cols, guessed };
   }
+
+  // the columns no field claimed: what each one holds, so a dashboard can chart it
+  const SEM = [["priority", /\b(priority|prio|urgency|importance)\b/], ["severity", /\b(severity|impact)\b/], ["sprint", /\b(sprint|iteration|cycle|release|version|fix version)\b/],
+    ["points", /\b(story points?|points|sp|estimate|estimation|effort|size|complexity)\b/], ["hours", /\b(hours|hrs|work|remaining work|time spent|logged|timesheet)\b/],
+    ["cost", /\b(cost|budget|spend|amount|price|value|actuals?|forecast cost|eac|capex|opex)\b/], ["risk", /\b(risk|rag|health)\b/],
+    ["label", /\b(labels?|tags?|keywords?)\b/], ["component", /\b(components?|module|area|feature area|system|application|app)\b/],
+    ["team", /\b(team|department|squad|function|vendor|supplier|org)\b/], ["place", /\b(region|location|site|country|city|office)\b/], ["client", /\b(client|customer|account)\b/]];
+  const money = v => v.replace(/[$€£₹¥,\s]|usd|eur|gbp|inr|hrs?|h$|d$|pts?$/gi, "");
+  function profile(heads, rows, cols, dayFirst) {
+    const taken = new Set(Object.values(cols).filter(j => j >= 0));
+    return heads.map((h, col) => ({ h: String(h ?? "").trim(), col })).filter(c => c.h && !taken.has(c.col)).map(({ h, col }) => {
+      const v = rows.map(r => String(r[col] ?? "").trim()), f = v.filter(Boolean), n = f.length, nh = norm(h);
+      const sem = (SEM.find(([, re]) => re.test(nh)) || [null])[0];
+      if (n === 0) return { name: h, col, type: "empty", sem };
+      const num = f.filter(x => isNum(money(x).replace(/%$/, ""))).length / n, dt = f.filter(x => dateValue(dateParts(x), dayFirst) != null).length / n;
+      const distinct = new Set(f.map(low)).size, yes = f.filter(x => /^(yes|no|y|n|true|false|✓|✔|x)$/i.test(x)).length / n;
+      const idLike = /\b(id|key|no|number|ref|code|s no|sl no|row)\b/.test(nh) || (num >= .8 && !sem && distinct === n && n > 5);
+      const type = num >= .8 && idLike ? "id" : num >= .8 && distinct > 2 ? "number" : dt >= .8 ? "date" : yes >= .9 ? "flag" : distinct <= Math.max(12, n * .3) && distinct < n ? "category" : "text";
+      return { name: h, col, type, sem, filled: n / rows.length, distinct };
+    });
+  }
+  const numOf = v => { const x = parseFloat(money(String(v ?? "")).replace(/%$/, "")); return Number.isFinite(x) ? x : null; };
 
   // one text date -> [y, m, d] parts and day-first evidence, like the workbook's _t/_s/_a/_b/_c columns
   function dateParts(raw) {
@@ -173,7 +215,7 @@
     const get = (r, k) => cols[k] >= 0 ? (r[cols[k]] ?? "").trim() : "";
 
     const R = body.map(r => {
-      const o = {}; FIELDS.forEach(([k]) => o["r_" + k] = get(r, k)); return o;
+      const o = { raw: r }; FIELDS.forEach(([k]) => o["r_" + k] = get(r, k)); return o;
     });
     let evDay = 0, evMon = 0;
     for (const o of R) for (const k of ["start", "finish", "bfin", "afin", "bstart"]) {
@@ -183,7 +225,8 @@
     const dayFirst = opt.dateOrder === "day" ? true : opt.dateOrder === "month" ? false : evDay > evMon;
     let maxPa = 0;
     for (const o of R) {
-      const st = o.r_status;
+      // no status, % or actual-finish column: a Kanban list called Done (Trello, ClickUp lists) still means done
+      const st = o.r_status || (cols.status < 0 && cols.pct < 0 && cols.afin < 0 && DONE.includes(low(o.r_phase)) ? o.r_phase : "");
       o.st = !st ? "" : dateValue(dateParts(st), dayFirst) != null ? "Done" : DONE.includes(low(st)) ? "Done" : CANCEL.includes(low(st)) ? "Cancelled" : "Open";
       o.nm = o.st === "Cancelled" ? "" : o.r_name.trim();
       o.act = o.nm !== "";
@@ -232,7 +275,7 @@
     const leaf = R.filter(o => o.leaf), tasks = leaf.filter(o => o.istask), ms = leaf.filter(o => o.isms);
     const sum = (a, f) => a.reduce((t, o) => t + f(o), 0);
     const ww = sum(tasks, o => o.w);
-    const k = { rows: act.length, cols, heads: det.heads, hdrRow: det.hdr + 1, dayFirst, evidence: evDay + evMon, statusDate: sd };
+    const k = { rows: act.length, cols, heads: det.heads, guessed: det.guessed.filter(g => !(opt.cols && g in opt.cols)), hdrRow: det.hdr + 1, dayFirst, evidence: evDay + evMon, statusDate: sd };
     k.pct = ww ? sum(tasks, o => o.w * o.pe) / ww : leaf.length ? leaf.filter(o => o.done).length / leaf.length : 0;
     k.exp = ww ? sum(tasks, o => o.w * o.e) / ww : 0;
     const fins = leaf.map(o => o.finish).filter(v => v != null), bfs = leaf.map(o => o.bfin).filter(v => v != null);
@@ -306,11 +349,12 @@
     k.overdue = overdue.slice(0, N_LIST).map(item); k.overdueMore = Math.max(0, overdue.length - N_LIST);
     const up = by(tasks.filter(o => !o.done && o.finish != null && o.finish >= sd && o.finish <= sd + upcoming), o => o.finish);
     k.upcoming = up.slice(0, N_LIST).map(item); k.upcomingMore = Math.max(0, up.length - N_LIST); k.upcomingDays = upcoming;
+    k.extra = profile(det.heads, leaf.map(o => o.raw), cols, dayFirst);
     // every leaf row, for report builders (dates are day numbers; see fromYMD/iso)
     const seen = {};
     k.tasks = leaf.map(o => ({ key: (b => (seen[b] = (seen[b] || 0) + 1) > 1 ? `${b}#${seen[b]}` : b)(o.nm + "|" + o.ph), row: o.row, name: o.nm, owner: o.r_owner, phase: o.ph, start: o.start, finish: o.finish, bfin: o.bfin,
       pct: o.pct, done: o.done, ms: o.isms, od: o.od, late: o.late, var: o.var, w: o.w,
-      uid: o.r_uid, afin: o.afin, bstart: o.bstart }));
+      uid: o.r_uid, afin: o.afin, bstart: o.bstart, st: o.r_status, type: o.r_ms, x: k.extra.map(c => String(o.raw[c.col] ?? "").trim()) }));
     // rows the status column marks cancelled (not leaves, so not in k.tasks): the plan diff tells cancelled from removed
     k.cancelled = R.filter(o => o.st === "Cancelled" && o.r_name).map(o => ({ uid: o.r_uid, name: o.r_name, phase: (cols.phase >= 0 && o.r_phase) || o.ph, owner: o.r_owner, row: o.row }));
     k.rules = rules;
@@ -325,7 +369,7 @@
 
   setCalendar();
   const parseDate = (t, dayFirst) => dateValue(dateParts(t), dayFirst);
-  root.KeelsonEngine = { compute, parseTable, detect, parseDate, FIELDS, RULES, DEFAULT_MS_KEYS, fromYMD, iso, fmt, nwd, wdiff, wd, DAY,
+  root.KeelsonEngine = { compute, parseTable, detect, norm, numOf, parseDate, FIELDS, RULES, DEFAULT_MS_KEYS, fromYMD, iso, fmt, nwd, wdiff, wd, DAY,
     setCalendar, calendar, calText, isWd, addWd, WEEKENDS };
   if (typeof module !== "undefined") module.exports = root.KeelsonEngine;
 })(typeof window !== "undefined" ? window : globalThis);

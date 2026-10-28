@@ -114,19 +114,20 @@
 <main id="main" tabindex="-1">
 <!-- ============ HERO ============ -->
 <section class="hero" aria-labelledby="h-hero">
+  <canvas class="dots" aria-hidden="true"></canvas>
   <div class="wrap hero-copy">
-    <h1 id="h-hero" class="rise">Turn your project plan into a status report in minutes</h1>
+    <h1 id="h-hero" class="rise" data-blur>Turn your project plan into a status report in minutes</h1>
     <p class="lead rise d1">Upload your plan from MS Project, Jira, Smartsheet or Excel. Keelson shows what changed since last week, flags delays, and creates a report you can send to your client.</p>
     <div class="hero-act rise d2">
       <div class="hero-ctas">
-        <a class="btn btn-primary btn-lg" href="app.html#upload"><svg class="ic" aria-hidden="true"><use href="#i-upload"/></svg>Upload your plan</a>
+        <a class="btn btn-primary btn-lg" href="app.html#upload" data-magnet><svg class="ic" aria-hidden="true"><use href="#i-upload"/></svg>Upload your plan</a>
         <a class="btn btn-secondary btn-lg" href="samples/keelson-sample-onepager.pdf" target="_blank" rel="noopener" type="application/pdf">See a sample report</a>
       </div>
       <p class="hero-trust">Free · No sign-up · Your file stays on your computer<span class="open-note" data-open hidden></span></p>
     </div>
   </div>
   <div class="wrap">
-  <div class="stage rise d3" role="img" aria-label="Keelson app preview with the fictional FieldFlow sample: what changed since 16 February, plan finish 3 June, 13 working days behind baseline, P80 finish 23 July, and a one-page changes report ready as PDF or Word.">
+  <div class="stage rise d3" data-spot role="img" aria-label="Keelson app preview with the fictional FieldFlow sample: what changed since 16 February, plan finish 3 June, 13 working days behind baseline, P80 finish 23 July, and a one-page changes report ready as PDF or Word.">
     <div class="mock" aria-hidden="true">
       <div class="mock-top">
         <span class="logo"><svg><use href="#k-mark"/></svg>Keelson</span>
@@ -184,7 +185,7 @@
 <!-- Plain text names only: no third-party logos or certification marks (trademark and endorsement rules). -->
 <div class="wrap works">
   <p class="lbl" id="h-works">Works with exports from</p>
-  <ul class="marks">
+  <ul class="marks" data-loop>
     <li>Microsoft Project</li>
     <li>Jira</li>
     <li>Smartsheet</li>
@@ -194,6 +195,21 @@
   </ul>
   <p class="fine">Reads .xlsx, .csv and .tsv files or a pasted table. From MS Project, save as .xlsx or CSV first. Tested on five real-world plan shapes.<sup><a href="#n2" aria-label="Note 2">2</a></sup> Product names are trademarks of their owners. Keelson is not affiliated with or endorsed by them.</p>
 </div>
+</section>
+
+<!-- ============ DASHBOARD: built from the file's own columns (images are the fictional FieldFlow sample) ============ -->
+<section class="section dash-sec" id="dashboard" aria-labelledby="h-dash">
+  <div class="wrap">
+    <div class="dash-copy" data-reveal>
+      <h2 id="h-dash">A dashboard from whatever your file has</h2>
+      <p class="lead">Status, priority, sprint, owner, story points, cost: every column Keelson finds becomes a card. Exports from Jira, Azure DevOps, Smartsheet, Asana, Monday.com, ClickUp, Wrike, Trello and Primavera are read as they are, with nothing to set up.</p>
+      <a class="btn btn-primary" href="app.html#upload" data-magnet>Open the dashboard<svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+    </div>
+    <figure class="dash-shot" data-reveal data-tilt>
+      <picture class="theme-light"><img src="img/dashboard-light.webp" width="1400" height="1003" alt="The At a glance dashboard for the fictional FieldFlow sample: 48% done, 13 of 34 tasks, status, phase and owner cards" loading="lazy" decoding="async"></picture>
+      <picture class="theme-dark"><img src="img/dashboard-dark.webp" width="1400" height="1003" alt="The At a glance dashboard for the fictional FieldFlow sample, dark theme" loading="lazy" decoding="async"></picture>
+    </figure>
+  </div>
 </section>
 
 <!-- ============ THREE QUESTIONS: what changed, slip trend, finish forecast ============ -->
@@ -494,7 +510,7 @@
       <h2 id="h-cta">Try it on this week's plan</h2>
       <p>Nothing to install. Your file stays on your computer.</p>
     </div>
-    <div class="row"><a class="btn btn-primary btn-lg" href="app.html#upload">Upload your plan <svg class="ic arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a><a class="btn btn-secondary btn-lg" href="#pricing">See pricing</a></div>
+    <div class="row"><a class="btn btn-primary btn-lg" href="app.html#upload" data-magnet>Upload your plan <svg class="ic arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a><a class="btn btn-secondary btn-lg" href="#pricing">See pricing</a></div>
   </div>
 </section>
 

@@ -161,7 +161,8 @@
       "New scope and named risks are not modelled; add them to the plan to see their effect.",
       "The spread is understated if the remaining work is riskier than the work done so far.",
     ];
-    return { ok: true, ...out, seed, factor, f50, f80, p50, p80, cv, sentence, assumptions, phases, notes, callout };
+    const dist = Array.from({ length: 160 }, (_, i) => addWd(sd, Ts[Math.floor((i + .5) * Ts.length / 160)])); // 160 evenly spaced finish dates, for drawing
+    return { ok: true, ...out, seed, factor, f50, f80, p50, p80, dist, cv, sentence, assumptions, phases, notes, callout };
   }
 
   // ---------- report ----------

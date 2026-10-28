@@ -180,3 +180,12 @@ Plus Jakarta Sans    SIL Open Font License 1.1    Copyright 2020 The Plus Jakart
                                                   (https://github.com/tokotype/PlusJakartaSans)
 
 The full licence text is in site/fonts/OFL-PlusJakartaSans.txt, published alongside the fonts.
+
+site/vendor/pts.min.js is dist/pts.min.js from the npm package pts@1.0.3 (https://github.com/williamngan/pts),
+with only its sourceMappingURL comment removed. It is loaded only from our own origin, and only when you open the Dashboard.
+
+  Package  Version  Licence     Copyright
+  pts      1.0.3    Apache-2.0  Copyright © 2017-present William Ngan and contributors
+  SHA-256 of pts.min.js: 3953b93e53dcf693bbd28b2e5c618c4790df25c1123dd6657d9695162c38d381
+
+The full licence text is in site/vendor/pts.LICENSE, published alongside the library.
