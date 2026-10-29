@@ -595,7 +595,7 @@
 
   // ---------- report building ----------
   if (H && !document.getElementById("kr-css")) { const st = document.createElement("style"); st.id = "kr-css"; st.textContent = H.css; document.head.append(st); }
-  const opts = id => ({ title: S.title || "Project status", client: S.client, preparedBy: S.prep, brand: { ...S.brand }, prev: S.compare ? prevSnap() : null, history: S.compare ? histOf(prevSnap()) : [], edits: { ...(S.edits[id] || {}) } });
+  const opts = id => ({ title: S.title || "Project status", client: S.client, preparedBy: S.prep, brand: { ...S.brand }, prev: S.compare ? prevSnap() : null, history: S.compare ? histOf(prevSnap()) : [], edits: { ...(S.edits[id] || {}) }, actions: id === "weekly" ? actsFor() : null });
   // the forecast runs 5,000 resamples: its result and its page are kept until the plan (S.k) or the saved versions (S.hist) change
   // ponytail: KF.report() can't take a precomputed result, so a new plan still computes twice (page + tool panel)
   const fc = { k: null, h: null, res: null, key: "", doc: null };
@@ -664,14 +664,14 @@
       `<h3 class="ghead" id="g-more">More reports</h3><ul class="gallery" aria-labelledby="g-more">${more.map(card).join("")}</ul>`;
     paintDetected();
     fitThumbs();
-    paintChase();
+    paintChase(); paintActs();
   }
   // chase list: who to ask for an update, from this plan (and the last saved version for stale progress); copying is Pro
   function paintChase() {
-    const C = window.KeelsonChase, g = S.k ? C.build(S.k, prevVersion()) : [];
+    const C = window.KeelsonChase, g = S.k ? C.build(S.k, prevVersion(), AC ? actsLog() : []) : [];
     S.chase = g; $("chase").hidden = !usable(); $("chase-all").hidden = !g.length;
     if (!g.length) { $("chase-sub").textContent = "Nobody to chase this week: nothing overdue, nothing due in the next 5 working days, nothing stuck since the last version."; $("chase-list").innerHTML = ""; return; }
-    const n = g.reduce((t, x) => t + x.items.length, 0), what = { overdue: "Overdue", soon: "Due in the next 5 working days", stale: "No progress since the last version" };
+    const n = g.reduce((t, x) => t + x.items.length, 0), what = { overdue: "Overdue", soon: "Due in the next 5 working days", stale: "No progress since the last version", action: "Overdue action from the log" };
     $("chase-sub").textContent = `${plural(n, "task")} to ask about, ${g.length} ${g.length === 1 ? "person" : "people"}. Copy a message and paste it into email, Teams or Slack. Keelson sends nothing.`;
     $("chase-list").innerHTML = g.map((x, i) => `<div class="ch"><div class="ch-h"><b>${esc(x.owner)}</b><span>${x.items.length}</span><button class="btn ghost sm" type="button" data-chase="${i}">Copy message</button></div>
       <ul>${x.items.map(t => `<li class="${t.kind}">${esc(t.name)}<small>${esc(what[t.kind])} · due ${F(t.finish)}${t.kind === "overdue" ? ` · ${t.late} wd late` : ""}</small></li>`).join("")}</ul></div>`).join("");
@@ -683,6 +683,87 @@
   }
   $("chase-all").addEventListener("click", () => copyChase(null));
   $("chase-list").addEventListener("click", e => { const b = e.target.closest("[data-chase]"); if (b) copyChase(+b.dataset.chase); });
+
+  // ---------- actions, decisions and risks: a log per project in this browser, from minutes or tables (actions.js); Pro ----------
+  const AC = window.KeelsonActions, ACTS = "keelson-actions";
+  const actsFor = () => { const l = AC ? actsLog() : []; return l.length ? { ...AC.summary(l, S.sd), sd: S.sd } : null; }; // for the Weekly report
+  const actsLog = () => { const l = store.get(ACTS, {})[projKey()]; return Array.isArray(l) ? l : []; };
+  const actsPut = log => { const all = store.get(ACTS, {}); all[projKey()] = log; if (!store.set(ACTS, all)) toast("Couldn't save the log in this browser (storage full or blocked). Download the CSV to keep it."); };
+  let actsDraft = null; // items read and waiting for the PM to confirm
+  const isoOr = v => v == null ? "" : E.iso(v), dayIn = v => v ? E.parseDate(v) : null;
+  function paintActs() {
+    if (!AC) return;
+    $("acts").hidden = !usable();
+    if (!usable()) return;
+    const log = actsLog(), sm = AC.summary(log, S.sd), all = $("acts-filter").value === "all";
+    $("acts-sub").textContent = log.length
+      ? `${plural(sm.openActions, "open action")} · ${sm.overdue.length} overdue · ${plural(sm.decisions.length, "decision")} this week · ${plural(sm.risks.length, "open risk")}. Kept in this browser for ${S.title || "this project"}.`
+      : "Turn meeting minutes into a log that carries forward week to week. Overdue actions join the chase list and the Weekly report.";
+    $("acts-tools").hidden = !log.length; $("acts-csv").hidden = !log.length;
+    const rows = log.filter(x => all || (x.type === "Decision" ? (x.raised ?? x.added) >= S.sd - 7 : x.status === "Open")) // decisions: this week's.sort((a, b) => (a.status !== "Open") - (b.status !== "Open") || (a.due ?? 1e9) - (b.due ?? 1e9));
+    $("acts-list").innerHTML = !log.length ? "" : !rows.length ? `<p class="hint">Nothing open and no decisions this week. Choose Everything to see the whole log.</p>` :
+      `<table class="at"><thead><tr><th class="c-type">Type</th><th>Item</th><th class="c-own">Owner</th><th class="c-due">Due</th><th class="c-st">Status</th><th class="c-x"><span class="sr">Remove</span></th></tr></thead><tbody>${rows.map(x => {
+        const late = x.status === "Open" && x.due != null && x.due < S.sd, slip = x.firstDue != null && x.due != null && x.due > x.firstDue ? ` · moved ${E.wdiff(x.firstDue, x.due)} wd` : "";
+        return `<tr class="${x.status === "Open" ? "" : "done"}"><td class="c-type"><span class="tag">${esc(x.type)}</span></td><td>${esc(x.text)}${x.score ? ` <span class="hint">(score ${esc(x.score)})</span>` : ""}</td><td class="c-own">${esc(x.owner) || (x.type === "Decision" ? "" : '<span class="hint">No owner</span>')}</td>
+          <td class="c-due${late ? " late" : ""}">${x.due != null ? F(x.due) : ""}${late ? " · late" : ""}<span class="hint">${slip}</span></td>
+          <td class="c-st">${x.type === "Decision" ? "" : x.status === "Open" ? `<button class="link" type="button" data-act="done" data-id="${esc(x.id)}">${x.type === "Risk" ? "Close" : "Mark done"}</button>` : `${esc(x.status)} · <button class="link" type="button" data-act="open" data-id="${esc(x.id)}">Reopen</button>`}</td>
+          <td class="c-x"><button class="link" type="button" data-act="del" data-id="${esc(x.id)}" aria-label="Remove ${esc(x.text)}">✕</button></td></tr>`; }).join("")}</tbody></table>`;
+  }
+  function paintDraft() {
+    const r = actsDraft;
+    if (!r) { $("acts-review").innerHTML = ""; return; }
+    const opts = v => AC.TYPES.map(t => `<option${t === v ? " selected" : ""}>${t}</option>`).join("");
+    $("acts-review").innerHTML = !r.items.length ? "" : `<table class="at"><thead><tr><th class="c-x"><span class="sr">Keep</span></th><th class="c-type">Type</th><th>Item</th><th class="c-own">Owner</th><th class="c-due">Due</th></tr></thead><tbody>${r.items.map((x, i) =>
+      `<tr><td class="c-x"><input type="checkbox" checked data-i="${i}" data-f="keep" aria-label="Keep ${esc(x.text)}"></td><td class="c-type"><select class="in" data-i="${i}" data-f="type" aria-label="Type">${opts(x.type)}</select></td>
+       <td><input class="in" data-i="${i}" data-f="text" value="${esc(x.text)}" aria-label="Item"></td><td class="c-own"><input class="in" data-i="${i}" data-f="owner" value="${esc(x.owner)}" aria-label="Owner" placeholder="No owner"></td>
+       <td class="c-due"><input class="in" type="date" data-i="${i}" data-f="due" value="${isoOr(x.due)}" aria-label="Due"></td></tr>`).join("")}</tbody></table>
+      <div class="acts-save"><button class="btn fill sm" type="button" id="acts-save">Save to the log</button><button class="btn ghost sm" type="button" id="acts-cancel">Cancel</button></div>`;
+  }
+  function readActs(text, from) {
+    const md = dayIn($("acts-date").value) ?? S.sd, r = AC.read(text, { meetingDate: md, dayFirst: S.k ? S.k.dayFirst !== false : true });
+    actsDraft = { ...r, items: r.items.map(x => ({ ...x, keep: true })) };
+    const sk = r.skipped.length;
+    $("acts-msg").className = "status " + (r.items.length ? "ok" : "bad");
+    $("acts-msg").textContent = r.items.length
+      ? `Found ${plural(r.items.length, "item")}${from ? ` in ${from}` : ""}${r.kind === "table" ? " (read as a table)" : ""}${sk ? `; ${plural(sk, "line")} without a marker skipped` : ""}. Check them, then save.`
+      : r.kind === "notes" ? "Nothing found. Start lines with ACTION:, DECISION:, RISK: or ISSUE:, or paste a table with an Item column." : "No rows found under the headers.";
+    paintDraft();
+  }
+  const actsPro = () => { if (isPro()) return true; openPro("Keep an actions, decisions and risks log from your meeting minutes, plus Word and PowerPoint export — $12 a month or $96 a year."); return false; };
+  $("acts-new").addEventListener("click", () => { const p = $("acts-add"); p.hidden = !p.hidden; if (!p.hidden) { if (!$("acts-date").value) $("acts-date").value = isoOr(S.sd); $("acts-text").focus(); } });
+  $("acts-read").addEventListener("click", () => { if (actsPro()) readActs($("acts-text").value); });
+  $("acts-file").addEventListener("change", async e => {
+    const f = e.target.files[0]; e.target.value = ""; if (!f || !actsPro()) return;
+    try {
+      const p = await parsePlan(f), tsv = g => g.map(r => r.map(c => String(c ?? "").replace(/[\t\r\n]+/g, " ")).join("\t")).join("\n");
+      const text = p.text ?? (p.sheets.map(sh => tsv(sh.rows)).find(t => AC.parseTable(t)) || tsv(p.sheets[0].rows));
+      readActs(text, f.name);
+    } catch (err) { $("acts-msg").className = "status bad"; $("acts-msg").textContent = err.plain ? err.message : "Couldn't read that file. Save it as .xlsx or CSV and try again."; }
+  });
+  $("acts-file-l").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); $("acts-file").click(); } });
+  $("acts-review").addEventListener("input", e => { const t = e.target, i = t.dataset.i; if (i == null || !actsDraft) return; const x = actsDraft.items[+i];
+    if (t.dataset.f === "keep") x.keep = t.checked; else if (t.dataset.f === "due") x.due = dayIn(t.value); else x[t.dataset.f] = t.dataset.f === "type" ? t.value : t.value.slice(0, AC.LIM.text); });
+  $("acts-review").addEventListener("click", e => {
+    if (e.target.id === "acts-cancel") { actsDraft = null; paintDraft(); $("acts-msg").textContent = ""; return; }
+    if (e.target.id !== "acts-save" || !actsDraft || !actsPro()) return;
+    const keep = actsDraft.items.filter(x => x.keep && x.text.trim()).map(x => ({ ...x, text: x.text.trim(), owner: x.owner.trim() }));
+    const r = AC.merge(actsLog(), keep, S.sd); actsPut(r.log);
+    actsDraft = null; paintDraft(); $("acts-text").value = "";
+    $("acts-msg").className = "status ok"; $("acts-msg").textContent = `Saved: ${r.added} new, ${r.updated} updated${r.same ? `, ${r.same} already in the log` : ""}.`;
+    paintActs(); paintChase();
+  });
+  $("acts-list").addEventListener("click", e => {
+    const b = e.target.closest("[data-act]"); if (!b || !actsPro()) return;
+    const id = b.dataset.id, log = actsLog(), x = log.find(y => y.id === id); if (!x) return;
+    if (b.dataset.act === "del" && !confirm(`Remove “${x.text}” from the log?`)) return;
+    actsPut(b.dataset.act === "del" ? AC.remove(log, id) : AC.setStatus(log, id, b.dataset.act === "done" ? "Done" : "Open", S.sd));
+    paintActs(); paintChase();
+  });
+  $("acts-filter").addEventListener("change", paintActs);
+  $("acts-csv").addEventListener("click", () => { if (actsPro()) saveBlob(new Blob([AC.toCSV(actsLog())], { type: "text/csv" }), `${(S.title || "project").replace(/[^\p{L}\p{N} _-]+/gu, "").trim() || "project"} actions ${E.iso(S.sd)}.csv`); });
+  $("acts-tpl").addEventListener("click", e => { e.preventDefault(); saveBlob(new Blob([AC.TEMPLATE], { type: "text/csv" }), "keelson-actions-template.csv"); });
+  $("acts-prompt").textContent = AC ? AC.PROMPT : "";
+  $("acts-prompt-copy").addEventListener("click", () => navigator.clipboard.writeText(AC.PROMPT).then(() => toast("Prompt copied"), () => toast("Couldn't copy. Select the prompt and copy it yourself.")));
   // one version only: last week's export goes straight into What changed (read here, compared, never uploaded)
   $("gallery").addEventListener("click", e => { if (e.target.closest("#g-cmp")) $("g-cmp-file").click(); });
   $("g-cmp-file").addEventListener("change", async e => { const f = e.target.files[0]; e.target.value = ""; if (f && await compareFile(f)) go("report/changes"); });
@@ -768,7 +849,7 @@
   $("client2").addEventListener("input", e => { S.client = clean(e.target.value); $("client").value = S.client; people(); });
   $("prep2").addEventListener("input", e => { S.prep = clean(e.target.value); $("prep").value = S.prep; people(); });
   $("wipe").addEventListener("click", async () => {
-    if (!confirm("Remove everything Keelson saved in this browser? That's your theme, branding and logo, licence key, report history, version history of every project, status rules and unsaved commentary. Your plan files aren't affected.")) return;
+    if (!confirm("Remove everything Keelson saved in this browser? That's your theme, branding and logo, licence key, report history, version history of every project, status rules, actions logs and unsaved commentary. Your plan files aren't affected.")) return;
     for (const st of [localStorage, sessionStorage]) try { Object.keys(st).filter(k => k.startsWith("keelson-")).forEach(k => st.removeItem(k)); } catch (e) {}
     let cleared = true;
     if (KH) { // delete the whole "keelson" IndexedDB database (and a sample's in-memory versions)

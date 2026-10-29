@@ -525,6 +525,25 @@
     return compact(out);
   }
 
+  // the actions log (actions.js summary), when the PM keeps one: decisions this week, actions to watch, open risks
+  function actionBlocks(a, D) {
+    if (!a) return [];
+    const acts = [...a.overdue, ...a.dueSoon.filter(x => !a.overdue.includes(x))], shown = acts.slice(0, CAP);
+    const due = x => x.due == null ? "—" : D(x.due);
+    return compact([
+      { type: "heading", text: "Decisions and actions" },
+      { type: "text", id: "actions-summary", editable: false, text: `${plural(a.openActions, "open action")}, ${a.overdue.length} overdue${a.slipped.length ? `, ${a.slipped.length} moved since first agreed` : ""}. ${plural(a.closedRecently.length, "item")} closed and ${plural(a.decisions.length, "decision")} recorded in the last ${PERIOD} days.` },
+      a.decisions.length ? { type: "table", columns: [L("Decision", "78%"), M("Date", "22%")], rows: a.decisions.slice(0, CAP).map(x => [x.text, due({ due: x.raised ?? x.added })]) } : null,
+      more(a.decisions.length - CAP, "decision"),
+      { type: "table", columns: [L("Action", "46%"), L("Owner", "22%"), M("Due", "16%"), M("Status", "16%")],
+        rows: shown.map(x => [x.text, x.owner || "—", due(x), x.due != null && x.due < a.sd ? { text: "Overdue", tone: "red", chip: true } : { text: "Due soon", chip: true }]),
+        empty: "No actions overdue or due in the next 5 working days." },
+      more(acts.length - CAP, "action"),
+      a.risks.length ? { type: "table", columns: [L("Open risk", "56%"), L("Owner", "24%"), M("Score", "20%")], rows: a.risks.slice(0, CAP).map(x => [x.text, x.owner || "—", x.score || "—"]) } : null,
+      more(a.risks.length - CAP, "open risk"),
+    ]);
+  }
+
   function weekly(k, opts) {
     const D = mkD(k), cm = commentary(k, opts), dl = deltas(k, opts.prev), ph = allPhases(k), ms = allMs(k);
     const done7 = completedRecently(k), up = dueSoon(k), od = overdueTasks(k);
@@ -536,6 +555,7 @@
       ...(dl ? sinceLast(k, dl) : []),
       ...(hist.length > 1 && k.rows ? [{ type: "heading", text: `Trend over the last ${hist.length} reports` }, trendSvg(hist)] : []),
       { type: "heading", text: "Commentary" }, cm.highlights, cm.concerns, cm.next, cm.decisions,
+      ...actionBlocks(opts.actions, D),
       { type: "heading", text: "Key risks and issues" }, userList("risks", "Add the key risks and issues for this period, one per line.", opts.edits),
       { type: "heading", text: "Changes requested" }, userList("changes", "Add any change requests raised this period, one per line.", opts.edits),
       { type: "heading", text: `Completed in the last ${PERIOD} days` },

@@ -7,9 +7,10 @@
   const E = root.KeelsonEngine || (typeof require !== "undefined" ? require("./engine.js") : null);
   const SOON = 5; // working days ahead for "due soon"
   const NONE = "No owner";
-  const ASK = { overdue: "please update % done or confirm a new date", soon: "please confirm it will finish on time", stale: "please update % done" };
+  const ASK = { overdue: "please update % done or confirm a new date", soon: "please confirm it will finish on time", stale: "please update % done", action: "please confirm it's done or give a new date" };
 
-  function build(k, prev) {
+  // actions: the actions log (actions.js); its open actions and issues past due join their owner's list
+  function build(k, prev, actions) {
     if (!k || !k.tasks || k.cols.name < 0 || k.cols.finish < 0) return [];
     const sd = k.statusDate, until = E.addWd(sd, SOON), was = {};
     if (prev && prev.tasks) for (const t of prev.tasks) was[t.key] = t;
@@ -22,17 +23,16 @@
       else if (t.finish <= until) items.push({ t, kind: "soon" });
       else if (p && t.pct != null && p.pct != null && t.pct === p.pct && t.start != null && t.start <= sd) items.push({ t, kind: "stale" });
     }
-    const by = {};
-    for (const { t, kind } of items) {
-      const o = E.noOwner(t.owner) ? NONE : String(t.owner).replace(/\u00a0/g, " ").trim();
-      (by[o] = by[o] || []).push({ name: t.name, finish: t.finish, late: kind === "overdue" ? t.late : 0, pct: t.pct, ms: !!t.ms, kind, ask: ASK[kind] });
-    }
-    const order = { overdue: 0, soon: 1, stale: 2 };
+    const by = {}, push = (owner, it) => { const o = E.noOwner(owner) ? NONE : String(owner).replace(/\u00a0/g, " ").replace(/\s+/g, " ").trim(); (by[o] = by[o] || []).push(it); };
+    for (const { t, kind } of items) push(t.owner, { name: t.name, finish: t.finish, late: kind === "overdue" ? t.late : 0, pct: t.pct, ms: !!t.ms, kind, ask: ASK[kind] });
+    for (const a of actions || []) if (a.status === "Open" && (a.type === "Action" || a.type === "Issue") && a.due != null && a.due < sd)
+      push(a.owner, { name: a.text, finish: a.due, late: Math.max(1, E.wdiff(a.due, sd)), pct: null, ms: false, kind: "action", raised: a.raised ?? null, ask: ASK.action });
+    const order = { overdue: 0, action: 1, soon: 2, stale: 3 }, late = g => g.items.filter(i => i.kind === "overdue" || i.kind === "action").length;
     return Object.entries(by).map(([owner, list]) => ({ owner, items: list.sort((a, b) => order[a.kind] - order[b.kind] || b.late - a.late || a.finish - b.finish) }))
-      .sort((a, b) => (a.owner === NONE) - (b.owner === NONE) || b.items.filter(i => i.kind === "overdue").length - a.items.filter(i => i.kind === "overdue").length || a.owner.localeCompare(b.owner));
+      .sort((a, b) => (a.owner === NONE) - (b.owner === NONE) || late(b) - late(a) || a.owner.localeCompare(b.owner));
   }
 
-  const line = i => `- ${i.name}: ${i.kind === "overdue" ? `due ${E.fmt(i.finish)}, ${i.late} working day${i.late === 1 ? "" : "s"} late` : i.kind === "soon" ? `due ${E.fmt(i.finish)}, ${i.pct > 0 ? `${Math.round(i.pct * 100)}% done` : "not started"}` : `due ${E.fmt(i.finish)}, still ${Math.round(i.pct * 100)}% since the last update`}; ${i.ask}`;
+  const line = i => i.kind === "action" ? `- ${i.name} (action${i.raised != null ? ` from the ${E.fmt(i.raised)} meeting` : ""}): due ${E.fmt(i.finish)}, ${i.late} working day${i.late === 1 ? "" : "s"} late; ${i.ask}` : `- ${i.name}: ${i.kind === "overdue" ? `due ${E.fmt(i.finish)}, ${i.late} working day${i.late === 1 ? "" : "s"} late` : i.kind === "soon" ? `due ${E.fmt(i.finish)}, ${i.pct > 0 ? `${Math.round(i.pct * 100)}% done` : "not started"}` : `due ${E.fmt(i.finish)}, still ${Math.round(i.pct * 100)}% since the last update`}; ${i.ask}`;
   // one message per owner; plain text so it pastes cleanly into email, Teams or Slack
   function text(g, project) {
     const first = g.owner === NONE ? "" : g.owner.split(/[\s,;]+/)[0];

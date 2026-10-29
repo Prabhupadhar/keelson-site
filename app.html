@@ -223,6 +223,28 @@ textarea.paste:focus { outline: none; border-color: var(--focus); box-shadow: 0 
 .switch input::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, .3); transition: transform var(--dur-3) var(--ease-out) }
 .switch input:checked { background: var(--primary) } .switch input:checked::after { transform: translateX(16px) }
 .switch input:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px }
+/* actions, decisions and risks (actions.js) */
+.acts { margin-top: 24px }
+.acts, .chase { grid-template-columns: minmax(0, 1fr) }
+.chase-h > div:first-child { flex: 1 1 260px; min-width: 0 }
+.acts-btns { display: flex; flex-wrap: wrap; gap: 8px }
+.acts-add { display: grid; gap: 14px; border: 1px solid var(--line); border-radius: 10px; padding: 14px }
+.acts-row { display: flex; flex-wrap: wrap; align-items: end; gap: 10px }
+.acts-row .field { flex: 0 1 200px }
+.acts-prompt { white-space: pre-wrap; font: 13px/1.5 var(--font-mono, ui-monospace, monospace); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px; margin: 8px 0; max-height: 180px; overflow: auto }
+.acts-tools { display: flex; align-items: center; gap: 8px }
+.acts-tools select.in { width: auto; max-width: calc(100% - 48px); min-width: 0; min-height: 36px; padding: 4px 10px; font-size: 14px }
+.at { width: 100%; border-collapse: collapse; font-size: 14px; table-layout: fixed }
+.at th { text-align: left; color: var(--muted); font-weight: 600; font-size: 13px; padding: 6px 8px 6px 0; border-bottom: 1px solid var(--line) }
+.at td { padding: 6px 8px 6px 0; border-bottom: 1px solid var(--line); vertical-align: top; overflow-wrap: anywhere }
+.at .c-type { width: 92px } .at .c-own { width: 22% } .at .c-due { width: 132px } .at .c-st { width: 118px } .at .c-x { width: 40px }
+.at td .in { min-height: 36px; padding: 4px 8px; font-size: 14px }
+.at .late { color: var(--bad); font-weight: 700 }
+.at .done td:not(.c-st) { color: var(--muted); text-decoration: line-through }
+.at .tag { font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--bg); border: 1px solid var(--line); white-space: nowrap }
+.at button.link { background: none; border: 0; padding: 0; color: var(--link); font: inherit; font-size: 13px; text-decoration: underline; cursor: pointer; min-height: 32px }
+.acts-save { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px }
+@media (max-width: 640px) { .at thead { display: none } .at, .at tbody, .at tr, .at td { display: block; width: auto !important } .at tr { padding: 8px 0; border-bottom: 1px solid var(--line) } .at td { border: 0; padding: 2px 0 } .at td.c-st, .at td.c-x { display: inline-block; margin-right: 16px } }
 /* chase list (chase.js) */
 .chase { margin-top: 32px }
 .chase-h { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: start; gap: 12px }
@@ -558,6 +580,28 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
         <button class="btn line sm" type="button" id="chase-all">Copy all messages</button></div>
       <div class="chase-g" id="chase-list"></div>
     </section>
+    <section class="card acts" id="acts" aria-labelledby="h-acts" hidden>
+      <div class="chase-h"><div><h3 id="h-acts">Actions, decisions and risks</h3><p class="hint" id="acts-sub"></p></div>
+        <div class="acts-btns"><button class="btn fill sm" type="button" id="acts-new">Add from minutes</button><button class="btn line sm" type="button" id="acts-csv">Download CSV</button></div></div>
+      <div class="acts-add" id="acts-add" hidden>
+        <div class="field"><label for="acts-text">Paste meeting notes or a table</label>
+          <textarea class="in" id="acts-text" rows="7" spellcheck="false" autocomplete="off" placeholder="ACTION: Ravi to send the vendor contract by 12 Feb&#10;DECISION: Go-live stays on 3 Jun&#10;RISK: Data migration may slip – Grace Okafor&#10;ISSUE: Test environment down | Sam | 10 Feb&#10;&#10;Or paste a table with Type, Item, Owner, Due and Status columns."></textarea>
+          <small>Lines starting ACTION:, DECISION:, RISK: or ISSUE: are read; other lines are skipped. Owners from “@name”, “Name to …” or “– Name –”; due dates from any date on the line.</small></div>
+        <div class="acts-row">
+          <div class="field"><label for="acts-date">Meeting date</label><input class="in" type="date" id="acts-date"></div>
+          <label class="btn line sm" for="acts-file" tabindex="0" id="acts-file-l">Open a file</label><input type="file" id="acts-file" accept=".xlsx,.csv,.tsv,.txt" class="sr" tabindex="-1">
+          <button class="btn fill sm" type="button" id="acts-read">Read</button>
+          <a class="btn ghost sm" id="acts-tpl" href="#" download="keelson-actions-template.csv">Template (CSV)</a>
+        </div>
+        <details class="cols" id="acts-ai"><summary>Use your own AI tool</summary>
+          <p class="hint">Copy this prompt into the AI tool your company already allows (Copilot with a Teams transcript, for example), add your notes after it, and paste the table it gives you above. No AI runs in Keelson and nothing is sent from here.</p>
+          <pre class="acts-prompt" id="acts-prompt"></pre><button class="btn line sm" type="button" id="acts-prompt-copy">Copy prompt</button></details>
+        <p class="status" id="acts-msg" role="status"></p>
+        <div id="acts-review"></div>
+      </div>
+      <div class="acts-tools" id="acts-tools" hidden><label for="acts-filter" class="hint">Show</label><select class="in sm" id="acts-filter"><option value="open">Open items and this week’s decisions</option><option value="all">Everything</option></select></div>
+      <div class="acts-list" id="acts-list"></div>
+    </section>
     <input type="file" id="g-cmp-file" accept=".xlsx,.csv,.tsv,.txt" class="sr" tabindex="-1" aria-hidden="true">
   </section>
 
@@ -692,6 +736,7 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
 <script src="forecast.js"></script>
 <script src="health.js"></script>
 <script src="chase.js"></script>
+<script src="actions.js"></script>
 <script src="studio.js"></script>
 <script src="store-config.js"></script>
 <script src="app.js"></script>
