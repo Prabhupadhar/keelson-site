@@ -74,6 +74,26 @@
 .x-pp{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px;font-variant-numeric:tabular-nums}
 .x-pp b{display:block;font-size:1.25rem}.x-pp span{font-size:13px;color:var(--muted)}
 .x-messy{display:grid;gap:6px;font:600 12.5px var(--font-mono);max-width:460px}
+/* tile pictures: read at a glance, no code font */
+.x-list{list-style:none;margin:0;padding:0;display:grid;gap:8px;font-size:15px;font-weight:600}
+.x-list li{display:flex;align-items:center;gap:10px;background:var(--surface);border-radius:10px;padding:9px 12px}
+.x-list li b{margin-left:auto;font-size:13px;font-weight:700;color:var(--muted)}.x-list li b.ok{color:var(--ok)}
+.x-list li.gone{color:var(--muted)}.x-list li.gone span{text-decoration:line-through}
+.x-list em{font-style:normal;display:grid;place-items:center;min-width:28px;height:28px;border-radius:999px;font-size:14px;font-weight:800}
+.x-list em.w{background:var(--warn-bg);color:var(--ink)}.x-list em.g{background:var(--ok-bg);color:var(--ok)}
+.x-x,.x-ok{width:18px;height:18px;border-radius:50%;flex:none;position:relative;background:var(--bad-bg)}
+.x-x::before,.x-x::after{content:"";position:absolute;left:4px;top:8px;width:10px;height:2px;background:var(--bad);transform:rotate(45deg)}.x-x::after{transform:rotate(-45deg)}
+.x-ok{background:var(--ok-bg)}.x-ok::before{content:"";position:absolute;left:5px;top:3px;width:5px;height:9px;border:solid var(--ok);border-width:0 2px 2px 0;transform:rotate(45deg)}
+.x-chat{display:flex;gap:10px;align-items:flex-start}
+.x-av{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:var(--on-accent,#fff);font-size:13px;font-weight:800}
+.x-bub{background:var(--surface);border-radius:4px 14px 14px 14px;padding:10px 14px;display:grid;gap:6px;font-size:14px}
+.x-bub p{margin:0;color:var(--ink);display:flex;align-items:center;gap:8px}.x-bub p:first-child{font-weight:700}
+.x-bub i{width:8px;height:8px;border-radius:50%;flex:none}.x-bub i.r{background:var(--bad)}.x-bub i.a{background:var(--warn)}
+.x-flow{display:grid;gap:6px;justify-items:start}
+.x-note{margin:0;font-size:14px;color:var(--muted);border-left:3px solid var(--line-strong);padding:4px 0 4px 10px;font-style:italic}
+.x-arrow{color:var(--accent-text);font-size:20px;font-weight:800;padding-left:12px}
+.x-row{margin:0;display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:var(--surface);border-radius:10px;padding:8px 10px}
+.x-row b{font-size:13px;padding:3px 9px;border-radius:999px;background:var(--bg-soft)}.x-row em{font-style:normal;font-size:13px;font-weight:700;color:var(--ok);margin-left:4px}
 .x-messy div{background:var(--surface);border-radius:8px;padding:7px 10px;display:flex;justify-content:space-between;gap:8px}
 .x-messy .ok{color:var(--ok)}
 .x-messy .x-warn{color:var(--warn)}
@@ -114,11 +134,27 @@
   .x-tline{stroke-dasharray:420;stroke-dashoffset:420}
   .in .x-tline{animation:x-draw 4s infinite}
   .in .x-range s{animation:x-sweep 4s infinite}
-  .in .x-messy .gone{animation:x-strike 4s infinite}
+  .in .x-messy .gone,.in .x-list .gone{animation:x-strike 4s infinite}
   .in .x-file-ic{animation:x-lift 4s infinite}.in .x-file-ic:nth-child(2){animation-delay:.25s}.in .x-file-ic:nth-child(3){animation-delay:.5s}
   .in .x-lock .sh{animation:x-shackle 3.5s infinite}
 }
 @media (prefers-reduced-motion:reduce){.x-app{transform:none}.x-crop,.x-pg{transition:none}}
+/* toolkit tiles: a 7 s loop once the tile is in view; nothing moves with reduced motion */
+@media (prefers-reduced-motion:no-preference){
+  .in .x-list em,.in .x-list .x-ok{animation:x-pop 7s infinite both}
+  .in .x-list li:nth-child(2) em{animation-delay:.25s}.in .x-list li:nth-child(3) em,.in .x-list li:nth-child(3) .x-ok{animation-delay:.5s}
+  .in .x-av{animation:x-pop 7s infinite both}
+  .in .x-bub{animation:x-in 7s .2s infinite both;transform-origin:0 0}
+  .in .x-bub p{animation:x-line 7s infinite both}.in .x-bub p:nth-child(1){animation-delay:.5s}.in .x-bub p:nth-child(2){animation-delay:.9s}.in .x-bub p:nth-child(3){animation-delay:1.3s}
+  .in .x-note{animation:x-line 7s infinite both}
+  .in .x-arrow{animation:x-drop 7s .5s infinite both}
+  .in .x-row b,.in .x-row em{animation:x-pop 7s infinite both}
+  .in .x-row b:nth-child(1){animation-delay:1s}.in .x-row b:nth-child(2){animation-delay:1.2s}.in .x-row b:nth-child(3){animation-delay:1.4s}.in .x-row em{animation-delay:1.8s}
+}
+@keyframes x-pop{0%{opacity:0;transform:scale(.6)}6%{opacity:1;transform:scale(1.12)}9%,88%{opacity:1;transform:none}96%,100%{opacity:0;transform:scale(.9)}}
+@keyframes x-in{0%{opacity:0;transform:scale(.92) translateY(6px)}6%,88%{opacity:1;transform:none}96%,100%{opacity:0}}
+@keyframes x-line{0%{opacity:0;transform:translateX(-6px)}6%,88%{opacity:1;transform:none}96%,100%{opacity:0}}
+@keyframes x-drop{0%{opacity:0;transform:translateY(-6px)}6%{opacity:1;transform:translateY(3px)}10%,88%{opacity:1;transform:none}96%,100%{opacity:0}}
 @keyframes x-draw{0%,10%{stroke-dashoffset:420}60%,90%{stroke-dashoffset:0}100%{stroke-dashoffset:420}}
 @keyframes x-sweep{0%,15%{transform:scaleX(0)}55%,90%{transform:scaleX(1)}100%{transform:scaleX(0)}}
 @keyframes x-strike{0%,30%{opacity:1;text-decoration:none}45%,90%{opacity:.3;text-decoration:line-through}100%{opacity:1}}
