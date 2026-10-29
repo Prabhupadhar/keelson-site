@@ -40,7 +40,8 @@
       if (d != null && d < ref - 60) d = E.parseDate(/^\d{1,2}[/.]\d{1,2}$/.test(s) ? `${s}/${y + 1}`.replace(/\./g, "/") : `${s} ${y + 1}`, dayFirst);
     }
     const n = /^(\d{1,2})[/.](\d{1,2})/.exec(s); // reject 31/02 and the like instead of rolling them into March
-    if (d != null && n && +E.iso(d).slice(8) !== +(dayFirst ? n[1] : n[2])) return null;
+    if (d != null && n && +E.iso(d).slice(8) !== +(dayFirst ? n[1] : n[2])) d = null;
+    if (d == null && n && (dayFirst ? +n[2] > 12 && +n[1] <= 12 : +n[1] > 12 && +n[2] <= 12)) return dateIn(s, ref, !dayFirst); // 19/02 can only be day first
     return d;
   }
   // a weekday in front belongs to the date only when it is that date's weekday ("since Monday Dec 14": Dec 14 is a Tuesday)

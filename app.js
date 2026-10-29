@@ -240,7 +240,7 @@
       return load({ file: cur.file, text: cur.text, title: SH.title, sd: fromIso(cur.asOf), msKey: (SH.msKeys || [])[0] || "", sample: true, history: SH.versions.slice(0, -1) });
     }
     const p = SAMPLES.plans[+b.dataset.sample];
-    load({ file: p.label + " sample", text: p.text, title: "FieldFlow Service Cloud Implementation", sd: fromIso(SAMPLES.statusDate), msKey: (p.msKeys || [])[0] || "", sample: true });
+    load({ file: p.label + " sample", text: p.text, title: p.id === "messy" ? "FieldFlow messy tracker (sample)" : "FieldFlow Service Cloud Implementation", sd: fromIso(SAMPLES.statusDate), msKey: (p.msKeys || [])[0] || "", sample: true });
   });
   $("try-sample").addEventListener("click", () => $("samples").querySelector("[data-sample]")?.click()); // the first sample: the one with history
   const upErr = msg => { const el = $("up-err"); el.hidden = !msg; el.textContent = msg || ""; };
@@ -434,7 +434,7 @@
     const m = checkMsgs();
     $("msgs").innerHTML = m.map(([t, a, b]) => `<li class="msg ${t}"><div>${esc(a)}${b ? `<br><span>${esc(b)}</span>` : ""}</div></li>`).join("");
     const HC = window.KeelsonHealth, hc = ok ? HC.run(k, S.hist.filter(v => v.asOf < E.iso(k.statusDate)).pop() || null) : [];
-    $("health-d").hidden = !hc.length; $("healthsum").textContent = HC.summary(hc); $("health").innerHTML = HC.html(hc, esc);
+    $("health-d").hidden = !hc.length; if (S.sample && /messy/i.test(S.file)) $("health-d").open = true; $("healthsum").textContent = HC.summary(hc); $("health").innerHTML = HC.html(hc, esc);
     colMap(k); paintRules(); paintMs(); paintCal();
     if (!ok && S.body) $("cols").open = true;
     const to = $("to-reports");
@@ -693,7 +693,7 @@
   const isoOr = v => v == null ? "" : E.iso(v), dayIn = v => v ? E.parseDate(v) : null;
   function paintActs() {
     if (!AC) return;
-    $("acts").hidden = !usable();
+    $("acts").hidden = !usable(); $("acts-sample").hidden = !(S.sample && SAMPLES.minutes);
     if (!usable()) return;
     const log = actsLog(), sm = AC.summary(log, S.sd), all = $("acts-filter").value === "all";
     $("acts-sub").textContent = log.length
@@ -731,6 +731,7 @@
   }
   const actsPro = () => { if (isPro()) return true; openPro("Keep an actions, decisions and risks log from your meeting minutes, plus Word and PowerPoint export — $12 a month or $96 a year."); return false; };
   $("acts-new").addEventListener("click", () => { const p = $("acts-add"); p.hidden = !p.hidden; if (!p.hidden) { if (!$("acts-date").value) $("acts-date").value = isoOr(S.sd); $("acts-text").focus(); } });
+  $("acts-sample").addEventListener("click", () => { const m = SAMPLES.minutes; if (!m) return; $("acts-text").value = m.text; $("acts-date").value = m.meetingDate; $("acts-text").focus(); });
   $("acts-read").addEventListener("click", () => { if (actsPro()) readActs($("acts-text").value); });
   $("acts-file").addEventListener("change", async e => {
     const f = e.target.files[0]; e.target.value = ""; if (!f || !actsPro()) return;

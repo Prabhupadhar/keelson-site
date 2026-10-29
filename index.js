@@ -199,7 +199,7 @@ function run(newPlan) {
   colMap(k);
   sheet.innerHTML = draw(k);
   const HC = window.KeelsonHealth, hc = HC && $("pg-hc") && k.cols.finish >= 0 ? HC.run(k) : [];
-  if ($("pg-hc")) { $("pg-health").hidden = !hc.length; $("pg-healthsum").textContent = HC.summary(hc); $("pg-hc").innerHTML = HC.html(hc, esc); }
+  if ($("pg-hc")) { if (pg.src === "messy" && newPlan) $("pg-health").open = true; $("pg-health").hidden = !hc.length; $("pg-healthsum").textContent = HC.summary(hc); $("pg-hc").innerHTML = HC.html(hc, esc); }
   const rag = sheet.querySelector(".t-rag");
   if (rag && pg.last && pg.last !== k.rag && !reduce) rag.classList.add("flash");
   pg.last = k.rag; pg.k = k;

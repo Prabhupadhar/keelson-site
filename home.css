@@ -58,6 +58,7 @@
 .x-tile svg{width:100%;height:auto}
 .s2{grid-column:span 2}.s3{grid-column:span 3}.s4{grid-column:span 4}.s6{grid-column:span 6}
 @media (max-width:860px){.x-bento{grid-template-columns:1fr 1fr}.s2,.s3,.s4,.s6{grid-column:span 2}}
+@media (max-width:860px){.x-tile.x-tool{min-height:0}} /* toolkit tiles: size to their content on narrow screens */
 .x-crop{border-radius:12px 12px 0 0;overflow:hidden;height:190px;margin:0 0 -28px;border:1px solid var(--line);border-bottom:0;box-shadow:0 -6px 30px rgba(0,0,0,.12);transition:transform .5s ease;-webkit-mask-image:linear-gradient(#000 70%,transparent);mask-image:linear-gradient(#000 70%,transparent)}
 .x-tile:hover .x-crop{transform:translateY(-8px)}
 .x-crop img,.x-dash img{display:block;width:100%;height:auto}
@@ -69,6 +70,8 @@
 .x-messy{display:grid;gap:6px;font:600 12.5px var(--font-mono);max-width:460px}
 .x-messy div{background:var(--surface);border-radius:8px;padding:7px 10px;display:flex;justify-content:space-between;gap:8px}
 .x-messy .ok{color:var(--ok)}
+.x-messy .x-warn{color:var(--warn)}
+.x-msg div:first-child{font-family:var(--font-sans);font-weight:600}
 .x-fmt{display:flex;gap:16px;flex-wrap:wrap}
 .x-file-ic{display:grid;justify-items:center;gap:6px;font-size:13px;color:var(--muted)}
 .x-file-ic b{font-weight:600}
