@@ -75,7 +75,7 @@
               </div>
               <div class="mega-side">
                 <h4>Free</h4>
-                <a href="./#try"><svg class="ic sm" aria-hidden="true"><use href="#i-gauge"/></svg>Quick check</a>
+                <a href="tools.html#try"><svg class="ic sm" aria-hidden="true"><use href="#i-gauge"/></svg>Quick check</a>
                 <a href="templates.html"><svg class="ic sm" aria-hidden="true"><use href="#i-box"/></svg>Template packs</a>
                 <a href="tools.html" aria-current="page"><svg class="ic sm" aria-hidden="true"><use href="#i-tool"/></svg>Free tools</a>
                 <h4 style="margin-top:10px">Works with</h4>
@@ -102,7 +102,7 @@
       <a href="./#changes">What changed</a>
       <a href="./#trend">Slip trend</a>
       <a href="./#forecast">Finish forecast</a>
-      <a href="./#try">Quick check</a>
+      <a href="tools.html#try">Quick check</a>
       <a href="templates.html">Template packs</a>
       <a href="tools.html" aria-current="page">Free tools</a>
       <h4>Keelson</h4>
@@ -150,6 +150,48 @@
   </div>
 </section>
 
+<!-- ============ LIVE DEMO: the real dashboard rules, run in this tab ============ -->
+<section class="section soft" id="try" aria-labelledby="h-try">
+  <div class="wrap">
+    <div class="intro">
+      <h2 id="h-try">Check any plan without leaving this page</h2>
+      <p>Paste a plan from MS Project, Jira, Smartsheet or Excel and see its status. It starts with a sample plan and stays in this browser tab. Keelson knows over 100 column names from common PM tools and reads dates like <code>Mon 3/17/27</code>, <code>17/03/2027</code> or <code>17-Mar-27</code>. If it misses a column, you choose it once from a list.</p>
+    </div>
+    <div class="pg" id="pg">
+      <div class="pg-top">
+        <div class="seg" role="group" aria-label="Plan to use" id="pg-src"></div>
+        <span class="privacy"><svg class="ic sm" aria-hidden="true"><use href="#i-lock"/></svg>Runs in this tab. Nothing leaves your device.</span>
+      </div>
+      <div class="pg-grid">
+        <div class="pg-side">
+          <div class="pg-field"><label class="pg-l" for="pg-text">Plan <span id="pg-note"></span></label>
+            <textarea id="pg-text" spellcheck="false" autocomplete="off" placeholder="In Excel, MS Project, Smartsheet or Jira: select the whole table, headers included. Copy, then paste here.&#10;&#10;Or open a CSV file below."></textarea>
+            <div class="pg-row"><label class="btn btn-secondary btn-sm" for="pg-file" tabindex="0" id="pg-file-l">Open a CSV file</label><input type="file" id="pg-file" accept=".csv,.tsv,.txt,text/csv" hidden><button class="btn btn-ghost btn-sm" type="button" id="pg-clear">Clear</button></div></div>
+          <div class="pg-field"><label for="pg-title">Project name</label><input type="text" id="pg-title" autocomplete="off"></div>
+          <div class="pg-field"><label for="pg-date">Status date</label><input type="date" id="pg-date"></div>
+          <div class="pg-field"><label for="pg-slide">Move the status date through the project</label>
+            <div class="pg-time"><button class="play" type="button" id="pg-play" aria-label="Play the project from start to finish"></button><input type="range" id="pg-slide" min="0" max="100" value="0"><small id="pg-slide-out"></small></div></div>
+          <details class="pg-cols"><summary>Columns found <span id="pg-colsum"></span></summary>
+            <p class="pg-hint" id="pg-colinfo" style="margin-bottom:10px"></p><div class="cm" id="pg-colmap"></div>
+            <div class="pg-field" style="margin-top:12px"><label for="pg-mskey">Also a milestone if the name contains</label><input type="text" id="pg-mskey" placeholder="e.g. sign-off" autocomplete="off"></div></details>
+        </div>
+        <div class="pg-main">
+          <p class="pg-say" id="pg-say" aria-live="polite"></p>
+          <div class="sheet" id="sheet"></div>
+          <div class="pg-act">
+            <button class="btn btn-primary" type="button" id="pg-copy">Copy status update</button>
+            <button class="btn btn-secondary" type="button" id="pg-print">Print or save as PDF</button>
+            <a class="btn btn-secondary" href="app.html">All seven reports in the app</a>
+            <a class="btn btn-ghost" href="./#pricing" data-store="dashboard"><svg class="ic sm" aria-hidden="true"><use href="#i-download"/></svg>Get the Excel version free</a>
+            <span class="copied" id="pg-copied" role="status"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="fine" style="margin-top:var(--sp-5)">Sample company, people and project are fictional. The demo reads pasted text and CSV; the reports app also opens .xlsx and .tsv files.</p>
+  </div>
+</section>
+
 </main>
 
 <!-- ============ FOOTER ============ -->
@@ -158,7 +200,7 @@
     <div class="foot-grid">
       <div><a class="logo" href="./"><svg aria-hidden="true"><use href="#k-mark"/></svg>Keelson</a><p class="tag">Turn your project plan into a status report. Your plan stays on your computer.</p><a class="social" href="https://www.linkedin.com/company/https-keelson.co.in/" target="_blank" rel="noopener me"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>Follow Keelson on LinkedIn<span class="sr"> (opens in a new tab)</span></a></div>
       <div><h4>Product</h4><ul><li><a href="app.html">Reports app</a></li><li><a href="dashboard.html">Dashboard</a></li><li><a href="./#changes">What changed</a></li><li><a href="./#trend">Slip trend</a></li><li><a href="./#forecast">Finish forecast</a></li><li><a href="./#pricing">Pricing</a></li></ul></div>
-      <div><h4>Free</h4><ul><li><a href="./#try">Quick check</a></li><li><a href="./#pricing" data-store="dashboard">Excel dashboard</a></li><li><a href="#wd">Working days</a></li><li><a href="#gng">Go / No-Go</a></li></ul></div>
+      <div><h4>Free</h4><ul><li><a href="tools.html#try">Quick check</a></li><li><a href="./#pricing" data-store="dashboard">Excel dashboard</a></li><li><a href="#wd">Working days</a></li><li><a href="#gng">Go / No-Go</a></li></ul></div>
       <div><h4>Learn</h4><ul><li><a href="templates.html">Template packs</a></li><li><a href="templates.html#frameworks">Methods</a></li><li><a href="templates.html#compare">Compare</a></li><li><a href="./#faq">FAQ</a></li></ul></div>
       <div><h4>Company</h4><ul><li><a href="mailto:support@keelson.co.in">Contact</a></li><li><a href="legal.html#licence">Licence</a></li><li><a href="legal.html#refunds">Refunds</a></li><li><a href="legal.html#privacy">Privacy</a></li></ul></div>
     </div>
@@ -168,6 +210,8 @@
 </footer>
 
 <script src="engine.js"></script>
+<script src="samples.js"></script>
+<script src="samples-history.js"></script>
 <script src="store-config.js"></script>
 <script src="index.js"></script>
 </body>
