@@ -15,7 +15,7 @@
   // a landing date is shown only from a fit worth extrapolating: 4+ reports, R² >= 0.7, landing within 2x the remaining span
   const VERDICT_N = 4, LAND_R2 = 0.7, LAND_SPAN = 2;
 
-  const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const cut = (s, n) => { s = String(s ?? ""); return s.length > n ? s.slice(0, n - 1).trimEnd() + "…" : s; };
   const plural = (n, w, ws) => `${n} ${n === 1 ? w : (ws || w + "s")}`;
   const day = v => { if (v == null || v === "") return null; if (typeof v === "number") return Number.isFinite(v) ? v : null;

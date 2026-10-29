@@ -117,7 +117,8 @@
     if (res.status === 429) return { reach: false, why: "rate" };
     let j = null; try { j = await res.json(); } catch (e) {}
     if (!(res.ok || [400, 404, 422].includes(res.status)) || !j || typeof j !== "object" || typeof j[FLAG[op]] !== "boolean") return { reach: false, why: "offline" };
-    const meta = j.meta || {}, mine = SELLING && meta.store_id === STORE_ID && PRODUCT_IDS.includes(meta.product_id);
+    const meta = j.meta || {}, test = !!(j.license_key && j.license_key.test_mode); // a test-mode key (free with the test card) only unlocks the test page
+    const mine = SELLING && meta.store_id === STORE_ID && PRODUCT_IDS.includes(meta.product_id) && (!test || CFG.testMode === true);
     return { reach: true, j, ok: j[FLAG[op]] && mine, mine, other: !mine && meta.store_id != null, instance: (j.instance && typeof j.instance.id === "string" && j.instance.id) || "", error: String(j.error || "") };
   }
   const record = (key, r, instanceId) => {

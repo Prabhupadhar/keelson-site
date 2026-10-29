@@ -115,7 +115,7 @@ render();
 }
 
 const E = window.KeelsonEngine;
-const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const today = () => Math.floor((Date.now() - new Date().getTimezoneOffset() * 6e4) / E.DAY);
 const fromInput = v => { const p = (v || "").split("-").map(Number); return p.length === 3 && p.every(Number.isFinite) ? E.fromYMD(...p) : null; };
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;

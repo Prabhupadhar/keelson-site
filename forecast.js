@@ -14,7 +14,7 @@
   // bootstrap of the history times exp(z * PROJ_SD * cv), a project-level term for "the remaining work as a whole can run differently".
   const PROJ_SD = 0.2;
 
-  const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const plural = (n, w, ws) => `${n} ${n === 1 ? w : (ws || w + "s")}`;
   const yearOf = v => +E.iso(v).slice(0, 4);
   const mkD = sd => v => v == null ? "—" : E.fmt(v, sd == null || yearOf(v) !== yearOf(sd)); // year only when it differs

@@ -1,5 +1,6 @@
 // TEST MODE store settings, used only by app-test.html (a hidden copy of the app for test purchases). See docs/LEMON-SQUEEZY.md.
 window.KEELSON_STORE = Object.freeze({
+  testMode: true,            // accept test-mode licence keys; never set this in store-config.js
   storeId: 505056,
   proProductIds: [1468657],   // Keelson Pro, test mode
   checkout: Object.freeze({
