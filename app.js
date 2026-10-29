@@ -235,14 +235,19 @@
   $("samples").innerHTML = (SH && KH ? sampleBtn("history", SH.label, SH.note) : "") + SAMPLES.plans.map((p, i) => sampleBtn(i, p.label, p.note)).join("");
   $("samples").addEventListener("click", e => {
     const b = e.target.closest("[data-sample]"); if (!b) return;
+    upErr("");
+    try { openSample(b); } catch (err) { console.error(err); upErr("Couldn't open the sample. Reload the page (Ctrl+F5, or Cmd+Shift+R on a Mac) and try again."); }
+  });
+  function openSample(b) {
     if (b.dataset.sample === "history") { // the current plan plus five earlier weekly versions, kept in memory
       const cur = SH.versions[SH.versions.length - 1];
       return load({ file: cur.file, text: cur.text, title: SH.title, sd: fromIso(cur.asOf), msKey: (SH.msKeys || [])[0] || "", sample: true, history: SH.versions.slice(0, -1) });
     }
     const p = SAMPLES.plans[+b.dataset.sample];
     load({ file: p.label + " sample", text: p.text, title: p.id === "messy" ? "FieldFlow messy tracker (sample)" : "FieldFlow Service Cloud Implementation", sd: fromIso(SAMPLES.statusDate), msKey: (p.msKeys || [])[0] || "", sample: true });
-  });
-  $("try-sample").addEventListener("click", () => $("samples").querySelector("[data-sample]")?.click()); // the first sample: the one with history
+  }
+  $("try-sample").addEventListener("click", () => { const b = $("samples").querySelector("[data-sample]"); // the first sample: the one with history
+    if (b) b.click(); else upErr("The sample plans didn't load. Reload the page (Ctrl+F5, or Cmd+Shift+R on a Mac) and try again."); });
   const upErr = msg => { const el = $("up-err"); el.hidden = !msg; el.textContent = msg || ""; };
   const dropT = $("drop-t").textContent, dropS = $("drop-s").innerHTML;
   const busy = on => { $("drop-t").innerHTML = on ? `<span class="busy"><span class="spin" aria-hidden="true"></span>Reading your plan…</span>` : dropT; $("drop-s").innerHTML = on ? "" : dropS; };
@@ -267,8 +272,11 @@
     upErr("");
     if (!f) return;
     busy(true);
-    try { load(await parsePlan(f)); }
-    catch (e) { console.error("Keelson: could not read", f.name, e); upErr(e && e.plain ? e.message : READ_FAIL); }
+    let p;
+    try { p = await parsePlan(f); }
+    catch (e) { console.error("Keelson: could not read", f.name, e); upErr(e && e.plain ? e.message : READ_FAIL); busy(false); return; }
+    try { load(p); } // the file was read; a failure here is ours, so say so and keep the error text for support
+    catch (e) { console.error("Keelson: could not open", f.name, e); upErr(`The file was read, but the app hit an error opening it (${String(e && e.message || e).slice(0, 120)}). Reload the page (Ctrl+F5, or Cmd+Shift+R on a Mac) and try again; if it happens again, email ${SUPPORT} with this message.`); }
     finally { busy(false); }
   }
   $("file").addEventListener("change", e => { readFile(e.target.files[0]); e.target.value = ""; });
