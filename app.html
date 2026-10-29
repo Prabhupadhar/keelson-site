@@ -61,6 +61,7 @@ button, input, select, textarea { font: inherit; color: inherit }
 @media (max-width: 1100px) { .crumb { display: none } }
 @media (max-width: 760px) { .steps a span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap } .steps a { padding: 0 6px; min-width: 44px; justify-content: center } .nav .wrap { gap: 8px } .steps { margin-left: auto } }
 @media (max-width: 420px) { .brand b { display: none } .steps a { min-width: 40px; padding: 0 4px } }
+@media (max-width: 480px) { #pro-btn { max-width: 104px; white-space: normal; line-height: 1.15; text-align: center; padding: 4px 8px } }
 
 /* buttons */
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 20px; border: 0; border-radius: var(--r-pill); font: 800 15px/1.1 var(--font-sans);
@@ -162,6 +163,23 @@ textarea.paste:focus { outline: none; border-color: var(--focus); box-shadow: 0 
 .summary b { font-size: 16px; font-weight: 800 } .summary p { color: var(--muted); font-size: 14px }
 .facts { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; padding: 0; margin: 0 }
 .facts li { padding: 4px 11px; border-radius: var(--r-pill); background: var(--surface-2); font-size: 13px; color: var(--muted) } .facts li b { color: var(--ink); font-weight: 800 }
+/* plan health check (health.js) */
+.hc{list-style:none;padding:0;margin:0;display:grid;gap:6px}
+.hc-i details{border:1px solid var(--line);border-radius:10px;padding:0 12px;background:var(--surface)}
+.hc .hc-i summary{min-height:44px;display:flex;justify-content:flex-start;align-items:center;gap:8px;cursor:pointer;font-size:14px;font-weight:700}
+.hc .hc-i summary::after{margin-left:auto}
+.hc .hc-i summary b{margin-left:0;min-width:28px;padding:1px 8px;border-radius:999px;background:var(--warn-bg);color:var(--ink);text-align:center}
+.hc-i p{margin:0 0 8px;color:var(--muted);font-size:13px}
+.hc-tb{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:10px}
+.hc-tb{table-layout:fixed}
+.hc-tb th:nth-child(2){width:48px}
+.hc-tb th:nth-child(3){width:28%}
+.hc-tb th:nth-child(4){width:26%}
+.hc-tb th{text-align:left;color:var(--muted);font-weight:600;padding:4px 8px 4px 0;border-bottom:1px solid var(--line)}
+.hc-tb td{padding:4px 8px 4px 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
+.hc-tb .hc-row{text-align:right;width:44px}
+.hc-more,.hc-ok{font-size:13px;color:var(--muted);margin:0 0 10px}
+.hc-ok{margin:4px 0 0}
 .msgs { display: grid; gap: 8px; list-style: none; padding: 0; margin: 0 }
 .msg { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; align-items: start; padding: 10px 12px; border-radius: var(--r-md); font-size: 15px; background: var(--surface-2) }
 .msg::before { content: ""; width: 22px; height: 22px; border-radius: 50%; background: var(--line) }
@@ -174,7 +192,8 @@ textarea.paste:focus { outline: none; border-color: var(--focus); box-shadow: 0 
 .cols summary { display: flex; justify-content: space-between; align-items: center; gap: 10px; min-height: 48px; font-size: 15px; font-weight: 800; cursor: pointer; list-style: none }
 .cols summary::-webkit-details-marker { display: none }
 .cols summary::after { content: ""; width: 8px; height: 8px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: rotate(45deg) translateY(-2px); transition: transform var(--dur-2) }
-.cols[open] summary::after { transform: rotate(-135deg) }
+.cols[open] > summary::after { transform: rotate(-135deg) }
+.hc-i details[open] > summary::after { transform: rotate(-135deg) }
 .cols summary span { margin-left: auto; color: var(--muted); font-weight: 500; font-size: 14px }
 .cols[open] { padding-bottom: 16px }
 .cols + .cols { margin-top: -16px } /* one ruled list, not three boxes */
@@ -204,6 +223,19 @@ textarea.paste:focus { outline: none; border-color: var(--focus); box-shadow: 0 
 .switch input::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, .3); transition: transform var(--dur-3) var(--ease-out) }
 .switch input:checked { background: var(--primary) } .switch input:checked::after { transform: translateX(16px) }
 .switch input:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px }
+/* chase list (chase.js) */
+.chase { margin-top: 32px }
+.chase-h { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: start; gap: 12px }
+.chase-h h3 { font-size: 18px; margin: 0 0 4px }
+.chase-g { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 12px }
+.ch { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; display: grid; gap: 8px; align-content: start; min-width: 0 }
+.ch-h { display: flex; align-items: center; gap: 8px; font-size: 15px }
+.ch-h span { color: var(--muted); font-size: 13px }
+.ch-h .btn { margin-left: auto }
+.ch ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; font-size: 14px }
+.ch li { overflow-wrap: anywhere }
+.ch li small { display: block; color: var(--muted); font-size: 13px }
+.ch li.overdue small { color: var(--bad) }
 .ghead { display: flex; align-items: center; gap: 8px; margin: 8px 0 16px; font-size: 18px; letter-spacing: -.01em }
 .gallery { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; list-style: none; padding: 0; margin: 0 0 40px }
 .gallery.three { grid-template-columns: repeat(3, minmax(0, 1fr)) }
@@ -482,6 +514,10 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
         <div class="summary" id="summary" aria-live="polite"></div>
         <ul class="facts" id="facts"></ul>
         <ul class="msgs" id="msgs" aria-label="Data check"></ul>
+        <details class="cols" id="health-d"><summary>Plan health <span id="healthsum"></span></summary>
+          <p class="hint" style="margin-bottom:10px">Checks on the plan itself: rows worth fixing before the client sees them. Free, and nothing leaves your browser.</p>
+          <div id="health"></div>
+        </details>
         <details class="cols" id="cols"><summary>Columns found <span id="colsum"></span></summary>
           <p class="hint" id="colinfo" style="margin-bottom:12px"></p><div class="cm" id="colmap"></div>
         </details>
@@ -517,6 +553,11 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
     </div>
     <div class="compare" data-compare hidden></div>
     <div id="gallery"></div>
+    <section class="card chase" id="chase" aria-labelledby="h-chase" hidden>
+      <div class="chase-h"><div><h3 id="h-chase">Chase list</h3><p class="hint" id="chase-sub"></p></div>
+        <button class="btn line sm" type="button" id="chase-all">Copy all messages</button></div>
+      <div class="chase-g" id="chase-list"></div>
+    </section>
     <input type="file" id="g-cmp-file" accept=".xlsx,.csv,.tsv,.txt" class="sr" tabindex="-1" aria-hidden="true">
   </section>
 
@@ -649,6 +690,8 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
 <script src="diff.js"></script>
 <script src="trend.js"></script>
 <script src="forecast.js"></script>
+<script src="health.js"></script>
+<script src="chase.js"></script>
 <script src="studio.js"></script>
 <script src="store-config.js"></script>
 <script src="app.js"></script>

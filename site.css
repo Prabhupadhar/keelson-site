@@ -725,3 +725,20 @@ table.cmp{width:100%;border-collapse:collapse;min-width:640px;font-size:15px}
 .dash-points{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--sp-6);max-width:1100px;margin:var(--sp-8) auto 0;padding:0;list-style:none}
 .dash-points b{display:block;font-size:16px;margin-bottom:6px} .dash-points span{color:var(--muted);font-size:15px}
 @media (max-width:900px){.dash-points{grid-template-columns:minmax(0,1fr)}}
+/* plan health check (health.js), Quick check */
+.hc{list-style:none;padding:0;margin:0;display:grid;gap:6px}
+.hc-i details{border:1px solid var(--line);border-radius:10px;padding:0 12px;background:var(--surface)}
+.hc .hc-i summary{min-height:44px;display:flex;justify-content:flex-start;align-items:center;gap:8px;cursor:pointer;font-size:14px;font-weight:700}
+.hc .hc-i summary::after{margin-left:auto}
+.hc .hc-i summary b{margin-left:0;min-width:28px;padding:1px 8px;border-radius:999px;background:var(--warn-bg);color:var(--ink);text-align:center}
+.hc-i p{margin:0 0 8px;color:var(--muted);font-size:13px}
+.hc-tb{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:10px}
+.hc-tb{table-layout:fixed}
+.hc-tb th:nth-child(2){width:48px}
+.hc-tb th:nth-child(3){width:28%}
+.hc-tb th:nth-child(4){width:26%}
+.hc-tb th{text-align:left;color:var(--muted);font-weight:600;padding:4px 8px 4px 0;border-bottom:1px solid var(--line)}
+.hc-tb td{padding:4px 8px 4px 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
+.hc-tb .hc-row{text-align:right;width:44px}
+.hc-more,.hc-ok{font-size:13px;color:var(--muted);margin:0 0 10px}
+.hc-ok{margin:4px 0 0}

@@ -416,7 +416,9 @@
 
   setCalendar();
   const parseDate = (t, dayFirst) => dateValue(dateParts(t), dayFirst);
-  root.KeelsonEngine = { compute, parseTable, detect, norm, numOf, parseDate, FIELDS, RULES, DEFAULT_MS_KEYS, fromYMD, iso, fmt, nwd, wdiff, wd, DAY,
+  // an owner cell that names nobody: blank, or a placeholder people type for "not yet assigned"
+  const noOwner = s => /^(|-+|—|–|\?+|#n\/a|n\/a|#ref!|tbd|tba|tbc|none|unassigned|not assigned|nobody)$/i.test(String(s ?? "").replace(/\u00a0/g, " ").trim());
+  root.KeelsonEngine = { compute, parseTable, detect, norm, numOf, parseDate, noOwner, FIELDS, RULES, DEFAULT_MS_KEYS, fromYMD, iso, fmt, nwd, wdiff, wd, DAY,
     setCalendar, calendar, calText, isWd, addWd, WEEKENDS };
   if (typeof module !== "undefined") module.exports = root.KeelsonEngine;
 })(typeof window !== "undefined" ? window : globalThis);

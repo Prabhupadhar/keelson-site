@@ -185,6 +185,10 @@
             <a class="btn btn-ghost" href="./#pricing" data-store="dashboard"><svg class="ic sm" aria-hidden="true"><use href="#i-download"/></svg>Get the Excel version free</a>
             <span class="copied" id="pg-copied" role="status"></span>
           </div>
+          <details class="pg-cols" id="pg-health" style="margin-top:var(--sp-4)" hidden><summary>Plan health <span id="pg-healthsum" class="pg-hint"></span></summary>
+            <p class="pg-hint" style="margin-bottom:10px">Checks on the plan itself: rows worth fixing before the client sees them.</p>
+            <div id="pg-hc"></div>
+          </details>
         </div>
       </div>
     </div>
@@ -210,6 +214,7 @@
 </footer>
 
 <script src="engine.js"></script>
+<script src="health.js"></script>
 <script src="samples.js"></script>
 <script src="samples-history.js"></script>
 <script src="store-config.js"></script>

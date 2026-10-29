@@ -433,6 +433,8 @@
       `<li>Headers in row <b>${k.hdrRow}</b></li>` + (k.evidence ? `<li>Dates read <b>${k.dayFirst ? "day first" : "month first"}</b></li>` : "") : "";
     const m = checkMsgs();
     $("msgs").innerHTML = m.map(([t, a, b]) => `<li class="msg ${t}"><div>${esc(a)}${b ? `<br><span>${esc(b)}</span>` : ""}</div></li>`).join("");
+    const HC = window.KeelsonHealth, hc = ok ? HC.run(k, S.hist.filter(v => v.asOf < E.iso(k.statusDate)).pop() || null) : [];
+    $("health-d").hidden = !hc.length; $("healthsum").textContent = HC.summary(hc); $("health").innerHTML = HC.html(hc, esc);
     colMap(k); paintRules(); paintMs(); paintCal();
     if (!ok && S.body) $("cols").open = true;
     const to = $("to-reports");
@@ -662,7 +664,25 @@
       `<h3 class="ghead" id="g-more">More reports</h3><ul class="gallery" aria-labelledby="g-more">${more.map(card).join("")}</ul>`;
     paintDetected();
     fitThumbs();
+    paintChase();
   }
+  // chase list: who to ask for an update, from this plan (and the last saved version for stale progress); copying is Pro
+  function paintChase() {
+    const C = window.KeelsonChase, g = S.k ? C.build(S.k, prevVersion()) : [];
+    S.chase = g; $("chase").hidden = !usable(); $("chase-all").hidden = !g.length;
+    if (!g.length) { $("chase-sub").textContent = "Nobody to chase this week: nothing overdue, nothing due in the next 5 working days, nothing stuck since the last version."; $("chase-list").innerHTML = ""; return; }
+    const n = g.reduce((t, x) => t + x.items.length, 0), what = { overdue: "Overdue", soon: "Due in the next 5 working days", stale: "No progress since the last version" };
+    $("chase-sub").textContent = `${plural(n, "task")} to ask about, ${g.length} ${g.length === 1 ? "person" : "people"}. Copy a message and paste it into email, Teams or Slack. Keelson sends nothing.`;
+    $("chase-list").innerHTML = g.map((x, i) => `<div class="ch"><div class="ch-h"><b>${esc(x.owner)}</b><span>${x.items.length}</span><button class="btn ghost sm" type="button" data-chase="${i}">Copy message</button></div>
+      <ul>${x.items.map(t => `<li class="${t.kind}">${esc(t.name)}<small>${esc(what[t.kind])} · due ${F(t.finish)}${t.kind === "overdue" ? ` · ${t.late} wd late` : ""}</small></li>`).join("")}</ul></div>`).join("");
+  }
+  function copyChase(i) {
+    if (!isPro()) return openPro("Copy ready-to-send chase messages, plus Word and PowerPoint export — $12 a month or $96 a year.");
+    const C = window.KeelsonChase, txt = i == null ? C.all(S.chase, S.title) : C.text(S.chase[i], S.title);
+    navigator.clipboard.writeText(txt).then(() => toast(i == null ? "All chase messages copied" : `Message for ${S.chase[i].owner} copied`), () => toast("Couldn't copy. Select the text and copy it yourself."));
+  }
+  $("chase-all").addEventListener("click", () => copyChase(null));
+  $("chase-list").addEventListener("click", e => { const b = e.target.closest("[data-chase]"); if (b) copyChase(+b.dataset.chase); });
   // one version only: last week's export goes straight into What changed (read here, compared, never uploaded)
   $("gallery").addEventListener("click", e => { if (e.target.closest("#g-cmp")) $("g-cmp-file").click(); });
   $("g-cmp-file").addEventListener("change", async e => { const f = e.target.files[0]; e.target.value = ""; if (f && await compareFile(f)) go("report/changes"); });
