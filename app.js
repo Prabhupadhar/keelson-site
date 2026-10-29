@@ -1085,5 +1085,7 @@
   if (buyer) openPro();
 
   if (missing.length) upErr(`Part of the app didn't load (${missing.join(", ")}). Reload the page; if it keeps happening, tell us at keelson.co.in.`);
+  // Word and PowerPoint (Pro) load their libraries on first use; for Pro, fetch both once the page is idle so they still work with Wi-Fi off
+  (window.requestIdleCallback || (f => setTimeout(f, 1500)))(() => isPro() && [window.KeelsonDocx, window.KeelsonPptx].forEach(m => m?.load().catch(() => {})));
   window.KeelsonApp = { S, load, confident, isPro, rasterize, safeName, loadHist, curVersion }; // for tests
 })();
