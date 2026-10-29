@@ -261,7 +261,7 @@
     return { file: name, text: new TextDecoder().decode(buf).replace(/^\ufeff/, ""), title };
   }
   // the plan text of a parsed file: its best sheet for a workbook
-  const planText = p => { if (!p.sheets) return { text: p.text, sheet: "" }; const sc = p.sheets.map(s => score(s.rows)), i = sc.indexOf(Math.max(...sc)); return { text: toText(p.sheets[i].rows), sheet: p.sheets[i].name }; };
+  const planText = p => { if (!p.sheets) return { text: p.text, sheet: "" }; const sc = p.sheets.map(s => score(s.rows)), i = bestSheet(p.sheets, sc); return { text: toText(p.sheets[i].rows), sheet: p.sheets[i].name }; };
   async function readFile(f) {
     upErr("");
     if (!f) return;
@@ -284,6 +284,9 @@
   });
 
   // pick the sheet whose header row matches the most known column names
+  // on a tie, a visible sheet over a hidden one, and the current plan over "Previous week", "Old", "Archive" or "Copy of"
+  const STALE = /\b(old|previous|prev|last week|archive[ds]?|backup|copy|superseded)\b/i;
+  const bestSheet = (sheets, sc) => { const top = sc.map((v, i) => i).filter(i => sc[i] === Math.max(...sc)); return top.find(i => !sheets[i].hidden && !STALE.test(sheets[i].name)) ?? top.find(i => !sheets[i].hidden) ?? top[0]; };
   const score = rows => { const d = E.detect(rows); return Object.values(d.cols).filter(v => v >= 0).length + (d.cols.name >= 0 && d.cols.finish >= 0 ? 100 : 0); };
   const toText = rows => { const w = Math.max(0, ...rows.slice(0, 2000).map(r => r.length)); return rows.slice(0, 2000).map(r => Array.from({ length: w }, (_, i) => String(r[i] ?? "").replace(/[\t\r\n]+/g, " ")).join("\t")).join("\n"); };
   function load(o) {
@@ -292,7 +295,7 @@
     S.sd = o.sd ?? today();
     if (S.sheets) {
       const sc = S.sheets.map(s => score(s.rows));
-      S.sheet = sc.indexOf(Math.max(...sc)); S.scores = sc;
+      S.sheet = bestSheet(S.sheets, sc); S.scores = sc;
       S.text = toText(S.sheets[S.sheet].rows);
     } else S.text = o.text;
     S.title = clean(o.title);
@@ -346,7 +349,7 @@
     if (S.sheets) {
       $("sheet").innerHTML = S.sheets.map((s, i) => `<option value="${i}">${esc(s.name)}${s.hidden ? " (hidden)" : ""}</option>`).join("");
       $("sheet").value = String(S.sheet);
-      const best = S.scores.indexOf(Math.max(...S.scores)), n = S.scores[best] % 100;
+      const best = bestSheet(S.sheets, S.scores), n = S.scores[best] % 100;
       $("sheet-why").textContent = S.sheet === best && n ? `Picked for you: its headers match ${plural(n, "known column")}.` : "";
     }
     $("title").value = S.title; $("client").value = S.client; $("prep").value = S.prep; $("mskey").value = S.msKey;

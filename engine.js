@@ -2,25 +2,31 @@
    text. Pure functions, no network. tests/web/engine.test.js checks it against the Python reference on five plan shapes. */
 (function (root) {
   const FIELDS = [ // key, label, required, header names (first match wins; a column claimed earlier is not reused)
-    ["name", "Task name", true, ["Task Name", "Name", "Task", "Activity", "Activity Name", "Task Title", "Title", "Deliverable", "Work Item", "Item", "Milestone / Task", "Description", "Summary", "Work Item Title", "Item Name", "Subject", "Issue", "Story", "Ticket", "Card Name", "Action", "Step", "Requirement", "Feature", "Line Item", "Activity Description", "Task Description", "Deliverable Name", "Milestone Name"]],
-    ["finish", "Finish / due date", true, ["Finish", "Finish Date", "Finish_Date", "End", "End Date", "Due", "Due Date", "Due date", "Forecast Finish", "Scheduled Finish", "Planned Finish", "Planned End", "Target Date", "Target End", "Deadline", "Completion Date", "Date", "Due On", "Due By", "End Time", "Finish Time", "Target Finish", "Target Completion", "Planned Completion", "Planned End Date", "Planned Finish Date", "Expected Finish", "Expected End", "Estimated Finish", "Est Finish", "Forecast End", "Forecast Date", "Forecast Finish Date", "Committed Date", "Delivery Date", "Timeline End", "End On", "Finish By", "Closing Date"]],
-    ["start", "Start date", false, ["Start", "Start Date", "Start_Date", "Begin", "Begin Date", "Forecast Start", "Scheduled Start", "Planned Start", "Planned Start Date", "Start Time", "Start On", "Timeline Start", "Expected Start", "Estimated Start", "Target Start", "Kick-off", "Kickoff", "Kick off Date"]],
-    ["bfin", "Baseline finish", false, ["Baseline Finish", "Baseline_Finish", "Baseline Finish Date", "Baseline End", "Baseline Due", "Baseline", "Original Finish", "Original End", "Original Due Date", "Original Due", "Baseline1 Finish", "BL Finish", "Original Target Date", "Initial Due Date", "Baseline End Date", "Baseline Due Date", "BL Project Finish"]],
-    ["pct", "% complete", false, ["% Complete", "Percent Complete", "Percent_Complete", "% Done", "Pct Complete", "Complete %", "Completion %", "Progress", "Completion", "% Work Complete", "Percent Done", "% Progress", "Progress %", "Percentage Complete", "Percent", "Done %", "PctComplete", "Complete", "Physical % Complete"]],
-    ["status", "Status", false, ["Status", "Task Status", "State", "Progress Status", "Completed At", "Completed", "Workflow State", "Item Status", "Issue Status", "Current Status", "Status Category", "Is Done", "Done", "Completed?"]],
-    ["owner", "Owner", false, ["Owner", "Resource Names", "Resource_Names", "Resources", "Assigned To", "Assignee", "Responsible", "Task Owner", "Lead", "Person", "Accountable", "Assignees", "Assigned", "Owner Name", "Resource", "Resource Name", "Assigned Resource", "Responsible Person", "Team Member", "Action Owner", "Task Assignee", "People", "Who", "Assignee Name", "Owners", "Members"]],
-    ["phase", "Phase / workstream", false, ["Phase", "Workstream", "Work Stream", "Stage", "Stream", "Epic Link", "Epic Name", "Epic", "Section", "Section/Column", "Swimlane", "Category", "Workstream Name", "Work Package", "Project Phase", "Phase Name", "Stage Name", "Parent", "Parent Name", "Parent Summary", "Epic Summary", "Group", "List", "List Name", "Area Path", "Track", "Stream Name"]],
-    ["wbs", "WBS / outline number", false, ["WBS", "WBS Code", "Outline Number", "Outline_Number", "WBS ID", "Ref", "No.", "#", "WBS Number", "WBS No", "S.No", "Sl No", "Item No", "Outline"]],
-    ["lvl", "Outline level", false, ["Outline Level", "Outline_Level", "Level", "Indent", "Hierarchy Level", "Indent Level", "Depth"]],
-    ["dur", "Duration", false, ["Duration", "Duration (days)", "Dur", "Days", "Work Days", "Planned Duration", "Original Duration", "Estimated Duration", "Duration Days", "Planned Days"]],
-    ["ms", "Milestone / type", false, ["Milestone", "Is Milestone", "Milestone?", "Milestone Flag", "Type", "Task Type", "Issue Type", "Item Type", "Is a Milestone", "Key Milestone", "Work Item Type", "Activity Type", "Record Type"]],
-    ["sumf", "Summary flag", false, ["Summary", "Is Summary", "Summary Task", "Summary Row", "Is Parent"]],
+    ["name", "Task name", true, ["Task Name", "Name", "Task", "Activity", "Activity Name", "Task Title", "Title", "Deliverable", "Work Item", "Item", "Milestone / Task", "Work Item Title", "Item Name", "Subject", "Issue", "Story", "Ticket", "Card Name", "Action", "Step", "Requirement", "Feature", "Line Item", "Activity Description", "Task Description", "Deliverable Name", "Milestone Name", "Description", "Summary", "Nombre de tarea", "Nombre", "Tarea", "Nom de la tâche", "Nom", "Tâche", "Vorgangsname", "Name des Vorgangs", "Vorgang", "Nome da tarefa", "Nome", "Tarefa"]],
+    ["finish", "Finish / due date", true, ["Finish", "Finish Date", "Finish_Date", "End", "End Date", "Due", "Due Date", "Due date", "Forecast Finish", "Scheduled Finish", "Planned Finish", "Planned End", "Target Date", "Target End", "Deadline", "Completion Date", "Date", "Due On", "Due By", "End Time", "Finish Time", "Target Finish", "Target Completion", "Planned Completion", "Planned End Date", "Planned Finish Date", "Expected Finish", "Expected End", "Estimated Finish", "Est Finish", "Forecast End", "Forecast Date", "Forecast Finish Date", "Committed Date", "Delivery Date", "Timeline End", "End On", "Finish By", "Closing Date", "Fin", "Fecha de fin", "Fecha fin", "Date de fin", "Ende", "Endtermin", "Término", "Data de término"]],
+    ["start", "Start date", false, ["Start", "Start Date", "Start_Date", "Begin", "Begin Date", "Forecast Start", "Scheduled Start", "Planned Start", "Planned Start Date", "Start Time", "Start On", "Timeline Start", "Expected Start", "Estimated Start", "Target Start", "Kick-off", "Kickoff", "Kick off Date", "Comienzo", "Inicio", "Fecha de inicio", "Début", "Date de début", "Anfang", "Beginn", "Starttermin", "Início", "Data de início"]],
+    ["bfin", "Baseline finish", false, ["Baseline Finish", "Baseline_Finish", "Baseline Finish Date", "Baseline End", "Baseline Due", "Baseline", "Original Finish", "Original End", "Original Due Date", "Original Due", "Baseline1 Finish", "BL Finish", "Original Target Date", "Initial Due Date", "Baseline End Date", "Baseline Due Date", "BL Project Finish", "Fin de línea base", "Fin prevista", "Fin planifiée", "Fin de référence", "Geplantes Ende", "Basisplan Ende", "Término da linha de base", "Término previsto"]],
+    ["pct", "% complete", false, ["% Complete", "Percent Complete", "Percent_Complete", "% Done", "Pct Complete", "Complete %", "Completion %", "Progress", "Completion", "% Work Complete", "Percent Done", "% Progress", "Progress %", "Percentage Complete", "Percent", "Done %", "PctComplete", "Complete", "Physical % Complete", "% completado", "% completada", "% achevé", "% achevée", "% abgeschlossen", "% Arbeit abgeschlossen", "% concluída", "% concluído"]],
+    ["status", "Status", false, ["Status", "Task Status", "State", "Progress Status", "Completed At", "Completed", "Workflow State", "Item Status", "Issue Status", "Current Status", "Status Category", "Is Done", "Done", "Completed?", "Estado", "Statut", "État", "Situação"]],
+    ["owner", "Owner", false, ["Owner", "Resource Names", "Resource_Names", "Resources", "Assigned To", "Assignee", "Responsible", "Task Owner", "Lead", "Person", "Accountable", "Assignees", "Assigned", "Owner Name", "Resource", "Resource Name", "Assigned Resource", "Responsible Person", "Team Member", "Action Owner", "Task Assignee", "People", "Who", "Assignee Name", "Owners", "Members", "Nombres de los recursos", "Recursos", "Responsable", "Noms ressources", "Noms des ressources", "Ressourcennamen", "Ressourcen", "Verantwortlich", "Nomes dos recursos", "Recursos", "Responsável"]],
+    ["phase", "Phase / workstream", false, ["Phase", "Workstream", "Work Stream", "Stage", "Stream", "Epic Link", "Epic Name", "Epic", "Section", "Section/Column", "Swimlane", "Category", "Workstream Name", "Work Package", "Project Phase", "Phase Name", "Stage Name", "Fase", "Étape", "Phase du projet", "Parent", "Parent Name", "Parent Summary", "Epic Summary", "Group", "List", "List Name", "Area Path", "Track", "Stream Name"]],
+    ["wbs", "WBS / outline number", false, ["WBS", "WBS Code", "Outline Number", "Outline_Number", "WBS ID", "Ref", "No.", "#", "WBS Number", "WBS No", "S.No", "Sl No", "Item No", "Outline", "EDT", "PSP-Code", "Code WBS"]],
+    ["lvl", "Outline level", false, ["Outline Level", "Outline_Level", "Level", "Indent", "Hierarchy Level", "Indent Level", "Depth", "Nivel de esquema", "Niveau hiérarchique", "Gliederungsebene", "Nível da estrutura de tópicos"]],
+    ["dur", "Duration", false, ["Duration", "Duration (days)", "Dur", "Days", "Work Days", "Planned Duration", "Original Duration", "Estimated Duration", "Duration Days", "Planned Days", "Duración", "Durée", "Dauer", "Duração"]],
+    ["ms", "Milestone / type", false, ["Milestone", "Is Milestone", "Milestone?", "Milestone Flag", "Is a Milestone", "Key Milestone", "Issue Type", "Work Item Type", "Item Type", "Activity Type", "Record Type", "Hito", "Jalon", "Meilenstein", "Marco", "Type", "Task Type"]],
+    ["sumf", "Summary flag", false, ["Summary", "Is Summary", "Summary Task", "Summary Row", "Is Parent", "Resumen", "Tarea de resumen", "Récapitulative", "Tâche récapitulative", "Sammelvorgang", "Resumo", "Tarefa de resumo"]],
     // v2 (plan diff, history, forecast): last, so they never take a column from the fields above
-    ["uid", "Task ID", false, ["Unique ID", "Unique_ID", "UID", "Issue key", "Issue Key", "Key", "ID", "Task ID", "Issue id", "Work Item ID", "Activity ID", "Row ID", "Item ID", "Ticket ID", "Task Number"]],
+    ["uid", "Task ID", false, ["Unique ID", "Unique_ID", "UID", "Issue key", "Issue Key", "Key", "ID", "Task ID", "Issue id", "Work Item ID", "Activity ID", "Row ID", "Item ID", "Ticket ID", "Task Number", "Id. único", "Id único", "Numéro unique", "Einmalige Nr.", "Einmalige Nummer", "Identificação exclusiva", "Id exclusiva"]],
     ["afin", "Actual finish", false, ["Actual Finish", "Actual_Finish", "Actual End", "Actual Finish Date", "Resolved", "Resolution Date", "Completed Date", "Done Date", "Actual Completion", "Completed On", "Closed Date", "Date Completed", "Actual End Date", "Date Closed", "Finished At", "Resolved Date", "Done On", "Closed"]],
     ["bstart", "Baseline start", false, ["Baseline Start", "Baseline_Start", "Baseline Start Date", "Original Start", "Baseline1 Start", "BL Start", "Original Start Date", "BL Project Start"]],
   ];
-  const DONE = ["Complete", "Completed", "Done", "Closed", "Finished", "Resolved", "Delivered", "Achieved", "Accepted", "Signed off", "Released", "Live", "Yes", "Y", "True", "✓", "✔", "☑"].map(s => s.toLowerCase());
+  const DONE = ["Complete", "Completed", "Done", "Closed", "Finished", "Resolved", "Delivered", "Achieved", "Accepted", "Signed off", "Released", "Live", "Yes", "Y", "True", "✓", "✔", "☑", "terminé", "terminée", "terminado", "terminada", "erledigt", "abgeschlossen", "fertig", "completado", "completada", "concluído", "concluída", "concluido", "completata", "completato", "voltooid", "afgerond"].map(s => s.toLowerCase());
+  // "✅ Done", "Done ✓", "Completed (100%)", "Closed - done": read the words, but not "not done", "in progress" or "partially complete"
+  const DONE_W = ["done", "complete", "completed", "closed", "finished", "resolved", "delivered", "achieved", "released", "terminé", "terminée", "terminado", "terminada", "erledigt", "abgeschlossen", "fertig", "completado", "completada", "concluído", "concluída", "concluido", "completata", "completato", "voltooid", "afgerond"], CANCEL_W = ["cancelled", "canceled", "descoped", "dropped"]; // with es, fr, de, pt, it, nl
+  const words = s => low(s).replace(/\([^)]*\)/g, " ").replace(/[^\p{L}\s']/gu, " ").split(/\s+/).filter(Boolean);
+  const NEG = /\b(not|un|in progress|pending|partially|partly|almost|nearly|to be|tbc|awaiting|re ?opened)\b/i;
+  const doneWord = s => { const w = words(s); return w.length > 0 && w.length <= 4 && w.some(x => DONE_W.includes(x)) && !NEG.test(s); };
+  const cancelWord = s => { const w = words(s); return w.length > 0 && w.length <= 4 && w.some(x => CANCEL_W.includes(x)) && !NEG.test(s); };
   const CANCEL = ["Cancelled", "Canceled", "Won't Do", "Wont Do", "Won't Fix", "Dropped", "Descoped", "Removed", "Not Required", "Duplicate", "N/A"].map(s => s.toLowerCase());
   const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const WEEKDAYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
@@ -87,34 +93,38 @@
   const wdiff = (a, b) => a === b ? 0 : b > a ? nwd(a + 1, b) : -nwd(b + 1, a);
   const isNum = s => /^-?\d+(\.\d+)?$/.test(s);
   const low = s => String(s ?? "").trim().toLowerCase();
-  const truthy = s => ["yes", "y", "true", "1", "x"].includes(low(s));
+  const truthy = s => ["yes", "y", "true", "1", "x", "✓", "✔", "☑", "✅", "oui", "ja", "sí", "si", "sim"].includes(low(s));
 
   function parseTable(text) {
     // control characters become spaces (tab, LF and CR are kept: they are the separators)
-    const lines = text.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\uFFFE\uFFFF]/g, " ").replace(/\r\n?/g, "\n").replace(/\n+$/, "").split("\n");
+    const lines = text.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\uFFFE\uFFFF]/g, " ").replace(/[\u00a0\u2007\u202f]/g, " ").replace(/\r\n?/g, "\n").replace(/\n+$/, "").split("\n");
     const head = lines.slice(0, 12).join("\n");
     const sep = head.includes("\t") ? "\t" : (head.split(";").length > head.split(",").length ? ";" : ",");
-    if (sep === "\t") return lines.map(l => l.split("\t").map(c => c.trim()));
+    const lead = c => c.length - c.replace(/^[ \u00a0]+/, "").length;
+    if (sep === "\t" && !/(^|\t)"/m.test(text)) return lines.map(l => { const cs = l.split("\t"), r = cs.map(c => c.trim()); r.ind = cs.map(lead); return r; });
     const rows = []; let row = [], cell = "", q = false; // RFC 4180 CSV, quotes may span lines
     const src = lines.join("\n");
     for (let i = 0; i < src.length; i++) {
       const ch = src[i];
       if (q) { if (ch === '"') { if (src[i + 1] === '"') { cell += '"'; i++; } else q = false; } else cell += ch; }
       else if (ch === '"') q = true;
-      else if (ch === sep) { row.push(cell.trim()); cell = ""; }
-      else if (ch === "\n") { row.push(cell.trim()); rows.push(row); row = []; cell = ""; }
+      else if (ch === sep) { (row.ind ||= []).push(lead(cell)); row.push(cell.trim()); cell = ""; }
+      else if (ch === "\n") { (row.ind ||= []).push(lead(cell)); row.push(cell.trim()); rows.push(row); row = []; cell = ""; }
       else cell += ch;
     }
-    row.push(cell.trim()); rows.push(row);
+    (row.ind ||= []).push(lead(cell)); row.push(cell.trim()); rows.push(row);
     return rows;
   }
 
   // headers compare loosely: case, spaces, underscores, dots, dashes, colons, a trailing "?" and bracketed units like "(days)" don't matter
-  const norm = s => String(s ?? "").replace(/^\uFEFF/, "").toLowerCase().replace(/^\s*custom ?field\s*\(([^)]*)\)/, "$1").replace(/\([^)]*\)|\[[^\]]*\]/g, " ").replace(/[_./:\-–—?*]+/g, " ").replace(/%/g, " % ").replace(/\s+/g, " ").trim();
+  const norm = s => String(s ?? "").replace(/^\uFEFF/, "").replace(/[\p{Extended_Pictographic}\u{1F1E6}-\u{1F1FF}\uFE0F\u200D]/gu, " ").toLowerCase().replace(/^\s*custom[\s_]*field[\s_]*\(([^)]*)\)/, "$1").replace(/\([^)]*\)|\[[^\]]*\]/g, " ").replace(/[_./:\-–—?*]+/g, " ").replace(/%/g, " % ").replace(/\s+/g, " ").trim();
   // a loose match (the header contains a synonym's words) must not take a column that belongs to a sibling field
-  const NOT = { finish: /\b(baseline|bl|original|actual|early|late|latest|earliest|float|slack|variance|duration|start|begin)\b/, start: /\b(baseline|bl|original|actual|early|late|latest|earliest|float|slack|variance|finish|end|due)\b/,
-    bfin: /\bstart\b/, bstart: /\b(finish|end)\b/, afin: /\bstart\b/, name: /\b(id|key|number|no|date|owner|status|type|code)\b/, pct: /\b(work|cost)\b/ };
+  const NOT = { finish: /\b(baseline|bl|original|actual|early|late|latest|earliest|float|slack|variance|duration|start|begin|week)\b/, start: /\b(baseline|bl|original|actual|early|late|latest|earliest|float|slack|variance|finish|end|due|week)\b/,
+    bfin: /\b(start|cost|budget|hours|effort|work|spend|value|amount)\b/, bstart: /\b(finish|end)\b/, afin: /\bstart\b/, name: /\b(id|key|number|no|date|owner|status|type|code|points?|estimate|hours|cost|effort|size|count|url|email|link)\b/, pct: /\b(cost|budget|hours)\b/, phase: /\b(id|key|number|no|code|url|email|date|due|start|finish|end|status|owner|task)\b/, owner: /\b(email|e mail|id|phone|team|group|department)\b/, status: /\b(date|reason|comment|notes?|by|rag|health)\b/, dur: /\b(delay|late|variance|slack|float|lag|start|finish|end|actual|remaining|cost)\b/ };
   const LOOSE = ["name", "finish", "start", "bfin", "pct", "status", "owner", "phase", "dur", "uid", "afin", "bstart"];
+  const typo1 = (a, b) => { if (a === b || Math.abs(a.length - b.length) > 1) return false; let i = 0; while (i < a.length && a[i] === b[i]) i++;
+    if (a.length === b.length) return a.slice(i + 1) === b.slice(i + 1) || (a[i] === b[i + 1] && a[i + 1] === b[i] && a.slice(i + 2) === b.slice(i + 2));
+    return a.length > b.length ? a.slice(i + 1) === b.slice(i) : a.slice(i) === b.slice(i + 1); };
   // header row = the row (1-10) with most recognised header names; columns by synonym order: exact, then loose, then by content
   function detect(grid) {
     const syn = new Set(FIELDS.flatMap(f => f[3].map(norm)));
@@ -123,13 +133,23 @@
       const s = grid[i].filter(c => syn.has(norm(c))).length;
       if (s > best) { best = s; hdr = i; }
     }
-    const heads = grid[hdr] || [], H = heads.map(norm), cols = {}, guessed = [];
+    // two-row headers ("Baseline" over "Finish", from merged cells): take the pair when together they are a known name
+    const up = hdr > 0 ? grid[hdr - 1] : [];
+    const heads = (grid[hdr] || []).map((h, j) => { const t = String(up[j] ?? "").trim(), m = `${t} ${h}`; return t && h && syn.has(norm(m)) ? m : h; });
+    const H = heads.map(norm), cols = {}, guessed = [];
     FIELDS.forEach(([k]) => { cols[k] = -1; });
     const free = j => j >= 0 && !Object.values(cols).includes(j);
     const pass = test => { for (const [k, , , names] of FIELDS) if (cols[k] < 0) for (const n of names) { const j = heads.findIndex((h, i) => free(i) && test(h, H[i], n, k)); if (j >= 0) { cols[k] = j; break; } } };
-    pass((h, _, n) => low(h) === low(n));
-    pass((_, h, n) => h !== "" && h === norm(n));
-    pass((_, h, n, k) => { const w = norm(n); if (!LOOSE.includes(k) || w.length < 5 || (NOT[k] && NOT[k].test(h))) return false; return ` ${h} `.includes(` ${w} `); });
+    const body0 = grid.slice(hdr + 1, hdr + 201), yesNo = j => { const v = body0.map(r => String(r[j] ?? "").trim()).filter(Boolean); return v.length > 2 && v.filter(x => /^(yes|no|y|n|true|false|0|1|✓|✔|☑|✅|x)$/i.test(x)).length / v.length >= .8; };
+    const ok = (k, i) => !(k === "name" && yesNo(i)); // a yes/no column is never the task name (MS Project's Summary flag)
+    const inner = h => (/\(([^)]+)\)/.exec(h) || [])[1];
+    pass((h, H0, n, k) => H0 !== "" && H0 === norm(n) && ok(k, heads.indexOf(h))); // one pass, so a field's preferred names win over its weaker ones
+    // one slip of the keyboard ("Fnish Date", "Staus", "Asignee"): one letter wrong, missing, extra or swapped; nearer than a loose match
+    pass((h, H0, n, k) => { const w = norm(n); return LOOSE.includes(k) && w.length >= 5 && H0.length >= 4 && !syn.has(H0) && !(NOT[k] && NOT[k].test(H0)) && typo1(H0, w) && ok(k, heads.indexOf(h)); }); // a known name ("State") is never a typo of another
+    // the words in brackets name the field ("Custmo field (Start date)", "Due (date due)")
+    pass((h, H0, n, k) => { const x = inner(String(h ?? "")); return !!x && norm(x) === norm(n) && !(NOT[k] && NOT[k].test(H0)) && ok(k, heads.indexOf(h)); }); // "Start Delay (days)" is not a duration
+    pass((h, H0, n, k) => { const w = norm(n); if (!LOOSE.includes(k) || w.length < 5 || (NOT[k] && NOT[k].test(H0))) return false; const hw = H0.split(" "), m = w.split(" ").length, win = Array.from({ length: Math.max(0, hw.length - m + 1) }, (_, i) => hw.slice(i, i + m).join(" "));
+      return (` ${H0} `.includes(` ${w} `) || (w.length >= 6 && win.some(x => typo1(x, w)))) && ok(k, heads.indexOf(h)); }); // "Activity % Coplete"
     // no name or finish header: read the columns themselves
     const body = grid.slice(hdr + 1, hdr + 201).filter(r => r.some(c => String(c ?? "").trim()));
     const vals = j => body.map(r => String(r[j] ?? "").trim()).filter(Boolean);
@@ -175,6 +195,7 @@
     if (!t) return null;
     if (isNum(t) && +t > 20000 && +t < 80000) return { serial: Math.floor(+t) - 25569 }; // Excel serial
     if (WEEKDAYS.includes(t.slice(0, 3).toLowerCase())) t = t.slice((t + " ").indexOf(" ") + 1).trim();
+    t = t.replace(/\b(\d{1,2})(st|nd|rd|th)\b/gi, "$1"); // "Jan 5th, 2026"
     let s = /[\/\-.]/.test(t) ? t.split(" ")[0] : t;
     s = s.replace(/[ \-.]/g, "/").replace(/,/g, "");
     const p = s.split("/");
@@ -215,39 +236,65 @@
     const get = (r, k) => cols[k] >= 0 ? (r[cols[k]] ?? "").trim() : "";
 
     const R = body.map(r => {
-      const o = { raw: r }; FIELDS.forEach(([k]) => o["r_" + k] = get(r, k)); return o;
+      const o = { raw: r, ind: cols.name >= 0 && r.ind ? r.ind[cols.name] || 0 : 0 }; FIELDS.forEach(([k]) => o["r_" + k] = get(r, k)); return o;
     });
     let evDay = 0, evMon = 0;
     for (const o of R) for (const k of ["start", "finish", "bfin", "afin", "bstart"]) {
       o["p_" + k] = dateParts(o["r_" + k]);
       const e = o["p_" + k]?.ev || 0; if (e > 0) evDay++; if (e < 0) evMon++;
     }
-    const dayFirst = opt.dateOrder === "day" ? true : opt.dateOrder === "month" ? false : evDay > evMon;
-    let maxPa = 0;
+    // no date tells day-first from month-first: take the reading where fewer tasks finish before they start or fail to read
+    const odd = df => R.reduce((n, o) => { const a = dateValue(o.p_start, df), b = dateValue(o.p_finish, df); return n + (a != null && b != null && a > b ? 1 : 0) + (o.r_finish && b == null ? 1 : 0); }, 0);
+    const near = df => R.reduce((n, o) => [o.p_start, o.p_finish].reduce((m, p) => { const v = dateValue(p, df); return m + (v == null ? 0 : Math.abs(v - sd)); }, n), 0); // then: the reading that sits nearer the status date
+    const dayFirst = opt.dateOrder === "day" ? true : opt.dateOrder === "month" ? false : evDay !== evMon ? evDay > evMon : odd(true) !== odd(false) ? odd(true) < odd(false) : near(true) < near(false);
+    // the header row printed again at each page break is not a task
+    const hn = det.heads.map(h => norm(h)), hw = hn.filter(Boolean).length;
+    const isHead = r => hw >= 2 && r.filter((c, j) => hn[j] && norm(c) === hn[j]).length >= Math.max(2, hw / 2);
+    // a status column of dates ("Completed At") uses N/A for "not yet", not for "cancelled"
+    const stv = R.map(o => o.r_status).filter(v => v && !/^(#?n\/?a|#ref!|#value!|tbd|tba|[-—–?]+)$/i.test(v)), stDated = stv.length > 0 && stv.filter(v => dateValue(dateParts(v), dayFirst) != null).length >= stv.length / 2;
+    let maxPa = 0, lastPh = "";
     for (const o of R) {
       // no status, % or actual-finish column: a Kanban list called Done (Trello, ClickUp lists) still means done
-      const st = o.r_status || (cols.status < 0 && cols.pct < 0 && cols.afin < 0 && DONE.includes(low(o.r_phase)) ? o.r_phase : "");
-      o.st = !st ? "" : dateValue(dateParts(st), dayFirst) != null ? "Done" : DONE.includes(low(st)) ? "Done" : CANCEL.includes(low(st)) ? "Cancelled" : "Open";
+      if (o.r_phase && !isHead(o.raw)) lastPh = o.r_phase; // merged cells: a blank phase carries the one above
+      const st = o.r_status || (cols.status < 0 && cols.pct < 0 && cols.afin < 0 && DONE.includes(low(lastPh)) ? lastPh : "");
+      o.st = !st ? "" : dateValue(dateParts(st), dayFirst) != null ? "Done" : DONE.includes(low(st)) ? "Done" : CANCEL.includes(low(st)) && !(stDated && /^n\/?a$/i.test(st)) ? "Cancelled" : cancelWord(st) ? "Cancelled" : doneWord(st) ? "Done" : "Open";
       o.nm = o.st === "Cancelled" ? "" : o.r_name.trim();
-      o.act = o.nm !== "";
+      o.act = o.nm !== "" && !isHead(o.raw);
       for (const k of ["start", "finish", "bfin", "afin", "bstart"]) o[k] = dateValue(o["p_" + k], dayFirst);
-      const pa = o.r_pct === "" ? null : parseFloat(o.r_pct.replace("%", ""));
-      o.pa = Number.isFinite(pa) ? pa : null;
-      if (o.pa != null) maxPa = Math.max(maxPa, o.pa);
+      const pa = o.r_pct === "" ? null : parseFloat(o.r_pct.replace("%", "").replace(/^(\s*\d+),(\d+\s*)$/, "$1.$2")); // "50,5%": a decimal comma
+      o.pa = Number.isFinite(pa) ? pa : null; o.pcent = /%/.test(o.r_pct);
+      if (o.pa != null && !o.pcent) maxPa = Math.max(maxPa, o.pa);
       o.lv = !o.act ? null : cols.lvl >= 0 ? (isNum(o.r_lvl) ? +o.r_lvl : null) : o.r_wbs ? o.r_wbs.split(".").length : null;
       const dm = o.r_dur.replace(/d/g, " ").split(" ")[0];
       o.dn = o.r_dur === "" ? null : isNum(dm) ? +dm : null;
     }
-    const scale = maxPa > 1.0001 ? 100 : 1;
+    // notes under the table ("Notes:", "Source: PMO export") are not tasks: rows after the last row with any task data,
+    // set off by a blank line or worded like a note
+    { const data = o => ["finish", "start", "bfin", "pct", "status", "owner", "dur", "uid", "afin", "ms", "lvl"].some(f => cols[f] >= 0 && o["r_" + f]);
+      for (const o of R) if (o.act && (/^(grand |sub ?)?totals?:?$/i.test(o.nm) || (/^(grand |sub ?)?totals?\b/i.test(o.nm) && !o.r_start && !o.r_finish))) { o.act = false; o.nm = ""; o.footer = true; } // "Total", "Grand total", "Subtotal", first so notes above it still read as notes
+      let last = -1; R.forEach((o, i) => { if (o.act && data(o)) last = i; });
+      const blankAt = i => R[i].raw.every(c => !String(c ?? "").trim());
+      for (let i = last + 1; i < R.length; i++) { const o = R[i]; if (!o.act) continue; let gap = false; for (let j = last + 1; j < i; j++) if (blankAt(j)) gap = true;
+        if (gap || /^(notes?|source|legend|key|prepared|generated|exported|printed|page \d|confidential|total|\*)/i.test(o.nm) || /:$/.test(o.nm)) { o.act = false; o.nm = ""; o.footer = true; } }
+    }
+    let indent = false;
+    if (cols.lvl < 0 && !R.some(o => o.act && o.r_wbs)) { const ds = [...new Set(R.filter(o => o.act).map(o => o.ind))].sort((a, b) => a - b);
+      // only when it behaves like an outline: each indented-under row's parent spans its children's dates (stray spaces don't)
+      if (ds.length >= 2) { const A = R.filter(o => o.act), lv = o => ds.indexOf(o.ind) + 1; let sums = 0, fit = 0;
+        A.forEach((o, i) => { if (i + 1 >= A.length || lv(A[i + 1]) <= lv(o)) return; sums++; let ok = o.finish != null;
+          for (let j = i + 1; j < A.length && lv(A[j]) > lv(o); j++) { const c = A[j]; if (c.finish != null && o.finish != null && c.finish > o.finish) ok = false; if (c.start != null && o.start != null && c.start < o.start) ok = false; }
+          if (ok) fit++; });
+        if (sums >= 2 && fit / sums >= .8) { indent = true; A.forEach(o => { o.lv = lv(o); }); } } }
+    const scale = maxPa > 1.0001 || (maxPa === 0 && R.some(o => o.pcent)) ? 100 : 1;
     R.forEach((o, i) => {
-      const nx = R[i + 1];
-      o.pct = o.pa == null ? null : Math.min(1, Math.max(0, o.pa / scale));
+      let j = i + 1; while (j < R.length && !R[j].act) j++; const nx = R[j];
+      o.pct = o.pa == null ? null : Math.min(1, Math.max(0, o.pa / (o.pcent ? 100 : scale)));
       o.done = o.act && (o.st === "Done" || (o.pct ?? 0) >= 1);
       o.pe = o.done ? 1 : (o.pct ?? 0);
       const msc = low(o.r_ms);
       o.sum = !o.act ? false : truthy(o.r_sumf) || msc.includes("summary") || msc === "epic" ? true
         : !nx ? false
-        : cols.lvl >= 0 ? (o.lv != null && nx.lv != null && nx.lv > o.lv)
+        : cols.lvl >= 0 || indent ? (o.lv != null && nx.lv != null && nx.lv > o.lv)
         : !!(o.r_wbs && nx.r_wbs && nx.r_wbs.startsWith(o.r_wbs + "."));
       o.ms = o.act && !o.sum && (truthy(o.r_ms) || msc.includes("milestone") || o.dn === 0
         || keys.some(k => k.re.test(o.nm) && (!k.def || o.start == null || o.finish == null || nwd(o.start, o.finish) <= 1)));

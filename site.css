@@ -718,9 +718,10 @@ table.cmp{width:100%;border-collapse:collapse;min-width:640px;font-size:15px}
 .tool-loop{display:flex;gap:clamp(16px,2.5vw,32px);overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)}
 .tool-loop .marks{flex:none;flex-wrap:nowrap;animation:loop 28s linear infinite} .tool-loop:hover .marks{animation-play-state:paused}
 @keyframes loop{to{transform:translateX(calc(-100% - clamp(16px,2.5vw,32px)))}}
-/* dashboard section */
-.dash-sec .wrap{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,7fr);gap:var(--sp-8);align-items:center}
-.dash-copy .lead{color:var(--muted);font-size:17px;margin:12px 0 22px}
-.dash-shot{margin:0;border-radius:20px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow-3),0 40px 80px -40px color-mix(in srgb,var(--accent) 35%,transparent)}
+/* dashboard page */
+.dash-act{margin:var(--sp-5) 0 0}
+.dash-shot{margin:0 auto;max-width:1100px;border-radius:20px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow-3),0 40px 80px -40px color-mix(in srgb,var(--accent) 35%,transparent)}
 .dash-shot img{display:block;width:100%;height:auto}
-@media (max-width:900px){.dash-sec .wrap{grid-template-columns:minmax(0,1fr)}}
+.dash-points{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--sp-6);max-width:1100px;margin:var(--sp-8) auto 0;padding:0;list-style:none}
+.dash-points b{display:block;font-size:16px;margin-bottom:6px} .dash-points span{color:var(--muted);font-size:15px}
+@media (max-width:900px){.dash-points{grid-template-columns:minmax(0,1fr)}}
