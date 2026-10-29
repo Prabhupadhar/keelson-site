@@ -11,6 +11,7 @@
 <link rel="preload" href="fonts/plus-jakarta-sans-500.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="design/tokens.css">
 <link rel="stylesheet" href="site.css">
+<link rel="stylesheet" href="home.css">
 <script src="theme.js"></script>
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Keelson">
@@ -114,275 +115,111 @@
 </header>
 
 <main id="main" tabindex="-1">
-<!-- ============ HERO ============ -->
-<section class="hero" aria-labelledby="h-hero">
-  <canvas class="dots" aria-hidden="true"></canvas>
-  <div class="wrap hero-copy">
-    <h1 id="h-hero" class="rise" data-blur>Turn your project plan into a status report in minutes</h1>
-    <p class="lead rise d1">Upload your plan from MS Project, Jira, Smartsheet or Excel. Keelson shows what changed since last week, flags delays, and creates a report you can send to your client.</p>
-    <div class="hero-act rise d2">
-      <div class="hero-ctas">
-        <a class="btn btn-primary btn-lg" href="app.html#upload" data-magnet><svg class="ic" aria-hidden="true"><use href="#i-upload"/></svg>Upload your plan</a>
-        <a class="btn btn-secondary btn-lg" href="samples/keelson-sample-onepager.pdf" target="_blank" rel="noopener" type="application/pdf">See a sample report</a>
-      </div>
-      <p class="hero-trust">Free · No sign-up · Your file stays on your computer<span class="open-note" data-open hidden></span></p>
+<!-- ============ HERO: the five-second answer ============ -->
+<section class="x-hero" aria-labelledby="h-hero">
+  <div class="wrap">
+    <h1 id="h-hero">Plan in. <span>Status report out</span></h1>
+    <p class="x-sub">Drop in your MS Project, Jira, Smartsheet or Excel plan. Get a steering-committee report in under a minute. Your file never leaves your browser.</p>
+    <div class="hero-ctas">
+      <a class="btn btn-primary btn-lg" href="app.html#upload"><svg class="ic" aria-hidden="true"><use href="#i-upload"/></svg>Upload your plan</a>
+      <a class="btn btn-secondary btn-lg" href="samples/keelson-sample-onepager.pdf" target="_blank" rel="noopener" type="application/pdf">See a sample report</a>
     </div>
+    <p class="hero-trust">Free · No sign-up · Your file stays on your computer<span class="open-note" data-open hidden></span></p>
   </div>
   <div class="wrap">
-  <div class="stage rise d3" data-spot role="img" aria-label="Keelson app preview with the fictional FieldFlow sample: what changed since 16 February, plan finish 3 June, 13 working days behind baseline, P80 finish 23 July, and a one-page changes report ready as PDF or Word.">
-    <div class="mock" aria-hidden="true">
-      <div class="mock-top">
-        <span class="logo"><svg><use href="#k-mark"/></svg>Keelson</span>
-        <span class="crumb">FieldFlow rollout / <b>What changed</b></span>
-        <span class="steps"><span class="done">✓ Upload</span><span class="done">✓ Check</span><span class="on">3 Reports</span></span>
-      </div>
-      <div class="mock-body">
-        <div class="side">
-          <h5>Reports</h5>
-          <span class="si"><svg class="ic"><use href="#i-doc"/></svg>One-pager</span>
-          <span class="si"><svg class="ic"><use href="#i-report"/></svg>Weekly status</span>
-          <span class="si"><svg class="ic"><use href="#i-gantt"/></svg>Roadmap</span>
-          <span class="si"><svg class="ic"><use href="#i-columns"/></svg>Variance</span>
-          <h5 style="margin-top:14px">Over time</h5>
-          <span class="si on"><svg class="ic"><use href="#i-swap"/></svg>What changed</span>
-          <span class="si"><svg class="ic"><use href="#i-trend"/></svg>Slip trend</span>
-          <span class="si"><svg class="ic"><use href="#i-target"/></svg>Forecast</span>
-          <div class="file"><b>plan-23Feb.xlsx</b>34 tasks · 7 milestones · 6 weekly versions on this device</div>
-        </div>
-        <div class="main">
-          <div class="kpis">
-            <div class="kpi"><small>Overall status</small><span class="chip chip-warn"><span class="dot"></span>Amber</span><em>by your rules</em></div>
-            <div class="kpi"><small>Plan finish</small><b>3 Jun</b><em class="bad">13 working days late</em></div>
-            <div class="kpi"><small>P80 finish</small><b>23 Jul</b><em>P50 9 Jul</em></div>
-            <div class="kpi"><small>Since 16 Feb</small><b>28</b><em>changes</em></div>
-          </div>
-          <div class="panel">
-            <div class="panel-h">What changed since 16 Feb <span>23 Feb export</span></div>
-            <div class="chg">
-              <div><span class="chip chip-bad">Later</span><span>Go-live (milestone)</span><b class="bad">+2 wd · 20 May</b></div>
-              <div><span class="chip chip-bad">Later</span><span>UAT sign-off</span><b class="bad">+2 wd · 13 May</b></div>
-              <div><span class="chip chip-bad">Later</span><span>User acceptance testing</span><b class="bad">+2 wd · 7 May</b></div>
-              <div><span class="chip chip-brand">Added</span><span>Extra regression cycle</span><b>Testing</b></div>
-              <div><span class="chip chip-mute">Removed</span><span>Archive legacy reports</span><b>Data migration</b></div>
-              <div><span class="chip chip-warn">Owner</span><span>Telematics feed</span><b>→ Grace Okafor</b></div>
-            </div>
-          </div>
-          <div class="why"><svg class="ic"><use href="#i-alert"/></svg><span><b>Why Amber:</b> the plan finishes 3 Jun, 13 working days after its baseline of 17 May. Go-live moved 2 working days to 20 May. Nothing overdue.</span></div>
-        </div>
-        <div class="paperwrap">
-          <div class="paper">
-            <div class="paper-h"><b>Changes since 16 Feb</b><span>23 Feb 2027</span></div>
-            <div style="display:flex;justify-content:space-between;align-items:center"><span>FieldFlow rollout</span><span class="p-rag">AMBER</span></div>
-            <div class="p-sec"><h6>Headline</h6><p>Finish 1 → 3 Jun (+2 wd); Go-live 18 → 20 May (+2 wd), driven by Testing. 1 task added, 1 removed; 18 finish later.</p></div>
-            <div class="p-sec"><h6>Finish dates moved</h6><table class="p-tbl"><tr><td>Go-live</td><td class="late">+2</td></tr><tr><td>UAT sign-off</td><td class="late">+2</td></tr><tr><td>Hypercare exit</td><td class="late">+2</td></tr></table></div>
-            <div class="p-sec"><h6>Slip by phase</h6><div class="p-bars"><i style="height:100%"></i><i style="height:46%"></i><i style="height:30%"></i><i style="height:15%"></i></div></div>
-          </div>
-          <div class="dl"><span class="btn btn-primary"><svg class="ic sm"><use href="#i-download"/></svg>PDF</span><span class="btn btn-secondary">Word</span></div>
-        </div>
+    <div class="x-app" id="x-app">
+      <div class="x-bar" aria-hidden="true"><b></b><b></b><b></b><span>keelson.co.in/app</span></div>
+      <div class="x-screen">
+        <div class="x-drop" aria-hidden="true"><div><b>Drop your plan here</b>.xlsx, .csv or .tsv</div></div>
+        <div class="x-shot"><img class="th-l" src="img/home/dash-glance-light.webp" width="1600" height="1111" alt="Keelson Dashboard for the fictional FieldFlow sample: 48% done, finish 3 Jun 2027, every task as a coloured bar"><img class="th-d" src="img/home/dash-glance-dark.webp" width="1600" height="1111" alt="Keelson Dashboard for the fictional FieldFlow sample: 48% done, finish 3 Jun 2027, every task as a coloured bar"></div>
+        <div class="x-file" aria-hidden="true"><i></i>Portal_plan_wk43.xlsx</div>
+        <svg class="x-cur" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 1 L3 16 L7 12 L10 19 L12.5 18 L9.5 11 L15.5 11 Z" fill="var(--ink)" stroke="var(--bg)" stroke-width="1.2"/></svg>
       </div>
     </div>
   </div>
+  <!-- Plain text names only: no third-party logos or certification marks (trademark and endorsement rules). -->
+  <div class="wrap works">
+    <p class="lbl" id="h-works">Works with exports from</p>
+    <ul class="marks" data-loop>
+      <li>Microsoft Project</li>
+      <li>Jira</li>
+      <li>Smartsheet</li>
+      <li>Excel</li>
+      <li>Google Sheets</li>
+      <li>CSV</li>
+    </ul>
+    <p class="fine">Reads .xlsx, .csv and .tsv files or a pasted table. From MS Project, save as .xlsx or CSV first. Tested on five real-world plan shapes.<sup><a href="#n2" aria-label="Note 2">2</a></sup> Product names are trademarks of their owners. Keelson is not affiliated with or endorsed by them.</p>
   </div>
-  <!-- ============ WORKS WITH ============ -->
-<!-- Plain text names only: no third-party logos or certification marks (trademark and endorsement rules). -->
-<div class="wrap works">
-  <p class="lbl" id="h-works">Works with exports from</p>
-  <ul class="marks" data-loop>
-    <li>Microsoft Project</li>
-    <li>Jira</li>
-    <li>Smartsheet</li>
-    <li>Excel</li>
-    <li>Google Sheets</li>
-    <li>CSV</li>
-  </ul>
-  <p class="fine">Reads .xlsx, .csv and .tsv files or a pasted table. From MS Project, save as .xlsx or CSV first. Tested on five real-world plan shapes.<sup><a href="#n2" aria-label="Note 2">2</a></sup> Product names are trademarks of their owners. Keelson is not affiliated with or endorsed by them.</p>
-</div>
 </section>
 
-<!-- ============ THREE QUESTIONS: what changed, slip trend, finish forecast ============ -->
-<!-- WAI-ARIA tabs (index.js). #changes, #trend and #forecast links from any page select their tab. -->
-<section class="section soft" id="why" aria-labelledby="h-why">
-  <div class="wrap">
-    <div class="intro">
-      <h2 id="h-why">Every sponsor asks the same three questions</h2>
-      <p>Your plan has the answers. They are spread across last week's file, this week's file and the baseline. Keelson puts them on one page.</p>
+<!-- ============ HOW IT WORKS: pinned scroll story (home.js) ============ -->
+<section class="x-story" id="how" aria-labelledby="h-how">
+  <h2 class="sr-only" id="h-how">How it works</h2>
+  <div class="wrap x-story-in">
+    <div class="x-steps">
+      <div class="x-step"><p class="x-n">Step 1</p><h3>Drop in the plan you already have</h3><p>Exports from 12 tools, messy or not: typos in headers, Total rows, merged cells, French, German, Spanish and Portuguese headers.</p></div>
+      <div class="x-step"><p class="x-n">Step 2</p><h3>Keelson reads it like a PM would</h3><p>It finds the task, finish, owner and progress columns, and shows you what it understood before it reports anything.</p></div>
+      <div class="x-step"><p class="x-n">Step 3</p><h3>Send it as it is</h3><p>A one-pager, a weekly report, a forecast or a steering-committee deck. PDF, Word or PowerPoint.</p></div>
     </div>
-    <div class="qtabs" role="tablist" aria-label="The three questions">
-      <button class="qtab" type="button" role="tab" id="t1" aria-controls="p1" aria-selected="true"><span class="hide-sm">What changed since last week?</span><span class="show-sm">What changed</span></button>
-      <button class="qtab" type="button" role="tab" id="t2" aria-controls="p2" aria-selected="false" tabindex="-1"><span class="hide-sm">Is it getting worse?</span><span class="show-sm">Getting worse?</span></button>
-      <button class="qtab" type="button" role="tab" id="t3" aria-controls="p3" aria-selected="false" tabindex="-1"><span class="hide-sm">When will it finish?</span><span class="show-sm">Finish date</span></button>
-    </div>
-    <div class="qpanel" role="tabpanel" id="p1" aria-labelledby="t1">
-    <article class="qp split" id="changes" aria-labelledby="h-changes">
-    <div class="copy">
-      <h3 id="h-changes">Upload two weekly plans and see what changed</h3>
-      <p>Add both files, or compare with the version Keelson saved last week. You get one short summary for your sponsor, and the table behind it.</p>
-      <ul class="ticks">
-        <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Tasks added, removed, moved later or earlier, new owner, progress gone down, renamed</span></li>
-        <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Baseline changes are always shown in red</span></li>
-        <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Works even if the columns or the date format change between files</span></li>
-      </ul>
-      <div class="row"><a class="btn btn-primary" href="app.html#upload">Compare two plans <svg class="ic sm arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a></div>
-    </div>
-    <div class="well">
-      <div class="app-card" role="img" aria-label="Changes report for the fictional FieldFlow sample: since 16 February the finish moved from 1 to 3 June and go-live from 18 to 20 May, driven by Testing; 1 task added, 1 removed, 18 finish later and 6 earlier; no baseline changes.">
-        <div class="app-card-h" aria-hidden="true"><b>Changes since 16 Feb</b><span>FieldFlow rollout · 23 Feb export</span></div>
-        <p class="headline" aria-hidden="true"><b>Since 16 Feb: finish 1 → 3 Jun (+2 wd); Go-live 18 → 20 May (+2 wd)</b>, driven by Testing; 3 other milestones moved. 1 task added (Extra regression cycle), 1 removed (Archive legacy reports). 18 tasks finish later (incl. 3 milestones): the largest move was +2 wd (User acceptance testing); 17 tasks followed; 6 tasks finish earlier (incl. 1 milestone), by up to -2 wd. Also 1 owner change and 1 task renamed (1 to confirm).</p>
-        <div class="cstrip" aria-hidden="true"><span class="on"><b>1</b> Added</span><span><b>1</b> Removed</span><span><b>18</b> Moved later</span><span><b>0</b> Baseline changed</span></div>
-        <table class="ctbl" aria-hidden="true">
-          <colgroup><col style="width:92px"><col><col class="hide-sm" style="width:24%"><col style="width:84px"></colgroup>
-          <thead><tr><th>Change</th><th>Task</th><th class="hide-sm">Phase</th><th class="r">Move</th></tr></thead>
-          <tbody>
-            <tr><td><span class="chip chip-bad">Later</span></td><td><b>Go-live</b></td><td class="hide-sm">Cutover and go-live</td><td class="r"><b class="late">+2 wd</b></td></tr>
-            <tr><td><span class="chip chip-bad">Later</span></td><td>UAT sign-off</td><td class="hide-sm">Testing</td><td class="r"><b class="late">+2 wd</b></td></tr>
-            <tr><td><span class="chip chip-bad">Later</span></td><td>User acceptance testing</td><td class="hide-sm">Testing</td><td class="r"><b class="late">+2 wd</b></td></tr>
-            <tr><td><span class="chip chip-brand">Added</span></td><td>Extra regression cycle</td><td class="hide-sm">Testing</td><td class="r">new</td></tr>
-            <tr><td><span class="chip chip-mute">Removed</span></td><td>Archive legacy reports</td><td class="hide-sm">Data migration</td><td class="r">removed</td></tr>
-          </tbody>
-        </table>
-        <p class="excl" aria-hidden="true"><span class="box on"><svg class="ic"><use href="#i-check"/></svg></span>Show in the client version · 27 of 28 changes</p>
+    <div class="x-pin">
+      <div class="x-visual" aria-hidden="true">
+        <div class="x-v on"><div class="x-tools"><span>MS Project</span><span>Jira</span><span>Smartsheet</span><span>Excel</span><span>Asana</span><span>monday.com</span><span>Azure DevOps</span><span>Primavera P6</span><span>Trello</span></div></div>
+        <div class="x-v"><div class="x-map">
+          <div><code>Fnish Date</code><i>→</i><b>Finish</b></div>
+          <div><code>% Done</code><i>→</i><b>Progress</b></div>
+          <div><code>Resource Names</code><i>→</i><b>Owner</b></div>
+          <div><code>Phase Gate Date</code><i>→</i><em>not a workstream</em></div>
+          <div><code>Total</code><i>→</i><em>not a task</em></div>
+        </div></div>
+        <div class="x-v x-fan"><img src="img/home/rep-changes.webp" width="900" height="1200" alt="" loading="lazy"><img src="img/home/rep-forecast.webp" width="900" height="1200" alt="" loading="lazy"><img src="img/home/rep-onepager.webp" width="900" height="1014" alt="" loading="lazy"></div>
       </div>
-    </div>
-    </article>
-    </div>
-    <div class="qpanel" role="tabpanel" id="p2" aria-labelledby="t2" hidden>
-    <article class="qp split" id="trend" aria-labelledby="h-trend">
-    <div class="copy">
-      <h3 id="h-trend">See how milestone dates moved, week by week</h3>
-      <p>Keelson saves each weekly plan on your computer and charts the forecast date of each key milestone over time. It also records every time the baseline was changed, with the date.</p>
-      <ul class="ticks">
-        <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Trend for up to 8 milestones, and the phases that keep moving later</span></li>
-        <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>In plain words: how many working days the finish moves later each week, and where it lands if that continues</span></li>
-        <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Every re-baseline Keelson sees is logged and stays flagged until you record why. Older files can be dropped in to backfill</span></li>
-      </ul>
-      <p class="fine">Needs 3 saved reports for the trend, 2 for the baseline log. History stays in this browser. You can export it to a file.</p>
-    </div>
-    <div class="well">
-      <div class="app-card trend">
-        <div class="app-card-h" aria-hidden="true"><b>Milestone slip trend</b><span>FieldFlow rollout · 6 weekly reports · 19 Jan to 23 Feb</span></div>
-        <svg viewBox="0 0 672 300" role="img" aria-labelledby="trend-t trend-d">
-          <title id="trend-t">Milestone slip trend, fictional sample</title>
-          <desc id="trend-d">Forecast dates of five milestones in the fictional FieldFlow sample at six weekly reports, 19 January to 23 February 2027. Go-live moved from 10 to 20 May, UAT sign-off from 3 to 13 May, Hypercare exit from 24 May to 3 June, SIT exit from 13 to 19 April and Build complete from 15 to 16 February. The whole-project baseline was reset on 9 February.</desc>
-          <g aria-hidden="true">
-            <line class="grid" x1="60" x2="500" y1="20" y2="20"/>
-            <line class="grid" x1="60" x2="500" y1="68" y2="68"/>
-            <line class="grid" x1="60" x2="500" y1="116" y2="116"/>
-            <line class="grid" x1="60" x2="500" y1="164" y2="164"/>
-            <line class="grid" x1="60" x2="500" y1="212" y2="212"/>
-            <line class="ax" x1="60" x2="500" y1="260" y2="260"/>
-            <text x="52" y="24" text-anchor="end">21 Jun</text><text x="52" y="72" text-anchor="end">24 May</text><text x="52" y="120" text-anchor="end">26 Apr</text><text x="52" y="168" text-anchor="end">29 Mar</text><text x="52" y="216" text-anchor="end">1 Mar</text><text x="52" y="264" text-anchor="end">1 Feb</text>
-            <text x="60" y="286" text-anchor="middle">19 Jan</text><text x="148" y="286" text-anchor="middle">26 Jan</text><text x="236" y="286" text-anchor="middle">2 Feb</text><text x="324" y="286" text-anchor="middle">9 Feb</text><text x="412" y="286" text-anchor="middle">16 Feb</text><text x="500" y="286" text-anchor="middle">23 Feb</text>
-            <line class="diag" x1="324" x2="324" y1="20" y2="260"/>
-            <polyline class="l5" points="60,236.0 148,236.0 236,236.0 324,234.3 412,234.3 500,234.3"/>
-            <g class="p5"><circle cx="60" cy="236.0" r="4"/><circle cx="148" cy="236.0" r="4"/><circle cx="236" cy="236.0" r="4"/><circle cx="324" cy="234.3" r="4"/><circle cx="412" cy="234.3" r="4"/><circle cx="500" cy="234.3" r="4"/></g>
-            <polyline class="l4" points="60,138.3 148,138.3 236,126.3 324,124.6 412,124.6 500,128.0"/>
-            <g class="p4"><circle cx="60" cy="138.3" r="4"/><circle cx="148" cy="138.3" r="4"/><circle cx="236" cy="126.3" r="4"/><circle cx="324" cy="124.6" r="4"/><circle cx="412" cy="124.6" r="4"/><circle cx="500" cy="128.0" r="4"/></g>
-            <polyline class="l2" points="60,104.0 148,104.0 236,92.0 324,90.3 412,90.3 500,86.9"/>
-            <g class="p2"><circle cx="60" cy="104.0" r="4"/><circle cx="148" cy="104.0" r="4"/><circle cx="236" cy="92.0" r="4"/><circle cx="324" cy="90.3" r="4"/><circle cx="412" cy="90.3" r="4"/><circle cx="500" cy="86.9" r="4"/></g>
-            <polyline class="l1" points="60,92.0 148,92.0 236,80.0 324,78.3 412,78.3 500,74.9"/>
-            <g class="p1"><circle cx="60" cy="92.0" r="4"/><circle cx="148" cy="92.0" r="4"/><circle cx="236" cy="80.0" r="4"/><circle cx="324" cy="78.3" r="4"/><circle cx="412" cy="78.3" r="4"/><circle cx="500" cy="74.9" r="4"/></g>
-            <polyline class="l3" points="60,68.0 148,68.0 236,56.0 324,54.3 412,54.3 500,50.9"/>
-            <g class="p3"><circle cx="60" cy="68.0" r="4"/><circle cx="148" cy="68.0" r="4"/><circle cx="236" cy="56.0" r="4"/><circle cx="324" cy="54.3" r="4"/><circle cx="412" cy="54.3" r="4"/><circle cx="500" cy="50.9" r="4"/></g>
-            <text class="lbl" x="512" y="239.3">Build 16 Feb</text>
-            <text class="lbl" x="512" y="133.0">SIT exit 19 Apr</text>
-            <text class="lbl" x="512" y="100.9">UAT 13 May</text>
-            <text class="lbl" x="512" y="76.9">Go-live 20 May</text>
-            <text class="lbl" x="512" y="52.9">Hypercare 3 Jun</text>
-            <rect class="rb" x="317" y="183" width="14" height="14" rx="2" transform="rotate(45 324 190)"/>
-            <text x="338" y="195">Baseline reset 9 Feb</text>
-          </g>
-        </svg>
-        <div class="legend" aria-hidden="true"><span><i class="l5"></i>Build complete</span><span><i class="l4"></i>SIT exit</span><span><i class="l2"></i>UAT sign-off</span><span><i class="l1"></i>Go-live</span><span><i class="l3"></i>Hypercare exit</span><span><i class="d"></i>Re-baseline</span></div>
-        <div class="drift"><b>+1.7 working days a week</b><span>The forecast finish is slipping 1.7 wd per week over the last 6 reports (19 Jan to 23 Feb 2027) (slower than time passes); if that continues it lands around 26 Jul 2027. Latest: 2 wd later than the report before.</span></div>
-        <div class="audit" aria-label="Re-baseline log">
-          <div><time>9 Feb</time><span>Baseline finish 3 → 17 May; 19 task baselines changed</span><span class="chip chip-bad"><span class="dot"></span>No note</span></div>
-          <div><time>23 Feb</time><span>Phase “Testing” later in 3 of 5 reports</span><span class="chip chip-warn"><span class="dot"></span>+8 wd</span></div>
-        </div>
-      </div>
-    </div>
-    </article>
-    </div>
-    <div class="qpanel" role="tabpanel" id="p3" aria-labelledby="t3" hidden>
-    <article class="qp split" id="forecast" aria-labelledby="h-forecast">
-    <div class="copy">
-      <h3 id="h-forecast">A likely finish date, with honest odds</h3>
-      <p>Keelson checks how long your finished tasks took compared with their baseline, then asks what happens if the rest of the plan goes the same way. You get two dates (P50 and P80) and one clear sentence for your sponsor.</p>
-      <ul class="ticks">
-        <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Based on your plan's own history. No extra estimates, no add-ins</span></li>
-        <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Gives no forecast when there is too little data, or when the baseline looks reset to actual dates</span></li>
-        <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>You can hide the card, but not edit its numbers</span></li>
-      </ul>
-      <p class="fine">Needs Baseline Start and Baseline Finish columns and at least 10 completed tasks. New scope and known risks are not included, and the report says so. Checked on 1,000 simulated projects; not yet validated on real project histories (<a href="#faq-forecast">how</a>).</p>
-    </div>
-    <div class="well">
-      <div class="app-card">
-        <div class="app-card-h"><b>When will it finish?</b><span>FieldFlow rollout · status 23 Feb 2027</span></div>
-        <div class="fc-tiles">
-          <div class="kpi"><small>Plan date</small><b>3 Jun</b><em>72 working days left</em></div>
-          <div class="kpi"><small>P50 · 50/50 date</small><b>9 Jul</b><em>+26 working days</em></div>
-          <div class="kpi"><small>P80 · 8 in 10</small><b>23 Jul</b><em>+36 working days</em></div>
-        </div>
-        <div class="fc-strip" aria-hidden="true">
-          <div class="fc-track"></div>
-          <div class="fc-range" style="left:69.4%;width:24.6%"></div>
-          <div class="fc-m fcp" style="left:6%"><span>Plan</span><b>3 Jun</b><i></i></div>
-          <div class="fc-m bottom" style="left:69.4%"><i></i><span>P50 · 9 Jul</span></div>
-          <div class="fc-m" style="left:94%"><span>P80</span><b>23 Jul</b><i></i></div>
-        </div>
-        <p class="fc-say">13 completed tasks took on average <b>1.23x</b> their baselined time. If the remaining work behaves the same way, and parallel work waits for its slowest path, the 50/50 date is <b>9 Jul (P50)</b>; 8 in 10 replays finish by <b>23 Jul (P80)</b>. The current plan date of 3 Jun is earlier than either. This ignores new scope and risks not yet in the plan.</p>
-        <p class="fc-warn"><svg class="ic" aria-hidden="true"><use href="#i-alert"/></svg><span><b>P80 likely optimistic:</b> the latest phase with enough history (Build and configure, 1.32x) is running slower than the earlier ones, so remaining work may be riskier than the average.</span></p>
-        <p class="refuse"><svg class="ic" aria-hidden="true"><use href="#i-alert"/></svg><span><b>When it won't guess:</b> “Only 6 completed tasks have baseline dates. Needs 10 before a forecast means anything.”</span></p>
-      </div>
-    </div>
-    </article>
     </div>
   </div>
 </section>
 
-<!-- ============ REPORT GALLERY ============ -->
-<section class="section" id="reports" aria-labelledby="h-reports">
+<!-- ============ THREE QUESTIONS + FEATURES (bento). #changes, #trend and #forecast are linked from the menus and other pages ============ -->
+<section class="x-pad" id="why" aria-labelledby="h-why">
   <div class="wrap">
-    <div class="intro">
-      <h2 id="h-reports">The reports you send each week</h2>
-      <p>Seven client-ready reports from one plan file, as PDF, Word or PowerPoint, with your logo and colour. These four use this week's plan; <a href="#changes">What changed</a>, <a href="#trend">Slip trend</a> and <a href="#forecast">Finish forecast</a> use the weeks you saved before. All of them print on a white page.</p>
+    <h2 class="x-h2 x-rv" id="h-why">Every question the steering committee asks</h2>
+    <p class="x-lead x-rv">Answered from your plan, every week, in the same format.</p>
+    <div class="x-bento">
+      <div class="x-tile s4 x-rv" id="changes"><div><h3>What changed since last week</h3><p>Finish dates, owners, added and removed tasks. Renamed tasks are matched, not counted as new.</p></div>
+        <div class="x-crop"><img src="img/home/rep-changes.webp" width="900" height="1200" alt="The What changed report: 1 task added, 1 removed, 18 moved later, with every milestone that moved" loading="lazy"></div></div>
+      <div class="x-tile s2 x-rv" id="trend"><div><h3>Is it getting worse</h3><p>Slip trend across your saved weeks.</p></div>
+        <svg viewBox="0 0 200 90" aria-hidden="true"><polyline class="x-tline" points="4,84 44,84 84,66 124,54 164,54 196,12" fill="none" stroke="var(--accent)" stroke-width="4" stroke-linejoin="round"/></svg></div>
+      <div class="x-tile s2 x-rv" id="forecast"><div><h3>When will it finish</h3><p>A range from your own completed tasks, not a promise. Checked on 1,000 simulated projects (P80 held in 81%, P50 in 53%). <a href="#faq-forecast">How it works</a></p></div>
+        <div><div class="x-range" aria-hidden="true"><s></s><i style="left:30%"></i><i style="left:76%"></i></div><div class="x-pp"><div><b>9 Jul</b><span>P50 · 50/50 date</span></div><div><b>23 Jul</b><span>P80 · 8 in 10</span></div></div></div></div>
+      <div class="x-tile s4 x-rv"><div><h3>Reads the messy files real projects produce</h3><p>Tested on 621,858 damaged plans with known answers. In the latest round, 51,167 of 51,168 gave exactly the same report as the clean file.</p></div>
+        <div class="x-messy" aria-hidden="true"><div class="gone"><span>Total</span><span>48%</span></div><div class="gone"><span>Notes: see PMO pack</span><span></span></div><div><span>✅ Done</span><span class="ok">counted as done</span></div></div></div>
+      <div class="x-tile s3 x-rv"><div><p class="x-big">60 s</p><h3>From export to report</h3></div><p>No setup, no template to fill, no account.</p></div>
+      <div class="x-tile s3 x-rv"><div><h3>Send it in the format they read</h3><p>With your logo and brand colour.</p></div><div class="x-fmt" aria-hidden="true"><span class="pdf">PDF</span><span class="doc">Word</span><span class="ppt">PPT</span></div></div>
+      <div class="x-tile s6 x-night x-rv"><div><h3>A dashboard to present on the big screen</h3><p>Eleven screens from the same plan: at a glance, timeline, workstreams, team, risks. <a href="dashboard.html">See the Dashboard</a></p></div>
+        <div class="x-dash"><img src="img/home/dash-timeline-dark.webp" width="1600" height="1111" alt="Keelson Dashboard timeline screen in dark mode, fictional FieldFlow sample" loading="lazy"></div></div>
     </div>
-    <div class="gal">
-      <article class="gi">
-        <div class="gwell" aria-hidden="true"><div class="paper" style="width:100%">
-          <div class="paper-h"><b>One-pager</b><span>23 Feb</span></div>
-          <div class="ptiles"><i class="a"></i><i></i><i></i></div>
-          <div class="p-line"></div><div class="p-line" style="width:80%"></div>
-          <div class="p-sec"><h6>Phases</h6><div class="p-bars" style="height:34px"><i style="height:100%"></i><i style="height:100%"></i><i style="height:96%"></i><i style="height:40%"></i><i style="height:10%"></i></div></div>
-          <div class="p-sec"><h6>Milestones</h6><table class="p-tbl"><tr><td>UAT sign-off</td><td class="late">13 May</td></tr><tr><td>Go-live</td><td class="late">20 May</td></tr></table></div>
-        </div></div>
-        <h3>One-pager</h3><p>A short summary: status, finish date, milestones and late work, on one page.</p>
-      </article>
-      <article class="gi">
-        <div class="gwell" aria-hidden="true"><div class="paper" style="width:100%">
-          <div class="paper-h"><b>Weekly status</b><span>23 Feb</span></div>
-          <div class="p-sec"><h6>Summary</h6><div class="p-line"></div><div class="p-line" style="width:86%"></div><div class="p-line" style="width:64%"></div></div>
-          <div class="p-sec"><h6>Next milestones</h6><table class="p-tbl"><tr><td>SIT exit</td><td>19 Apr</td></tr><tr><td>UAT sign-off</td><td>13 May</td></tr><tr><td>Go-live</td><td>20 May</td></tr></table></div>
-          <div class="p-sec"><h6>Since last week</h6><div class="p-line"></div><div class="p-line" style="width:72%"></div></div>
-        </div></div>
-        <h3>Weekly status</h3><p>A summary you can edit, milestones, risks and what changed since last week.</p>
-      </article>
-      <article class="gi">
-        <div class="gwell" aria-hidden="true"><div class="paper" style="width:100%">
-          <div class="paper-h"><b>Roadmap</b><span>Oct to Jun</span></div>
-          <div class="pg-gantt"><i style="width:30%"></i><i style="width:40%;margin-left:18%"></i><i style="width:32%;margin-left:24%"></i><i style="width:30%;margin-left:52%"></i><i style="width:18%;margin-left:74%"></i><i style="width:14%;margin-left:86%"></i><i style="width:22%;margin-left:30%"></i><i style="width:26%;margin-left:60%"></i></div>
-          <div class="p-sec"><h6>Key dates</h6><table class="p-tbl"><tr><td>Build complete</td><td>16 Feb</td></tr><tr><td>Go-live</td><td>20 May</td></tr><tr><td>Hypercare exit</td><td>3 Jun</td></tr></table></div>
-        </div></div>
-        <h3>Roadmap</h3><p>Phases, milestones and today's date on one wide page. Easy for the client to read.</p>
-      </article>
-      <article class="gi">
-        <div class="gwell" aria-hidden="true"><div class="paper" style="width:100%">
-          <div class="paper-h"><b>Variance</b><span>vs baseline</span></div>
-          <div class="pvar"><div><i style="width:100%"></i><b class="late">+21</b></div><div><i style="width:62%"></i><b class="late">+13</b></div><div><i style="width:62%"></i><b class="late">+13</b></div><div><i style="width:62%"></i><b class="late">+13</b></div><div><i style="width:57%"></i><b class="late">+12</b></div><div><i style="width:52%"></i><b class="late">+11</b></div><div><i style="width:52%"></i><b class="late">+11</b></div></div>
-          <div class="p-sec"><h6>Commentary</h6><div class="p-line"></div><div class="p-line" style="width:80%"></div><div class="p-line" style="width:55%"></div></div>
-        </div></div>
-        <h3>Variance</h3><p>Each phase and task compared with its baseline, in working days, biggest delay first.</p>
-      </article>
-    </div>
+  </div>
+</section>
+
+<!-- ============ PRIVACY ============ -->
+<section class="x-pad x-dark" id="privacy" aria-labelledby="h-privacy">
+  <div class="wrap x-rv">
+    <svg class="x-lock" viewBox="0 0 92 92" aria-hidden="true"><path class="sh" d="M28 40 V28 a18 18 0 0 1 36 0 V40" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round"/><rect x="18" y="40" width="56" height="44" rx="10" fill="currentColor"/><circle cx="46" cy="60" r="5" fill="#000"/></svg>
+    <h2 class="x-h2" id="h-privacy">Your plan never leaves your browser</h2>
+    <p class="x-lead">Client plans are confidential. Keelson reads the file on your computer and builds the report there. There is nothing to upload and nothing stored on a server.</p>
+    <div class="x-pv"><div><b>0 bytes</b>of your plan sent anywhere</div><div><b>No account</b>to create</div><div><b>Works</b>with Wi-Fi off once loaded</div></div>
+  </div>
+</section>
+
+<!-- ============ REPORTS: real pages from the sample ============ -->
+<section class="x-pad x-reports" id="reports" aria-labelledby="h-reports">
+  <div class="wrap"><h2 class="x-h2 x-rv" id="h-reports">Seven reports, one upload</h2><p class="x-lead x-rv">Real pages from the fictional FieldFlow sample. Preview every one free.</p></div>
+  <div class="x-strip" tabindex="0" role="group" aria-label="Report previews, scroll sideways">
+    <div class="x-card"><div class="x-pg"><img src="img/home/rep-onepager.webp" width="900" height="1014" alt="One-pager report page" loading="lazy"></div><b>One-pager</b><span>Free as PDF</span></div>
+    <div class="x-card"><div class="x-pg"><img src="img/home/rep-weekly.webp" width="900" height="1200" alt="Weekly status report page" loading="lazy"></div><b>Weekly status</b><span>Pro</span></div>
+    <div class="x-card"><div class="x-pg"><img src="img/home/rep-changes.webp" width="900" height="1200" alt="What changed report page" loading="lazy"></div><b>What changed</b><span>Pro</span></div>
+    <div class="x-card"><div class="x-pg"><img src="img/home/rep-trend.webp" width="900" height="1200" alt="Slip trend report page" loading="lazy"></div><b>Slip trend</b><span>Pro</span></div>
+    <div class="x-card"><div class="x-pg"><img src="img/home/rep-forecast.webp" width="900" height="1200" alt="Finish forecast report page" loading="lazy"></div><b>Finish forecast</b><span>Pro</span></div>
+  </div>
+  <div class="wrap">
     <p class="samples"><span>See a real report <span class="fine">(PDF, fictional sample)</span></span> <a href="samples/keelson-sample-onepager.pdf" target="_blank" rel="noopener" type="application/pdf">One-pager</a><a href="samples/keelson-sample-what-changed.pdf" target="_blank" rel="noopener" type="application/pdf">What changed</a><a href="samples/keelson-sample-finish-forecast.pdf" target="_blank" rel="noopener" type="application/pdf">Finish forecast</a></p>
   </div>
 </section>
@@ -517,7 +354,7 @@
       <div><h4>Learn</h4><ul><li><a href="templates.html">Template packs</a></li><li><a href="templates.html#frameworks">Methods</a></li><li><a href="templates.html#compare">Compare</a></li><li><a href="#faq">FAQ</a></li></ul></div>
       <div><h4>Company</h4><ul><li><a href="mailto:support@keelson.co.in">Contact</a></li><li><a href="legal.html#licence">Licence</a></li><li><a href="legal.html#refunds">Refunds</a></li><li><a href="legal.html#privacy">Privacy</a></li></ul></div>
     </div>
-    <p class="foot-tm">Microsoft, Excel and Project are trademarks of Microsoft Corporation; Google Sheets is a trademark of Google LLC; Jira is a trademark of Atlassian; Smartsheet and Asana are trademarks of their owners. Keelson is independent and not affiliated with or endorsed by any of them.</p>
+    <p class="foot-tm">Microsoft, Excel, Project and Azure DevOps are trademarks of Microsoft Corporation; Google Sheets is a trademark of Google LLC; Jira is a trademark of Atlassian; Smartsheet, Asana, monday.com, Trello and Primavera are trademarks of their owners. Keelson is independent and not affiliated with or endorsed by any of them.</p>
     <div class="foot-base"><span>© 2026 Keelson · Templates v1.0.0</span><span>No cookies. No trackers. No third-party requests. Hosted on GitHub Pages, which keeps server logs like any web host (<a href="legal.html#hosting">details</a>).</span></div>
   </div>
 </footer>
@@ -527,5 +364,6 @@
 <script src="samples-history.js"></script>
 <script src="store-config.js"></script>
 <script src="index.js"></script>
+<script src="home.js"></script>
 </body>
 </html>
