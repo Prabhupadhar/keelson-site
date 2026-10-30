@@ -734,7 +734,7 @@
     $("acts-msg").className = "status " + (r.items.length ? "ok" : "bad");
     $("acts-msg").textContent = r.items.length
       ? `Found ${plural(r.items.length, "item")}${from ? ` in ${from}` : ""}${r.kind === "table" ? " (read as a table)" : ""}${sk ? `; ${plural(sk, "line")} without a marker skipped` : ""}. Check them, then save.`
-      : r.kind === "notes" ? "Nothing found. Start lines with ACTION:, DECISION:, RISK: or ISSUE:, or paste a table with an Item column." : "No rows found under the headers.";
+      : r.kind === "notes" ? "Nothing found. Start lines with ACTION:, DECISION:, RISK: or ISSUE:, put bullets under a heading like “Action items” or “Decisions”, or paste a table with an Item column." : "No rows found under the headers.";
     paintDraft();
   }
   const actsPro = () => { if (isPro()) return true; openPro("Keep an actions, decisions and risks log from your meeting minutes, plus Word and PowerPoint export — $12 a month or $96 a year."); return false; };
