@@ -22,6 +22,16 @@
   const ALT = MARKS.map(m => esc(m[0])).join("|");
   const MARK_RE = new RegExp(`^\\s*(?:[-*•·▪◦]|\\d+[.)])?\\s*(?:\\[\\s*([xX✓ ]?)\\s*\\]\\s*)?(?:[\\[(](${ALT})[\\])]\\s*[:：]?|(${ALT})\\s*[:：])\\s*(.+)$`, "iu");
 
+  // section headings in minutes ("Action items", "Decisions:", "## Next steps"): the bullets under one are items of that type
+  const HEAD = {
+    Action: ["action items", "action item", "actions", "action points", "action log", "next steps", "next actions", "follow ups", "follow up", "to do", "todo", "tasks", "next meeting"],
+    Decision: ["decisions", "key decisions", "decisions made", "agreed", "agreements"],
+    Risk: ["risks", "key risks", "risks and mitigations"],
+    Issue: ["issues", "open issues", "blockers", "open questions", "questions", "risks and issues", "issues and risks"],
+  };
+  const headOf = line => { const k = key(line.replace(/^\s*#+\s*|\s*[:：]\s*$/g, "")); return Object.keys(HEAD).find(t => HEAD[t].includes(k)); };
+  const BULLET_RE = /^\s*(?:[-*•·▪◦]|\d+[.)])\s*(?:\[\s*([xX✓ ]?)\s*\]\s*)?(.+)$/u;
+
   // ---------- dates in free text ----------
   const MON = "jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec|january|february|march|april|june|july|august|september|october|november|december|ene|abr|ago|dic|janv|févr|fevr|avr|mai|juin|juil|août|aout|déc|mär|mrz|okt|dez|fev|out|set";
   const DATE_RES = [
@@ -63,13 +73,21 @@
   function parseNotes(text, opt = {}) {
     const ref = opt.meetingDate ?? null, dayFirst = opt.dayFirst !== false, items = [], skipped = [];
     const lines = String(text ?? "").split(/\r\n|\r|\n/).slice(0, 5000);
+    let sec = null; // the type of the heading we're under, if any
     lines.forEach((raw, i) => {
       const line = raw.replace(/ /g, " ");
       if (!line.trim()) return;
       const m = MARK_RE.exec(line);
-      if (!m) { if (/\p{L}/u.test(line)) skipped.push({ line: i + 1, text: clip(line, LIM.text) }); return; }
-      const type = MARKS.find(x => x[0] === (m[2] || m[3]).toLowerCase())?.[1] || "Action";
-      let rest = m[4], owner = "", due = null, status = /[xX✓]/.test(m[1] || "") ? "Done" : undefined; // only an explicit mark changes a saved status
+      let type, rest, tick;
+      if (m) { type = MARKS.find(x => x[0] === (m[2] || m[3]).toLowerCase())?.[1] || "Action"; rest = m[4]; tick = m[1]; }
+      else {
+        const h = headOf(line), b = !h && sec && BULLET_RE.exec(line);
+        if (h) { sec = h; return; }
+        // ponytail: under a heading only bullet or numbered lines count, and a plain line ends the section
+        if (!b) { sec = null; if (/\p{L}/u.test(line)) skipped.push({ line: i + 1, text: clip(line, LIM.text) }); return; }
+        type = sec; rest = b[2]; tick = b[1];
+      }
+      let owner = "", due = null, status = /[xX✓]/.test(tick || "") ? "Done" : undefined; // only an explicit mark changes a saved status
       if (/\((?:done|closed|complete[d]?)\)\s*$/i.test(rest)) { status = "Done"; rest = rest.replace(/\((?:done|closed|complete[d]?)\)\s*$/i, ""); }
       const at = AT_RE.exec(rest);
       if (at) { owner = at[1].replace(/[.’']+$/, ""); rest = rest.replace(at[0], " \u2063 "); } // a mark where the name was, so the words around it don't join
