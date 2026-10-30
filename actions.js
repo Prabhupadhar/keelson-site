@@ -29,8 +29,16 @@
     Risk: ["risks", "key risks", "risks and mitigations"],
     Issue: ["issues", "open issues", "blockers", "open questions", "questions", "risks and issues", "issues and risks"],
   };
-  const headOf = line => { const k = key(line.replace(/^\s*#+\s*|\s*[:：]\s*$/g, "")); return Object.keys(HEAD).find(t => HEAD[t].includes(k)); };
-  const BULLET_RE = /^\s*(?:[-*•·▪◦]|\d+[.)])\s*(?:\[\s*([xX✓ ]?)\s*\]\s*)?(.+)$/u;
+  // a short line naming a heading ("Agreed next steps", "5. Open questions:"); one-word headings must match whole,
+  // longer ones may sit inside ("Next steps / ownership"). A lead-in like "The team agreed to begin by exploring:" opens actions.
+  const headOf = line => {
+    if (/[.!?]\s*$/.test(line) || /^\s*(?:[-•·▪◦\uf0b7\uf0a7\uf076\uf0d8]|\*(?!\*))/.test(line)) return; // "* Follow up with Ana" is an item, not a heading
+    const num = /^\s*\d+[.)]/.test(line), k = key(line.replace(/^\s*(?:#+|\d+[.)])?\s*|\s*[:：]\s*$/g, "")), n = k.split(" ").length;
+    if (n <= 6) { const t = Object.keys(HEAD).find(t => HEAD[t].some(h => h === k || (!num && !/\d/.test(k) && h.includes(" ") && ` ${k} `.includes(` ${h} `)))); if (t) return t; }
+    if (/[:：]\s*$/.test(line) && /\b(?:agreed to|will|next steps?|action items?|follow[ -]?ups?|to do|owners?)\b/i.test(k)) return "Action+"; // bullets only
+  };
+  const NAME_TO = /^\p{Lu}[\p{L}'’.-]*(?:\s+(?:and|&)\s+\p{Lu}[\p{L}'’.-]*|\s+\p{Lu}[\p{L}'’.-]*){0,2}\s+to\s+\p{Ll}/u;
+  const BULLET_RE = /^\s*(?:[-•·▪◦\uf0b7\uf0a7\uf076\uf0d8]|\*(?!\*)|\d+[.)])\s*(?:\[\s*([xX✓ ]?)\s*\]\s*)?(.+)$/u;
 
   // ---------- dates in free text ----------
   const MON = "jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec|january|february|march|april|june|july|august|september|october|november|december|ene|abr|ago|dic|janv|févr|fevr|avr|mai|juin|juil|août|aout|déc|mär|mrz|okt|dez|fev|out|set";
@@ -71,26 +79,38 @@
   const AT_RE = new RegExp(`@([\\p{L}][\\p{L}\\p{N}_'’.-]*(?:\\s+${NOT_NAME}\\p{Lu}[\\p{L}'’.-]*)?)`, "iu");
   const NAME = /^\p{Lu}[\p{L}'’.-]*(?:\s+\p{Lu}[\p{L}'’.-]*){0,2}$/u;
   function parseNotes(text, opt = {}) {
-    const ref = opt.meetingDate ?? null, dayFirst = opt.dayFirst !== false, items = [], skipped = [];
+    let ref = opt.meetingDate ?? null; const dayFirst = opt.dayFirst !== false, items = [], skipped = [];
     const lines = String(text ?? "").split(/\r\n|\r|\n/).slice(0, 5000);
-    let sec = null; // the type of the heading we're under, if any
+    let sec = null, run = false, bul = false; // the type of the heading we're under; run: no blank line since the heading or last item
     lines.forEach((raw, i) => {
       const line = raw.replace(/ /g, " ");
-      if (!line.trim()) return;
+      if (!line.trim()) { run = false; return; }
       const m = MARK_RE.exec(line);
       let type, rest, tick;
       if (m) { type = MARKS.find(x => x[0] === (m[2] || m[3]).toLowerCase())?.[1] || "Action"; rest = m[4]; tick = m[1]; }
       else {
-        const h = headOf(line), b = !h && sec && BULLET_RE.exec(line);
-        if (h) { sec = h; return; }
-        // ponytail: under a heading only bullet or numbered lines count, and a plain line ends the section
-        if (!b) { sec = null; if (/\p{L}/u.test(line)) skipped.push({ line: i + 1, text: clip(line, LIM.text) }); return; }
-        type = sec; rest = b[2]; tick = b[1];
+        if (line.trim().length <= 20 && !/[a-z]{4}/i.test(line)) { const d = dateIn(line.trim(), ref, dayFirst); if (d != null && d !== false) { ref = d; sec = null; return; } } // "29/09/26": the meeting below it
+        const h = headOf(line), b = !h && BULLET_RE.exec(line);
+        if (h) { sec = h.replace("+", ""); run = true; bul = h.endsWith("+"); return; }
+        const plain = !b && sec && run && !bul && line.trim().split(/\s+/).length > 3 && !/[:：]\s*$/.test(line) && !/^\s*(?:next meeting|any other business|aob|thanks?\b|thank you)/i.test(line) ? [, , line.trim()] : null; // short lines and sign-offs end it
+        if (!b && !plain) sec = null; // otherwise a plain line ends the section
+        // under a heading every bullet is an item; elsewhere only "Chaitanya to connect with Dhruv"
+        const it = b || plain;
+        if (!it || !(sec || NAME_TO.test(it[2]))) { if (/\p{L}/u.test(line)) skipped.push({ line: i + 1, text: clip(line, LIM.text) }); return; }
+        type = sec || "Action"; rest = it[2]; tick = it[1]; run = true; if (b) bul = true; // once a section has bullets, a plain line ends it
       }
       let owner = "", due = null, status = /[xX✓]/.test(tick || "") ? "Done" : undefined; // only an explicit mark changes a saved status
       if (/\((?:done|closed|complete[d]?)\)\s*$/i.test(rest)) { status = "Done"; rest = rest.replace(/\((?:done|closed|complete[d]?)\)\s*$/i, ""); }
+      if (!AT_RE.test(rest) && type !== "Decision") {
+        const br = /^\[([^\]]{2,40})\]\s*/.exec(rest), co = /^([^:]{2,40}):\s+(.+)$/.exec(rest), pa = /\s*\(([^()]{2,40})\)\s*\.?\s*$/.exec(rest);
+        if (br && NAME.test(br[1])) { owner = br[1]; rest = rest.slice(br[0].length); }
+        else if (co && NAME.test(co[1]) && co[1].split(" ").length <= 3) { owner = co[1]; rest = co[2]; }
+        if (!owner && pa && NAME.test(pa[1])) { owner = pa[1]; rest = rest.slice(0, pa.index); }
+        const tc = /^[^:]{2,40}:\s+(.+)$/.exec(rest); // "Vendor contract: Ravi to chase legal" → the part after the topic names the owner
+        if (tc && NAME_TO.test(tc[1].replace(/\s+will\s+/, " to "))) rest = tc[1];
+      }
       const at = AT_RE.exec(rest);
-      if (at) { owner = at[1].replace(/[.’']+$/, ""); rest = rest.replace(at[0], " \u2063 "); } // a mark where the name was, so the words around it don't join
+      if (at) { const nm = /^(\S+)\s+\p{Ll}/u.test(at[1]) ? at[1].split(/\s+/)[0] : at[1]; owner = nm.replace(/[.’']+$/, ""); rest = rest.replace("@" + nm, " \u2063 "); } // "@ana send": one name // a mark where the name was, so the words around it don't join
       if (type === "Action" || type === "Risk" || type === "Issue") { // decisions keep their dates as text
         const parts = rest.split(/\s+[|–—-]\s+|\s*\|\s*/).map(p => p.trim()).filter(Boolean);
         if (parts.length > 1) {
@@ -114,8 +134,8 @@
           if (to) { owner = to[1]; rest = to[2].charAt(0).toUpperCase() + to[2].slice(1); }
         }
       }
-      rest = rest.replace(/\s*\u2063\s*/g, " ").replace(/\s+[–—-]\s*$|^\s*[–—-]\s+/g, "").replace(/\s{2,}/g, " ").trim();
-      if (!/[\p{L}\p{N}]/u.test(rest)) return;
+      rest = rest.replace(/\s*\u2063\s*/g, " ").replace(/\s+[–—-]\s*$|^\s*[–—-]\s+/g, "").replace(/\s{2,}/g, " ").replace(/\s+([.,;])/g, "$1").trim();
+      if (!/[\p{L}\p{N}]/u.test(rest) || /^(?:none|nil|n\/?a|tbd|tbc|no (?:new )?(?:actions?|decisions?|risks?|issues?)\b.*)$/i.test(rest)) return; // "Risks: none"
       items.push({ type, text: clip(rest, LIM.text), owner: clip(owner, LIM.field), due, status, raised: ref, ref: "", line: i + 1 });
     });
     return { items, skipped };
