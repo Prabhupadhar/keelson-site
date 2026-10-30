@@ -490,13 +490,13 @@ table.cmp{width:100%;border-collapse:collapse;min-width:640px;font-size:15px}
 .billing button{border:0;background:none;min-height:44px;padding:0 16px;border-radius:var(--r-pill);font-weight:800;font-size:14px;color:var(--muted);cursor:pointer}
 .billing button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow-1)}
 .billing .save{color:var(--spark-text)}
-.plans{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-4);align-items:stretch;max-width:840px;margin:0 auto}
+.plans{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--sp-4);align-items:stretch;max-width:1180px;margin:0 auto}
 .plan{position:relative;display:flex;flex-direction:column;gap:var(--sp-4);padding:28px 24px;border-radius:var(--r-xl);background:var(--surface);box-shadow:var(--shadow-2),inset 0 0 0 1px var(--line);min-width:0}
 .plan.pop{box-shadow:var(--shadow-3),inset 0 0 0 1.5px var(--accent)}
 .plan h3{font-size:19px;display:flex;align-items:center;gap:8px;justify-content:space-between;flex-wrap:wrap}
 .plan .for{color:var(--muted);font-size:14px;margin-top:-8px}
 .price{display:flex;align-items:baseline;gap:6px}
-.price b{font-size:44px;font-weight:800;letter-spacing:-.035em;line-height:1}
+.price b{font-size:44px;font-weight:800;letter-spacing:-.035em;line-height:1}.price b.talk{font-size:30px;line-height:44px}
 .price span{color:var(--muted);font-size:14px}
 .price-note{color:var(--muted);font-size:13px;min-height:20px;margin-top:-10px}
 .plan ul{list-style:none;margin:0;padding:var(--sp-4) 0 0;display:grid;gap:10px;border-top:1px solid var(--line);font-size:14.5px;color:var(--ink-2)}
@@ -598,7 +598,7 @@ table.cmp{width:100%;border-collapse:collapse;min-width:640px;font-size:15px}
 .legal ul{padding-left:20px;margin:0 0 var(--sp-3)}.legal li{margin:6px 0}
 .lcard{background:var(--bg-soft);border-radius:var(--r-lg);padding:var(--sp-5) var(--sp-5) var(--sp-2);margin:var(--sp-4) 0;box-shadow:inset 0 0 0 1px var(--line)}
 @media (min-width:961px){.tools>#wd{position:sticky;top:92px}}
-@media (max-width:960px){.ph-split{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:960px){.ph-split{grid-template-columns:minmax(0,1fr)}.plans{grid-template-columns:repeat(2,minmax(0,1fr));max-width:840px}.plans>.plan:last-child{grid-column:1/-1}}
 @media (max-width:640px){.daxis div span:nth-child(2){display:none}.tool .seg{display:grid;grid-template-columns:1fr 1fr;width:100%;border-radius:var(--r-lg)}.tool .seg button{padding:0 6px;border-radius:12px}.inner .tool{padding:20px 16px}.inner .qtabs{gap:var(--sp-5)}.inner .qtab{flex:none;font-size:15px}}
 
 /* motion */
