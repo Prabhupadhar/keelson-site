@@ -258,6 +258,10 @@ textarea.paste:focus { outline: none; border-color: var(--focus); box-shadow: 0 
 .ch li { overflow-wrap: anywhere }
 .ch li small { display: block; color: var(--muted); font-size: 13px }
 .ch li.overdue small { color: var(--bad) }
+/* update round trip (updates.js) */
+.upd .ch-h .btn { margin-left: 0 } .upd .ch-h b { margin-right: auto }
+.at .flag { color: var(--bad); font-size: 13px; display: block }
+.at .c-f { width: 96px } .at .c-v { width: 26% } .at .c-ok { width: 40px }
 .ghead { display: flex; align-items: center; gap: 8px; margin: 8px 0 16px; font-size: 18px; letter-spacing: -.01em }
 .gallery { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; list-style: none; padding: 0; margin: 0 0 40px }
 .gallery.three { grid-template-columns: repeat(3, minmax(0, 1fr)) }
@@ -580,6 +584,14 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
         <button class="btn line sm" type="button" id="chase-all">Copy all messages</button></div>
       <div class="chase-g" id="chase-list"></div>
     </section>
+    <section class="card chase upd" id="upd" aria-labelledby="h-upd" hidden>
+      <div class="chase-h"><div><h3 id="h-upd">Collect updates</h3><p class="hint" id="upd-sub"></p></div>
+        <div class="acts-btns"><button class="btn line sm" type="button" id="upd-all">Download all sheets</button>
+          <label class="btn fill sm" for="upd-file" tabindex="0" id="upd-file-l">Add returned sheets</label><input type="file" id="upd-file" accept=".xlsx,.csv,.tsv,.txt" multiple class="sr" tabindex="-1"></div></div>
+      <div class="chase-g" id="upd-list"></div>
+      <p class="status" id="upd-msg" role="status"></p>
+      <div id="upd-review"></div>
+    </section>
     <section class="card acts" id="acts" aria-labelledby="h-acts" hidden>
       <div class="chase-h"><div><h3 id="h-acts">Actions, decisions and risks</h3><p class="hint" id="acts-sub"></p></div>
         <div class="acts-btns"><button class="btn fill sm" type="button" id="acts-new">Add from minutes</button><button class="btn line sm" type="button" id="acts-csv">Download CSV</button></div></div>
@@ -737,9 +749,11 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
 <script src="forecast.js?v=956ea819"></script>
 <script src="health.js?v=1f94beef"></script>
 <script src="chase.js?v=8304e086"></script>
+<script src="xlsx-write.js?v=a0dd2717"></script>
+<script src="updates.js?v=ac3bfba8"></script>
 <script src="actions.js?v=397879ca"></script>
 <script src="studio.js?v=a272b249"></script>
 <script src="store-config.js?v=bee35025"></script>
-<script src="app.js?v=ce9d5329"></script>
+<script src="app.js?v=afef48f1"></script>
 </body>
 </html>
