@@ -672,7 +672,7 @@
       `<h3 class="ghead" id="g-more">More reports</h3><ul class="gallery" aria-labelledby="g-more">${more.map(card).join("")}</ul>`;
     paintDetected();
     fitThumbs();
-    paintChase(); paintActs();
+    paintChase(); paintUpd(); paintActs();
   }
   // chase list: who to ask for an update, from this plan (and the last saved version for stale progress); copying is Pro
   function paintChase() {
@@ -691,6 +691,80 @@
   }
   $("chase-all").addEventListener("click", () => copyChase(null));
   $("chase-list").addEventListener("click", e => { const b = e.target.closest("[data-chase]"); if (b) copyChase(+b.dataset.chase); });
+
+  // ---------- collect updates: a sheet per owner out, the filled sheets back, one change list (updates.js); Pro ----------
+  const U = window.KeelsonUpdates, XW = window.KeelsonXlsxWrite, UPD = "keelson-updates";
+  let updRound = null, updReplies = [], updRv = null, updSkip = new Set();
+  const updSent = () => { const r = store.get(UPD, {})[projKey()]; return r && Array.isArray(r.owners) ? r : null; };
+  const updPro = () => { if (isPro()) return true; openPro("Send each owner a sheet of their tasks and turn the replies into one change list, plus Word and PowerPoint export — $12 a month or $96 a year."); return false; };
+  function paintUpd() {
+    if (!U || !XW) return;
+    $("upd").hidden = !usable(); if (!usable()) return;
+    updRound = U.round(S.k); const g = updRound.groups, n = g.reduce((t, x) => t + x.tasks.length, 0), sent = updSent();
+    $("upd-all").hidden = g.length < 2;
+    $("upd-sub").textContent = (g.length ? `${plural(n, "task")} late, under way or due in the next two weeks, ${g.length} ${g.length === 1 ? "person" : "people"}. Download each sheet and send it with the message; add the filled sheets here for one list of changes. Keelson sends nothing and never changes your plan file.`
+      : "Nothing late, under way or due in the next two weeks, so there's nobody to ask.") + (sent ? ` Sheets sent for ${F(sent.asOf)}: ${plural(sent.owners.length, "person")}.` : "");
+    $("upd-list").innerHTML = g.map((x, i) => { const late = x.tasks.filter(t => t.od).length;
+      return `<div class="ch"><div class="ch-h"><b>${esc(x.owner)}</b><span>${plural(x.tasks.length, "task")}${late ? ` · ${late} late` : ""}</span></div>
+        <div class="acts-btns"><button class="btn line sm" type="button" data-upd="sheet" data-i="${i}">Download sheet</button><button class="btn ghost sm" type="button" data-upd="msg" data-i="${i}">Copy message</button></div></div>`; }).join("");
+    if (updReplies.length) { updRv = U.review(S.k, updReplies, sent ? sent.owners : null); paintUpdReview(); }
+  }
+  function updSheet(i) {
+    const g = updRound.groups[i], as = updRound.asOf;
+    saveBlob(new Blob([XW.book(U.sheet(g, as, S.title))], { type: XW.MIME }), U.fileName(g, as));
+    const all = store.get(UPD, {}), was = all[projKey()], owners = new Set(was && was.asOf === as && Array.isArray(was.owners) ? was.owners : []);
+    owners.add(g.owner); all[projKey()] = { asOf: as, owners: [...owners] }; store.set(UPD, all);
+  }
+  $("upd-list").addEventListener("click", e => {
+    const b = e.target.closest("[data-upd]"); if (!b || !updPro()) return;
+    const g = updRound.groups[+b.dataset.i];
+    if (b.dataset.upd === "sheet") { updSheet(+b.dataset.i); toast(`Sheet for ${g.owner} downloaded`); paintUpd(); return; }
+    navigator.clipboard.writeText(U.message(g, updRound.asOf, S.title, E.addWd(updRound.asOf, 2))).then(() => toast(`Message for ${g.owner} copied`), () => toast("Couldn't copy. Select the text and copy it yourself."));
+  });
+  $("upd-all").addEventListener("click", async () => {
+    if (!updPro()) return;
+    for (let i = 0; i < updRound.groups.length; i++) { updSheet(i); await new Promise(r => setTimeout(r, 300)); } // spaced out: browsers block a burst of downloads
+    toast(`${plural(updRound.groups.length, "sheet")} downloaded`); paintUpd();
+  });
+  $("upd-file-l").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); $("upd-file").click(); } });
+  $("upd-file").addEventListener("change", async e => {
+    const files = [...e.target.files].slice(0, U.LIM.files); e.target.value = ""; if (!files.length || !updPro()) return;
+    const bad = [];
+    for (const f of files) {
+      try {
+        const p = await parsePlan(f), r = U.read(p.sheets || { text: p.text }, S.k.dayFirst !== false);
+        if (r.error) { bad.push(`${f.name}: ${r.error}`); continue; }
+        const owner = r.owner || (/^Update - (.+?) - /.exec(f.name) || [])[1] || f.name.replace(/\.[^.]+$/, "");
+        updReplies = updReplies.filter(x => x.file !== f.name).concat({ ...r, file: f.name, owner });
+      } catch (err) { bad.push(`${f.name}: ${err.plain ? err.message : "couldn't be read. Save it as .xlsx or CSV and try again."}`); }
+    }
+    const sent = updSent(); updRv = U.review(S.k, updReplies, sent ? sent.owners : null);
+    updSkip = new Set(updRv.changes.map((c, i) => c.flags.length ? i : -1).filter(i => i >= 0)); // flagged changes start unticked
+    $("upd-msg").className = "status " + (bad.length ? "bad" : "ok");
+    $("upd-msg").textContent = bad.length ? bad.join(" ") : `Read ${plural(updReplies.length, "sheet")}. Untick anything you don't want, then download the change list.`;
+    paintUpdReview();
+  });
+  function paintUpdReview() {
+    const rv = updRv;
+    if (!rv || !updReplies.length) { $("upd-review").innerHTML = ""; return; }
+    const val = (c, v) => v == null || v === "" ? "—" : c.field === "Finish" && Number.isFinite(v) ? F(v) : c.field === "% done" && Number.isFinite(v) ? `${v}%` : esc(v);
+    const rows = rv.changes.map((c, i) => `<tr><td class="c-ok"><input type="checkbox" data-uk="${i}"${updSkip.has(i) ? "" : " checked"} aria-label="Keep ${esc(c.field)} for ${esc(c.t.name)}"></td><td class="c-own">${esc(c.owner)}</td>
+      <td>${esc(c.t.name)}${c.flags.map(f => `<span class="flag">${esc(f)}</span>`).join("")}</td><td class="c-f">${esc(c.field)}</td><td class="c-v">${val(c, c.old)} → <b>${val(c, c.new)}</b></td></tr>`).join("");
+    const notes = rv.notes.map(n => `<li><b>${esc(n.owner)}</b> · ${esc(n.t.name)}: ${n.blocked ? `blocked by ${esc(n.blocked)}${n.comment ? "; " : ""}` : ""}${esc(n.comment)}</li>`).join("");
+    const unk = rv.unknown.map(u => `<li><b>${esc(u.owner)}</b> · ${esc(u.row.name || "(no name)")}</li>`).join("");
+    $("upd-review").innerHTML = (rv.missing.length ? `<p class="hint">Not back yet: ${esc(rv.missing.join(", "))}.</p>` : "")
+      + (rows ? `<table class="at"><thead><tr><th class="c-ok"><span class="sr">Keep</span></th><th class="c-own">From</th><th>Task</th><th class="c-f">Field</th><th class="c-v">In the plan → new</th></tr></thead><tbody>${rows}</tbody></table>` : `<p class="hint">No changes in the sheets read so far.</p>`)
+      + (notes ? `<h4>Comments and blockers</h4><ul class="hint">${notes}</ul>` : "") + (unk ? `<h4>Not found in this plan</h4><ul class="hint">${unk}</ul>` : "")
+      + `<div class="acts-save"><button class="btn fill sm" type="button" id="upd-out">Download change list</button><button class="btn ghost sm" type="button" id="upd-clear">Clear</button></div>`;
+  }
+  $("upd-review").addEventListener("change", e => { const i = e.target.dataset.uk; if (i == null) return; if (e.target.checked) updSkip.delete(+i); else updSkip.add(+i); });
+  $("upd-review").addEventListener("click", e => {
+    if (e.target.id === "upd-clear") { updReplies = []; updRv = null; updSkip = new Set(); $("upd-msg").textContent = ""; paintUpdReview(); return; }
+    if (e.target.id !== "upd-out" || !updRv || !updPro()) return;
+    const rv = { ...updRv, changes: updRv.changes.filter((c, i) => !updSkip.has(i)) };
+    saveBlob(new Blob([XW.book(U.changeSheet(rv, S.sd))], { type: XW.MIME }), `Changes - ${(S.title || "project").replace(/[\\/:*?"<>|]+/g, " ").trim()} - ${F(S.sd)}.xlsx`);
+    toast("Change list downloaded");
+  });
 
   // ---------- actions, decisions and risks: a log per project in this browser, from minutes or tables (actions.js); Pro ----------
   const AC = window.KeelsonActions, ACTS = "keelson-actions";
