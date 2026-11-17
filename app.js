@@ -693,7 +693,13 @@
     paintDetected();
     fitThumbs();
     paintPP(); paintPC(); paintChase(); paintUpd(); paintActs();
+    // jumps to the sections that are showing
+    const here = JUMP.filter(([id]) => !$(id).hidden); $("jump").hidden = here.length < 3;
+    $("jump").innerHTML = `<label for="jump-to">Jump to</label><select class="in" id="jump-to"><option value="">On this screen…</option>${here.map(([id, t]) => `<option value="${id}">${t}</option>`).join("")}</select>`; // one tab stop, not six
   }
+  const JUMP = [["gallery", "Reports"], ["pp", "Ready to paste"], ["pc", "Plan checks"], ["chase", "Chase list"], ["upd", "Collect updates"], ["acts", "Actions log"]];
+  $("jump").addEventListener("change", e => { const id = e.target.value; if (!id) return; e.target.value = ""; const el = $(id), h = el.querySelector("h3");
+    el.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" }); if (h) { h.tabIndex = -1; h.focus({ preventScroll: true }); } });
   // paperwork (brief.js): stand-up, status message, look-ahead and agenda as text. The stand-up is free; copying the rest is Pro
   const PP = [["today", "Today's stand-up", "Overdue, due and starting, by person", true], ["message", "Status message", "This week's status for the sponsor, the client or the team"],
     ["look", "Look-ahead by person", "Every open task in the coming weeks"], ["agenda", "Meeting agenda", "The next progress meeting, from the plan and your actions log"]];

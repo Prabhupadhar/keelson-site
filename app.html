@@ -210,6 +210,9 @@ textarea.paste:focus { outline: none; border-color: var(--focus); box-shadow: 0 
 .v-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 16px }
 .v-facts span, .v-facts small { display: block; font-size: 13px; color: var(--muted) } .v-facts b { display: block; font-size: 18px; overflow-wrap: anywhere }
 @media (max-width: 700px) { .verdict { grid-template-columns: 1fr } }
+/* the reports screen is long: one row of jumps to its sections */
+.jump { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: -8px 0 20px; font-size: 14px; color: var(--muted) } .jump select { width: auto; min-height: 40px }
+#gallery, #pp, #pc, #chase, #upd, #acts { scroll-margin-top: 84px }
 /* nothing to pay for before a plan is open: the Pro button stays, quietly */
 body:has(#v-upload:not([hidden])) #pro-btn { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px var(--line-strong) }
 #pro-btn { transition: none } /* it changes style with the view: never show a half-way, low-contrast state */
@@ -609,6 +612,7 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
       <button class="btn line" type="button" id="hist-btn" data-hist><svg class="ic" aria-hidden="true"><use href="#i-history"/></svg><span id="hist-n">Version history</span></button>
     </div>
     <div class="verdict" id="verdict" aria-label="Where the plan stands" hidden></div>
+    <nav class="jump" id="jump" aria-label="On this screen" hidden></nav>
     <div class="compare" data-compare hidden></div>
     <div id="gallery"></div>
     <section class="card chase" id="pp" aria-labelledby="h-pp" hidden>
@@ -797,6 +801,6 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
 <script src="actions.js?v=397879ca"></script>
 <script src="studio.js?v=a272b249"></script>
 <script src="store-config.js?v=bee35025"></script>
-<script src="app.js?v=f0890c7c"></script>
+<script src="app.js?v=38fecfa1"></script>
 </body>
 </html>
