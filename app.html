@@ -203,6 +203,16 @@ textarea.paste:focus { outline: none; border-color: var(--focus); box-shadow: 0 
 .cm label.miss b::after { content: " · needed"; color: var(--bad); font-weight: 800 }
 .cm select { min-height: 40px; padding: 6px 8px; font-size: 14px }
 .hint { font-size: 14px; color: var(--muted) }
+/* the answer before the reports: status and why, then four facts */
+.verdict { display: grid; grid-template-columns: minmax(220px, 1fr) 2fr; gap: 16px 32px; align-items: center; padding: 20px 24px; margin-bottom: 24px; border: 1px solid var(--line); border-left: 6px solid var(--line-strong); border-radius: var(--r-md); background: var(--surface) }
+.verdict.ok { border-left-color: var(--ok) } .verdict.warn { border-left-color: var(--warn) } .verdict.bad { border-left-color: var(--bad) }
+.v-main b { display: block; margin: 8px 0 4px; font-size: 28px; line-height: 1.15 } .v-main p { font-size: 15px; color: var(--ink-2) }
+.v-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 16px }
+.v-facts span, .v-facts small { display: block; font-size: 13px; color: var(--muted) } .v-facts b { display: block; font-size: 18px; overflow-wrap: anywhere }
+@media (max-width: 700px) { .verdict { grid-template-columns: 1fr } }
+/* nothing to pay for before a plan is open: the Pro button stays, quietly */
+body:has(#v-upload:not([hidden])) #pro-btn { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px var(--line-strong) }
+#pro-btn { transition: none } /* it changes style with the view: never show a half-way, low-contrast state */
 .rules { display: grid; grid-template-columns: minmax(0, 1fr) 88px; gap: 6px 12px; align-items: center; font-size: 14px }
 .rules label { color: var(--muted) } .rules .in { min-height: 40px; padding: 6px 8px; font-size: 15px; text-align: right }
 .mslist { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; max-height: 260px; overflow: auto; font-size: 15px }
@@ -247,6 +257,27 @@ textarea.paste:focus { outline: none; border-color: var(--focus); box-shadow: 0 
 @media (max-width: 640px) { .at thead { display: none } .at, .at tbody, .at tr, .at td { display: block; width: auto !important } .at tr { padding: 8px 0; border-bottom: 1px solid var(--line) } .at td { border: 0; padding: 2px 0 } .at td.c-st, .at td.c-x { display: inline-block; margin-right: 16px } }
 /* chase list (chase.js) */
 .chase { margin-top: 32px }
+/* plan checks: quality, critical tasks, workload and slip log, in the same folding rows as the paperwork */
+.pc-b { margin: 2px 0 14px; font-size: 14px; min-width: 0; overflow-wrap: anywhere } .pc-b > p { margin: 0 0 10px } .pc-b .btn { margin: 0 8px 8px 0 }
+.pc-q { list-style: none; margin: 0 0 12px; padding: 0; display: grid; gap: 10px }
+.pc-q > li { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 2px 10px; align-items: baseline }
+.pc-q small { grid-column: 2; color: var(--muted) } .pc-q ul { grid-column: 2; margin: 2px 0 0; padding-left: 18px; color: var(--ink-2); overflow-wrap: anywhere }
+.pc-s { justify-self: start; padding: 1px 8px; border-radius: var(--r-pill); font-size: 12px; font-weight: 800; box-shadow: inset 0 0 0 1px var(--line-strong) }
+.pc-s.pass { background: var(--ok-bg); color: var(--ok); box-shadow: none } .pc-s.fail { background: var(--warn-bg); color: var(--ink); box-shadow: none }
+.pc-x { overflow-x: auto; margin: 0 0 12px } .pc-t { width: 100%; border-collapse: collapse; font-size: 14px }
+.pc-t th, .pc-t td { padding: 7px 10px 7px 0; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top } .pc-t th { font-size: 13px; color: var(--muted); font-weight: 700; white-space: nowrap }
+.pc-t td.n, .pc-t th.n { text-align: center; padding: 7px 6px; font-variant-numeric: tabular-nums; white-space: nowrap }
+.pc-t td.w1 { background: color-mix(in srgb, var(--accent) 10%, transparent) } .pc-t td.w2 { background: color-mix(in srgb, var(--accent) 20%, transparent) } .pc-t td.w3 { background: color-mix(in srgb, var(--accent) 32%, transparent); font-weight: 800 }
+.pc-all { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 14px; padding: 10px 12px; border-radius: var(--r-sm); background: var(--bg-soft) } .pc-all select { width: auto; min-height: 40px; flex: 0 1 280px } .pc-b .pc-all .btn { margin: 0 }
+.pc-sl { list-style: none; margin: 0 0 12px; padding: 0; display: grid; gap: 12px } .pc-sl li { display: grid; gap: 6px } .pc-sl small { color: var(--muted) }
+.pc-sl .row2 { display: flex; flex-wrap: wrap; gap: 8px } .pc-sl select { width: auto; min-height: 40px; flex: 0 1 280px } .pc-sl input { flex: 1 1 220px; min-height: 40px }
+/* paperwork: four texts to copy, one open at a time */
+.pp { display: grid; gap: 6px; margin-top: 12px }
+.pp-i { padding: 0 14px; border: 1px solid var(--line); border-radius: var(--r-sm) }
+.pp-i summary { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 12px; min-height: 48px; padding: 6px 0; cursor: pointer; font-size: 15px }
+.pp-i summary span { font-size: 14px; color: var(--muted) } .pp-i summary i { font-style: normal; font-size: 12px; font-weight: 800; padding: 1px 8px; border-radius: var(--r-pill); box-shadow: inset 0 0 0 1px var(--line-strong) }
+.pp-c { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 4px 0 10px } .pp-c label { display: flex; align-items: center; gap: 8px; font-size: 14px } .pp-c select { width: auto; min-height: 36px }
+.pp-t { margin: 0 0 14px; padding: 12px 14px; max-height: 320px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; border-radius: var(--r-sm); background: var(--bg-soft); color: var(--ink); font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace }
 .chase-h { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: start; gap: 12px }
 .chase-h h3 { font-size: 18px; margin: 0 0 4px }
 .chase-g { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 12px }
@@ -483,15 +514,15 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
   <!-- 1 UPLOAD -->
   <section class="view wrap" id="v-upload" aria-labelledby="h-upload">
     <div class="vh">
-      <h1 id="h-upload" tabindex="-1">Upload this week's plan</h1>
+      <h1 id="h-upload" tabindex="-1">Open your plan</h1>
       <p>An export from MS Project, Jira, Smartsheet or your own tracker. Keelson reads it on this computer and never uploads it.</p>
     </div>
     <label class="drop" id="drop" for="file">
-      <input type="file" id="file" accept=".xlsx,.csv,.tsv,.txt,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv,text/tab-separated-values,text/plain">
+      <input type="file" id="file" accept=".xlsx,.csv,.tsv,.txt,.xml,.xer,text/xml,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv,text/tab-separated-values,text/plain">
       <svg class="ic" aria-hidden="true"><use href="#i-upload"/></svg>
       <b id="drop-t">Drop your plan here</b>
       <span class="or" id="drop-s">or <u>choose a file</u></span>
-      <small>Excel <b>.xlsx</b>, <b>.csv</b> or <b>.tsv</b>. Or paste a table below.</small>
+      <small>Excel <b>.xlsx</b>, <b>.csv</b> or <b>.tsv</b>, MS Project <b>.xml</b>, Primavera <b>.xer</b>. Or paste a table below.</small>
     </label>
     <div class="try"><button class="btn line" type="button" id="try-sample">No file? Try a sample plan</button></div>
     <div class="err" id="up-err" role="alert" hidden></div>
@@ -577,8 +608,17 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
       <div style="display:grid;gap:8px;flex:1 1 520px"><h2 id="h-reports" tabindex="-1">Your reports</h2><p id="reports-sub"></p><p class="detected" id="detected"></p><p class="hint loop" id="loop-hint" hidden><svg class="ic" aria-hidden="true"><use href="#i-swap"/></svg>Upload next week's export and Keelson shows what changed since this one.</p></div>
       <button class="btn line" type="button" id="hist-btn" data-hist><svg class="ic" aria-hidden="true"><use href="#i-history"/></svg><span id="hist-n">Version history</span></button>
     </div>
+    <div class="verdict" id="verdict" aria-label="Where the plan stands" hidden></div>
     <div class="compare" data-compare hidden></div>
     <div id="gallery"></div>
+    <section class="card chase" id="pp" aria-labelledby="h-pp" hidden>
+      <div class="chase-h"><div><h3 id="h-pp">Ready to paste</h3><p class="hint">Today's stand-up, this week's status message, the look-ahead and the next meeting's agenda, written from this plan. Keelson sends nothing.</p></div></div>
+      <div class="pp" id="pp-list"></div>
+    </section>
+    <section class="card chase" id="pc" aria-labelledby="h-pc" hidden>
+      <div class="chase-h"><div><h3 id="h-pc">Plan checks</h3><p class="hint">How well the plan is built, what is driving the finish date, who is busiest and why dates moved. Worked out from this plan, on this computer.</p></div></div>
+      <div class="pp" id="pc-list"></div>
+    </section>
     <section class="card chase" id="chase" aria-labelledby="h-chase" hidden>
       <div class="chase-h"><div><h3 id="h-chase">Chase list</h3><p class="hint" id="chase-sub"></p></div>
         <button class="btn line sm" type="button" id="chase-all">Copy all messages</button></div>
@@ -615,7 +655,7 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
       <div class="acts-tools" id="acts-tools" hidden><label for="acts-filter" class="hint">Show</label><select class="in sm" id="acts-filter"><option value="open">Open items and this week’s decisions</option><option value="all">Everything</option></select></div>
       <div class="acts-list" id="acts-list"></div>
     </section>
-    <input type="file" id="g-cmp-file" accept=".xlsx,.csv,.tsv,.txt" class="sr" tabindex="-1" aria-hidden="true">
+    <input type="file" id="g-cmp-file" accept=".xlsx,.csv,.tsv,.txt,.xml,.xer" class="sr" tabindex="-1" aria-hidden="true">
   </section>
 
   <!-- DASHBOARD (studio.js, studio.css) -->
@@ -711,7 +751,7 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
       <button class="x" type="button" id="hist-x" aria-label="Close"><svg class="ic sm" aria-hidden="true"><use href="#i-x"/></svg></button></div>
     <ul class="hlist" id="hlist" aria-label="Saved versions, oldest first"></ul>
     <div class="back-f">
-      <label class="minidrop" for="bf-file"><input type="file" id="bf-file" accept=".xlsx,.csv,.tsv,.txt">
+      <label class="minidrop" for="bf-file"><input type="file" id="bf-file" accept=".xlsx,.csv,.tsv,.txt,.xml,.xer">
         <svg class="ic sm" aria-hidden="true"><use href="#i-plus"/></svg>
         <span><b id="bf-t">Add an older file</b><span id="bf-s">Last month's export, or any earlier one. It's placed by its status date.</span></span></label>
       <div class="row" id="bf-row" hidden>
@@ -739,6 +779,7 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
 <script src="samples.js?v=5021543a"></script>
 <script src="samples-history.js?v=e3084bad"></script>
 <script src="xlsx-read.js?v=e73de826"></script>
+<script src="plan-read.js?v=cc20f822"></script>
 <script src="reports.js?v=78521416"></script>
 <script src="render-html.js?v=d11007fe"></script>
 <script src="export-docx.js?v=7305b7c2"></script>
@@ -749,11 +790,13 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
 <script src="forecast.js?v=956ea819"></script>
 <script src="health.js?v=1f94beef"></script>
 <script src="chase.js?v=8304e086"></script>
+<script src="brief.js?v=70171f2a"></script>
+<script src="insight.js?v=1d68c0ba"></script>
 <script src="xlsx-write.js?v=a0dd2717"></script>
 <script src="updates.js?v=ac3bfba8"></script>
 <script src="actions.js?v=397879ca"></script>
 <script src="studio.js?v=a272b249"></script>
 <script src="store-config.js?v=bee35025"></script>
-<script src="app.js?v=afef48f1"></script>
+<script src="app.js?v=f0890c7c"></script>
 </body>
 </html>
