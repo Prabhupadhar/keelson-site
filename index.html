@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'; worker-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Keelson · Turn your project plan into a status report</title>
-<meta name="description" content="Upload your plan from MS Project, Jira, Smartsheet or Excel. Keelson shows what changed since last week, flags delays, and creates a report you can send to your client. Free, no sign-up, and your file stays on your computer.">
+<title>Keelson · Is your project plan on track?</title>
+<meta name="description" content="Open your project plan from MS Project, Primavera P6, Jira, Smartsheet or Excel. Keelson tells you if it is on track, what changed since last time and when it will finish, as a report you can send to your client. Free, no sign-up, and your file stays on your computer.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preload" href="fonts/plus-jakarta-sans-800.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/plus-jakarta-sans-500.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="design/tokens.css?v=edc0a1b2">
 <link rel="stylesheet" href="site.css?v=1b87b9b3">
-<link rel="stylesheet" href="home.css?v=566a0915">
+<link rel="stylesheet" href="home.css?v=85a53d37">
 <script src="theme.js?v=5cf6c6c8"></script>
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Keelson">
@@ -94,7 +94,7 @@
     </nav>
     <div class="nav-right">
       <button class="icon-btn" type="button" id="theme" aria-label="Switch to dark theme"><svg class="ic theme-light" aria-hidden="true"><use href="#i-moon"/></svg><svg class="ic theme-dark" aria-hidden="true"><use href="#i-sun"/></svg></button>
-      <a class="btn btn-primary btn-sm" href="app.html#upload"><span class="hide-sm">Upload your plan</span><span class="show-sm">Upload plan</span></a>
+      <a class="btn btn-primary btn-sm" href="app.html#upload"><span class="hide-sm">Open your plan</span><span class="show-sm">Open plan</span></a>
       <button class="icon-btn menu-btn" type="button" id="menubtn" aria-label="Open menu" aria-expanded="false" aria-controls="mnav"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg></button>
     </div>
     <nav class="mnav" id="mnav" aria-label="Menu" hidden>
@@ -119,11 +119,11 @@
 <section class="x-hero" aria-labelledby="h-hero">
   <div class="wrap x-split">
     <div class="x-copy">
-      <h1 id="h-hero">Project plan in. <span>Status report out</span></h1>
-      <p class="x-sub">Upload the plan export you already have, from MS Project, Jira, Smartsheet or Excel. Get your client’s weekly status report: what changed, what’s late, when it will finish.</p>
+      <h1 id="h-hero">Open your project plan. <span>See if it’s on track</span></h1>
+      <p class="x-sub">Keelson tells you if it’s on track, what changed since last time and when it will finish, as a report ready for your client. Works with MS Project, Primavera P6, Jira, Smartsheet and Excel.</p>
       <div class="hero-ctas">
-        <a class="btn btn-primary btn-lg" href="app.html#upload"><svg class="ic" aria-hidden="true"><use href="#i-upload"/></svg>Upload your plan</a>
-        <a class="btn btn-secondary btn-lg" href="samples/keelson-sample-onepager.pdf" target="_blank" rel="noopener" type="application/pdf">See a sample report</a>
+        <a class="btn btn-primary btn-lg" href="app.html#sample">Try a sample plan</a>
+        <a class="btn btn-secondary btn-lg" href="app.html#upload"><svg class="ic" aria-hidden="true"><use href="#i-upload"/></svg>Open your own plan</a>
       </div>
       <p class="hero-trust">Free to start · No sign-up · Your plan never leaves your browser<span class="open-note" data-open hidden></span></p>
     </div>
@@ -131,7 +131,7 @@
       <div class="x-bar" aria-hidden="true"><b></b><b></b><b></b><span>keelson.co.in/app</span></div>
       <div class="x-screen">
         <div class="x-drop" aria-hidden="true"><div><b>Drop your plan here</b>.xlsx, .csv or .tsv</div></div>
-        <div class="x-shot"><img class="th-l" src="img/home/dash-timeline-light.webp" width="1600" height="1111" alt="Keelson Dashboard timeline for the fictional FieldFlow sample: eight workstreams from Nov to Jun, build complete, data migration and integrations 15% done, finish 3 Jun 2027"><img class="th-d" src="img/home/dash-timeline-dark.webp" width="1600" height="1111" alt="Keelson Dashboard timeline for the fictional FieldFlow sample: eight workstreams from Nov to Jun, build complete, data migration and integrations 15% done, finish 3 Jun 2027"></div>
+        <div class="x-shot"><img class="th-l" src="img/home/verdict-light.webp" width="1600" height="1111" alt="Keelson with the fictional FieldFlow sample open: status Amber, at risk, finish 3 Jun 2027, 13 working days after the baseline, 48% done, next milestone SIT exit, and the reports below"><img class="th-d" src="img/home/verdict-dark.webp" width="1600" height="1111" alt="Keelson with the fictional FieldFlow sample open: status Amber, at risk, finish 3 Jun 2027, 13 working days after the baseline, 48% done, next milestone SIT exit, and the reports below"></div>
         <div class="x-file" aria-hidden="true"><i></i>Portal_plan_wk43.xlsx</div>
         <svg class="x-cur" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 1 L3 16 L7 12 L10 19 L12.5 18 L9.5 11 L15.5 11 Z" fill="var(--ink)" stroke="var(--bg)" stroke-width="1.2"/></svg>
       </div>
@@ -140,57 +140,49 @@
   <!-- Plain text names only: no third-party logos or certification marks (trademark and endorsement rules). -->
   <div class="wrap works">
     <p class="lbl" id="h-works">Works with exports from</p>
-    <ul class="marks" data-loop>
+    <ul class="marks">
       <li>Microsoft Project</li>
+      <li>Primavera P6</li>
       <li>Jira</li>
       <li>Smartsheet</li>
       <li>Excel</li>
       <li>Google Sheets</li>
       <li>CSV</li>
     </ul>
-    <p class="fine">Reads .xlsx, .csv and .tsv files or a pasted table. From MS Project, save as .xlsx or CSV first. Tested on five real-world plan shapes.<sup><a href="#n2" aria-label="Note 2">2</a></sup> Product names are trademarks of their owners. Keelson is not affiliated with or endorsed by them.</p>
-  </div>
-</section>
-
-<!-- ============ HOW IT WORKS: three steps ============ -->
-<section class="x-how" id="how" aria-labelledby="h-how">
-  <div class="wrap">
-    <h2 class="sr-only" id="h-how">How it works</h2>
-    <ol class="x-steps">
-      <li class="x-step x-rv"><span class="x-n">1</span><h3>Upload the plan you already have</h3><p>Exports from 12 tools, messy or not: header typos, Total rows, merged cells, French, German, Spanish and Portuguese headers.</p></li>
-      <li class="x-step x-rv"><span class="x-n">2</span><h3>Check what Keelson read</h3><p>It finds the task, finish, owner and progress columns and shows you what it understood before it reports anything.</p></li>
-      <li class="x-step x-rv"><span class="x-n">3</span><h3>Send the report</h3><p>One-pager, weekly status, forecast or a steering-committee deck, as PDF, Word or PowerPoint.</p></li>
-    </ol>
+    <p class="fine">Reads .xlsx, .csv and .tsv files, MS Project .xml, Primavera .xer or a pasted table. Tested on five real-world plan shapes.<sup><a href="#n2" aria-label="Note 2">2</a></sup> Product names are trademarks of their owners. Keelson is not affiliated with or endorsed by them.</p>
   </div>
 </section>
 
 <!-- ============ THREE QUESTIONS + FEATURES (bento). #changes, #trend and #forecast are linked from the menus and other pages ============ -->
 <section class="x-pad" id="why" aria-labelledby="h-why">
   <div class="wrap">
-    <h2 class="x-h2 x-rv" id="h-why">Every question the steering committee asks</h2>
-    <p class="x-lead x-rv">Answered from your plan, every week, in the same format.</p>
+    <h2 class="x-h2 x-rv" id="h-why">Three questions, answered from your plan</h2>
+    <p class="x-lead x-rv">The same three answers every time the plan changes.</p>
     <div class="x-bento">
-      <div class="x-tile s4 x-rv" id="changes"><div><h3>What changed since last week</h3><p>Moved, added and removed, matched week to week.</p></div>
+      <div class="x-tile s2 x-rv" id="changes"><div><h3>What changed since last week</h3><p>Moved, added and removed, matched week to week.</p></div>
         <div class="x-crop"><img src="img/home/rep-changes.webp" width="900" height="1200" alt="The What changed report: 1 task added, 1 removed, 18 moved later, with every milestone that moved" loading="lazy"></div></div>
       <div class="x-tile s2 x-rv" id="trend"><div><h3>Is it getting worse</h3><p>Slip across your saved weeks.</p></div>
         <svg viewBox="0 0 200 90" aria-hidden="true"><polyline class="x-tline" points="4,84 44,84 84,66 124,54 164,54 196,12" fill="none" stroke="var(--accent)" stroke-width="4" stroke-linejoin="round"/></svg></div>
       <div class="x-tile s2 x-rv" id="forecast"><div><h3>When will it finish</h3><p>A date range from your own pace. <a href="#faq-forecast">How it works</a></p></div>
         <div><div class="x-range" aria-hidden="true"><s></s><i style="left:30%"></i><i style="left:76%"></i></div><div class="x-pp"><div><b>9 Jul</b><span>P50 · 50/50 date</span></div><div><b>23 Jul</b><span>P80 · 8 in 10</span></div></div></div></div>
-      <div class="x-tile s2 x-rv" id="messy"><div><h3>Reads messy files</h3><p>Typos, Total rows, merged cells, six languages. Tested on 621,858 damaged plans.<sup><a href="#n3" aria-label="Note 3">3</a></sup></p></div>
-        <ul class="x-list" aria-hidden="true"><li class="gone"><i class="x-x"></i><span>Total row</span><b>skipped</b></li><li class="gone"><i class="x-x"></i><span>Notes under the table</span><b>skipped</b></li><li><i class="x-ok"></i>“✅ Done”<b class="ok">done</b></li></ul></div>
-      <div class="x-tile s2 x-rv"><div><h3>Send it in the format they read</h3><p>With your logo.</p></div><div class="x-fmt"><span class="x-file-ic f-pdf"><svg viewBox="0 0 48 60" aria-hidden="true"><path d="M6 2h26l14 14v38a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z" fill="var(--surface)" stroke="var(--line-strong)" stroke-width="2"/><path d="M32 2v10a4 4 0 0 0 4 4h10" fill="none" stroke="var(--line-strong)" stroke-width="2"/><rect x="-2" y="30" width="36" height="16" rx="3" class="tag"/><text x="16" y="42" text-anchor="middle">PDF</text></svg><b>PDF</b></span><span class="x-file-ic f-doc"><svg viewBox="0 0 48 60" aria-hidden="true"><path d="M6 2h26l14 14v38a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z" fill="var(--surface)" stroke="var(--line-strong)" stroke-width="2"/><path d="M32 2v10a4 4 0 0 0 4 4h10" fill="none" stroke="var(--line-strong)" stroke-width="2"/><rect x="-2" y="30" width="36" height="16" rx="3" class="tag"/><text x="16" y="42" text-anchor="middle">DOCX</text></svg><b>Word</b></span><span class="x-file-ic f-ppt"><svg viewBox="0 0 48 60" aria-hidden="true"><path d="M6 2h26l14 14v38a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z" fill="var(--surface)" stroke="var(--line-strong)" stroke-width="2"/><path d="M32 2v10a4 4 0 0 0 4 4h10" fill="none" stroke="var(--line-strong)" stroke-width="2"/><rect x="-2" y="30" width="36" height="16" rx="3" class="tag"/><text x="16" y="42" text-anchor="middle">PPTX</text></svg><b>PowerPoint</b></span></div></div>
-      <div class="x-tile s2 x-rv x-tool" id="health"><div><h3>Plan health check</h3><p>Problems counted, rows named. Free. <a href="tools.html#try">Try it</a></p></div>
-        <ul class="x-list" aria-hidden="true"><li><em class="w">3</em>No owner</li><li><em class="w">1</em>Finish before start</li><li><em class="g">✓</em>Milestones</li></ul></div>
-      <div class="x-tile s2 x-rv x-tool" id="chase"><div><h3>Know who to chase</h3><p>Who to ask, as a message ready to paste. Pro.</p></div>
-        <div class="x-chat" aria-hidden="true"><span class="x-av">SO</span><div class="x-bub"><p>Hi Sam, could you update these?</p><p><i class="r"></i>Security review · 7 days late</p><p><i class="a"></i>Data mapping · due Fri</p></div></div></div>
-      <div class="x-tile s2 x-rv x-tool" id="minutes"><div><h3>Minutes into an actions log</h3><p>Meeting notes become a tracked log. No AI. Pro.</p></div>
-        <div class="x-flow" aria-hidden="true"><p class="x-note">ACTION: Ravi to send the contract by 12 Feb</p><span class="x-arrow">↓</span><p class="x-row"><b>Action</b><b>Ravi</b><b>12 Feb</b><em>Open</em></p></div></div>
-      <div class="x-tile s6 x-night x-rv"><div><h3>A dashboard to present on the big screen</h3><p>Eleven screens from the same plan. <a href="dashboard.html">See the Dashboard</a></p></div>
-        <div class="x-dash"><img src="img/home/dash-glance-dark.webp" width="1600" height="1111" alt="Keelson Dashboard at a glance in dark mode, fictional FieldFlow sample: 48% done, finish 3 Jun 2027" loading="lazy"></div></div>
     </div>
+    <p class="x-lead x-also x-rv">Also in Keelson: a 14-check plan quality score and a free <a href="tools.html#try">plan health check</a>, the tasks driving the finish date, workload by person, a slip log with reasons, a chase list, an actions log from your minutes, and a <a href="dashboard.html">Dashboard</a> for the big screen.</p>
   </div>
 </section>
 
+<!-- ============ PAPERWORK: the four texts a PM writes by hand, from brief.js ============ -->
+<section class="x-how x-paper" id="paperwork" aria-labelledby="h-paper">
+  <div class="wrap">
+    <h2 class="x-h2 x-rv" id="h-paper">The weekly paperwork, already written</h2>
+    <p class="x-lead x-rv">Four things you type by hand today, written from your plan and ready to paste. Keelson sends nothing.</p>
+    <ul class="x-steps x-four">
+      <li class="x-step x-rv"><h3>Today’s stand-up</h3><p>What is overdue, due and starting, by person. Free.</p></li>
+      <li class="x-step x-rv"><h3>Status message</h3><p>This week’s status for the sponsor, the client or the team. Pro.</p></li>
+      <li class="x-step x-rv"><h3>Look-ahead by person</h3><p>Every open task in the next 2, 4 or 6 weeks, as text or Excel. Pro.</p></li>
+      <li class="x-step x-rv"><h3>Meeting agenda</h3><p>The next progress meeting, from the plan and your actions log. Pro.</p></li>
+    </ul>
+  </div>
+</section>
 <!-- ============ PRIVACY ============ -->
 <section class="x-pad x-dark" id="privacy" aria-labelledby="h-privacy">
   <div class="wrap x-rv">
@@ -203,7 +195,7 @@
 
 <!-- ============ REPORTS: real pages from the sample ============ -->
 <section class="x-pad x-reports" id="reports" aria-labelledby="h-reports">
-  <div class="wrap"><h2 class="x-h2 x-rv" id="h-reports">Seven reports, one upload</h2><p class="x-lead x-rv">Real pages from the fictional FieldFlow sample. Preview every one free.</p></div>
+  <div class="wrap"><h2 class="x-h2 x-rv" id="h-reports">Seven reports from one plan</h2><p class="x-lead x-rv">Real pages from the fictional FieldFlow sample. Preview every one free.</p></div>
   <div class="x-strip" tabindex="0" role="group" aria-label="Report previews, scroll sideways">
     <div class="x-card"><div class="x-pg"><img src="img/home/rep-onepager.webp" width="900" height="1014" alt="One-pager report page" loading="lazy"></div><b>One-pager</b><span>Free as PDF</span></div>
     <div class="x-card"><div class="x-pg"><img src="img/home/rep-weekly.webp" width="900" height="1200" alt="Weekly status report page" loading="lazy"></div><b>Weekly status</b><span>Pro</span></div>
@@ -232,8 +224,9 @@
         <p class="price"><b>$0</b><span>forever</span></p><p class="price-note">&nbsp;</p>
         <a class="btn btn-secondary" href="app.html">Start free</a>
         <ul>
-          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Quick check and plan health check of any plan</span></li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Quick check, plan health check and plan quality score of any plan</span></li>
           <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Preview all 7 reports · one-pager as PDF</span></li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Today’s stand-up, ready to paste</span></li>
           <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span><a href="#pricing" data-store="dashboard">Free Excel dashboard</a> download</span></li>
           <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Free PM tools</span></li>
         </ul>
@@ -249,6 +242,8 @@
           <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>All seven reports, PDF, Word and PowerPoint</span></li>
           <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Your logo and brand colour; no watermark, no Keelson footer</span></li>
           <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>What changed, slip trend and finish forecast</span></li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Status message, look-ahead and meeting agenda, ready to paste</span></li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Plan quality check, critical tasks, workload by person and a slip log with reasons</span></li>
           <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Chase list: who to ask for an update, ready to paste</span></li>
           <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Actions, decisions and risks log from your meeting minutes</span></li>
         </ul>
@@ -294,17 +289,16 @@
 <section class="wrap" aria-labelledby="h-cta">
   <div class="cta">
     <div>
-      <h2 id="h-cta">Try it on this week's plan</h2>
+      <h2 id="h-cta">Try it on your plan</h2>
       <p>Nothing to install. Your file stays on your computer.</p>
     </div>
-    <div class="row"><a class="btn btn-primary btn-lg" href="app.html#upload" data-magnet>Upload your plan <svg class="ic arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a><a class="btn btn-secondary btn-lg" href="#pricing">See pricing</a></div>
+    <div class="row"><a class="btn btn-primary btn-lg" href="app.html#upload" data-magnet>Open your plan <svg class="ic arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a><a class="btn btn-secondary btn-lg" href="#pricing">See pricing</a></div>
   </div>
 </section>
 
 <div class="wrap notes" aria-label="Notes"><ol>
   <li id="n1">Sample company, people and project are fictional. The figures in the product views on this page are what Keelson calculates from the fictional FieldFlow sample's six weekly exports (19 Jan to 23 Feb 2027), the same sample the app and the Quick check open on.</li>
   <li id="n2">The dashboard is checked on each build by pasting the same plan in five shapes (MS Project export, MS Project text paste, Jira CSV, a client tracker with title rows and day-first dates, and Keelson's own plan) and comparing every figure with an independent reference calculation. Up to 1,000 rows. Working days are Monday to Friday; “wd” means working days.</li>
-  <li id="n3">The messy plans are generated, not customer files. We start from plans whose answers are known (the five shapes in note 2, edge cases and exports from 12 tools) and damage them the way real files get damaged: renamed and misspelt headers, Total rows, merged cells, decoy columns, eight date formats, six languages. A plan passes only if every report figure matches the clean file exactly: rows, % done, finish, baseline variance, overdue tasks, milestones, RAG and workstreams. Latest round: 51,167 of 51,168 gave the same report as the clean file; the one that didn’t is a renamed header with a line break next to a look-alike column.</li>
 </ol></div>
 </main>
 

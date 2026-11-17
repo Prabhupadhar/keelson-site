@@ -160,3 +160,9 @@
 @keyframes x-strike{0%,30%{opacity:1;text-decoration:none}45%,90%{opacity:.3;text-decoration:line-through}100%{opacity:1}}
 @keyframes x-lift{0%,20%,70%,100%{transform:none}35%,55%{transform:translateY(-10px)}}
 @keyframes x-shackle{0%,30%{transform:translateY(-8px)}45%,100%{transform:none}}
+
+/* the one line that names the rest of the toolkit, under the three questions */
+.x-also{margin-top:40px}
+/* the four paperwork cards: four across, two on a tablet, one on a phone */
+.x-paper .x-lead{margin-bottom:32px}.x-four{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:1000px){.x-four{grid-template-columns:repeat(2,minmax(0,1fr))}}@media (max-width:760px){.x-four{grid-template-columns:1fr}}

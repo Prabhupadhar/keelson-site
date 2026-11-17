@@ -255,7 +255,7 @@
   async function parsePlan(f) {
     const name = f.name || "plan", ext = (name.match(/\.([^.]+)$/) || [, ""])[1].toLowerCase();
     if (f.size > 50 * 1024 * 1024) throw plainErr("That file is over 50 MB, too large to open here. Save the plan sheet as CSV and try that.");
-    if (ext === "xls" || ext === "mpp") throw plainErr(`.${ext} files can't be read in the browser. In ${ext === "mpp" ? "MS Project" : "Excel"}, use Save As › ${ext === "mpp" ? "Excel Workbook (.xlsx) or CSV" : "Excel Workbook (.xlsx)"}, then drop that file here.`);
+    if (ext === "xls" || ext === "mpp") throw plainErr(`.${ext} files can't be read in the browser. In ${ext === "mpp" ? "MS Project" : "Excel"}, use Save As › ${ext === "mpp" ? "XML Format (.xml)" : "Excel Workbook (.xlsx)"}, then drop that file here.`);
     const buf = await f.arrayBuffer(), head = new Uint8Array(buf, 0, Math.min(4, buf.byteLength));
     const title = clean(name).replace(/\.[^.]+$/, "").replace(/[_-]+/g, " ").replace(/\s+/g, " ").trim();
     if (head[0] === 0x50 && head[1] === 0x4b) {
@@ -264,7 +264,15 @@
       return { file: name, sheets, title };
     }
     if (head[0] === 0xd0 && head[1] === 0xcf) throw plainErr("This looks like an older .xls or a password-protected workbook. Save it as .xlsx (without a password) or CSV, then try again.");
-    return { file: name, text: new TextDecoder().decode(buf).replace(/^\ufeff/, ""), title };
+    let text = new TextDecoder().decode(buf).replace(/^\ufeff/, "");
+    if (text.includes("\ufffd") && /^ERMHDR\t/.test(text)) text = new TextDecoder("windows-1252").decode(buf); // P6 on Windows writes its local code page
+    // MS Project XML and Primavera XER become one sheet with the usual column names; the status date comes from the file
+    const sch = window.KeelsonPlanRead ? window.KeelsonPlanRead.read(text) : null;
+    if (sch) {
+      if (sch.rows.length < 2) throw plainErr("This schedule file has no tasks in it. Check you saved the right project, then try again.");
+      return { file: name, title: sch.title || title, sheets: [{ name: sch.kind === "xer" ? "Primavera XER" : "MS Project XML", rows: sch.rows }], sd: fromIso(sch.sd) ?? undefined };
+    }
+    return { file: name, text, title };
   }
   // the plan text of a parsed file: its best sheet for a workbook
   const planText = p => { if (!p.sheets) return { text: p.text, sheet: "" }; const sc = p.sheets.map(s => score(s.rows)), i = bestSheet(p.sheets, sc); return { text: toText(p.sheets[i].rows), sheet: p.sheets[i].name }; };
@@ -663,7 +671,19 @@
   }
   $("detected").addEventListener("click", e => { if (e.target.closest("#detected-change")) { $("cols").open = true; toCols = true; } });
   let toCols = false;
+  // the answer before the reports: status and why, finish against the baseline, progress against plan, next milestone, overdue
+  function paintVerdict() {
+    const k = S.k, v = $("verdict"), tone = { Green: "ok", Amber: "warn", Red: "bad" }[k.rag], why = k.ragReason || (k.why || []).join(" · ");
+    v.hidden = !tone && !why; if (v.hidden) return;
+    const pc = x => Math.round(x * 100) + "%", fact = (l, b, sub) => `<div><span>${l}</span><b>${esc(b)}</b><small>${esc(sub)}</small></div>`;
+    v.className = "verdict " + (tone || "");
+    v.innerHTML = `<div class="v-main">${tone ? `<span class="chip chip-${tone}">${esc(k.rag)}</span>` : ""}<b>${{ Green: "On track", Amber: "At risk", Red: "Off track" }[k.rag] || "Not enough dates to judge"}</b><p>${esc(why)}</p></div><div class="v-facts">` +
+      (k.finish != null ? fact("Finish", F(k.finish), k.bfinish == null ? "No baseline in this plan" : k.var > 0 ? `${k.var} working days after the baseline` : k.var < 0 ? `${-k.var} working days before the baseline` : "On the baseline") : "") +
+      (k.pct != null ? fact("Done", pc(k.pct), k.exp != null ? `${pc(k.exp)} expected by now` : `${k.nTaskDone} of ${k.nTask} tasks`) : "") +
+      (k.nextMs ? fact("Next milestone", k.nextMs.name, F(k.nextMs.finish)) : "") + fact("Overdue", String(k.overT ?? 0), k.overT === 1 ? "task" : "tasks") + "</div>";
+  }
   function paintGallery() {
+    paintVerdict();
     $("loop-hint").hidden = isPro();
     $("reports-sub").innerHTML = `${nWord(ALL.length)} reports for <b>${esc(S.title || "Your project")}</b> as of ${F(S.sd)}. Open one to edit the commentary and download it.${isPro() ? "" : ` ${esc(FREE_RULE)}.`}`;
     const n = trendVersions().length, lead = LEAD.map(id => ALL.find(r => r.id === id)).filter(Boolean), more = ALL.filter(r => !lead.includes(r));
@@ -672,8 +692,107 @@
       `<h3 class="ghead" id="g-more">More reports</h3><ul class="gallery" aria-labelledby="g-more">${more.map(card).join("")}</ul>`;
     paintDetected();
     fitThumbs();
-    paintChase(); paintUpd(); paintActs();
+    paintPP(); paintPC(); paintChase(); paintUpd(); paintActs();
   }
+  // paperwork (brief.js): stand-up, status message, look-ahead and agenda as text. The stand-up is free; copying the rest is Pro
+  const PP = [["today", "Today's stand-up", "Overdue, due and starting, by person", true], ["message", "Status message", "This week's status for the sponsor, the client or the team"],
+    ["look", "Look-ahead by person", "Every open task in the coming weeks"], ["agenda", "Meeting agenda", "The next progress meeting, from the plan and your actions log"]];
+  const ppState = () => S.pp || (S.pp = { audience: "sponsor", weeks: 2, open: "today" });
+  // the comparison the What changed report makes: this plan against the last saved version or the compared file
+  function ppDiff() { const p = prevVersion(), since = p ? fromIso(p.asOf) : null; if (since == null) return null;
+    try { return { since, ...KD.diff(p, curVersion(), { renames: { accepted: S.diff.accepted, split: S.diff.split } }) }; } catch (e) { return null; } }
+  function ppChanges() { const d = ppDiff(); return d ? { since: d.since, counts: d.counts } : null; }
+  function ppText(id) {
+    const B = window.KeelsonBrief, st = ppState(), o = { project: S.title, actions: AC ? actsLog() : [], changes: ppChanges() };
+    return id === "today" ? B.todayText(B.today(S.k), S.title, S.k.statusDate) : id === "message" ? B.message(S.k, { ...o, audience: st.audience })
+      : id === "look" ? B.lookaheadText(B.lookahead(S.k, st.weeks), S.title, S.k.statusDate, st.weeks) : B.agenda(S.k, o);
+  }
+  function paintPP() {
+    const B = window.KeelsonBrief, st = ppState(); $("pp").hidden = !B || !usable(); if ($("pp").hidden) return;
+    const pick = (id, label, opts, cur) => `<label>${label}<select class="in" id="${id}">${opts.map(([v, t]) => `<option value="${v}"${String(v) === String(cur) ? " selected" : ""}>${t}</option>`).join("")}</select></label>`;
+    $("pp-list").innerHTML = PP.map(([id, t, sub, free]) => `<details class="pp-i" data-pp="${id}"${st.open === id ? " open" : ""}><summary><b>${t}</b><span>${sub}</span>${free || isPro() ? "" : "<i>Pro</i>"}</summary>
+      <div class="pp-c">${id === "message" ? pick("pp-aud", "For", Object.entries(B.AUDIENCE), st.audience) : id === "look" ? pick("pp-wk", "Window", [2, 4, 6].map(w => [w, `${w} weeks`]), st.weeks) : ""}
+      <button class="btn fill sm" type="button" data-pp-copy="${id}">Copy</button>${id === "look" ? `<button class="btn line sm" type="button" data-pp-xlsx>Download Excel</button>` : ""}</div>
+      <pre class="pp-t" tabindex="0" aria-label="${t}">${esc(ppText(id))}</pre></details>`).join("");
+  }
+  const ppPro = () => { if (isPro()) return true; openPro("Copy the status message, look-ahead and meeting agenda written from your plan, plus Word and PowerPoint export — $12 a month or $96 a year."); return false; };
+  $("pp-list").addEventListener("toggle", e => { const d = e.target.closest("[data-pp]"); if (d && d.open) { ppState().open = d.dataset.pp; $("pp-list").querySelectorAll("[data-pp][open]").forEach(x => { if (x !== d) x.open = false; }); } }, true);
+  $("pp-list").addEventListener("change", e => { const st = ppState(); if (e.target.id === "pp-aud") st.audience = e.target.value; else if (e.target.id === "pp-wk") st.weeks = +e.target.value; else return; paintPP(); });
+  $("pp-list").addEventListener("click", e => {
+    const c = e.target.closest("[data-pp-copy]"), st = ppState();
+    if (c) { const id = c.dataset.ppCopy, name = PP.find(x => x[0] === id)[1]; if (id !== "today" && !ppPro()) return;
+      navigator.clipboard.writeText(ppText(id)).then(() => toast(`${name} copied`), () => toast("Couldn't copy. Select the text and copy it yourself.")); }
+    else if (e.target.closest("[data-pp-xlsx]") && ppPro()) { const B = window.KeelsonBrief;
+      saveBlob(new Blob([XW.book(B.lookaheadSheet(B.lookahead(S.k, st.weeks), st.weeks))], { type: XW.MIME }), `Look-ahead ${st.weeks} weeks - ${(S.title || "project").replace(/[\\/:*?"<>|]+/g, " ").trim()} - ${F(S.sd)}.xlsx`); }
+  });
+  // plan checks (insight.js): quality, critical tasks, workload, slip log. Free shows the headline and three rows; Pro shows all and downloads
+  const PC = [["quality", "Plan quality", "14 checks on how the plan is built"], ["drivers", "What drives the finish date", "Critical and near-critical tasks"],
+    ["workload", "Workload by person", "Open tasks per person, week by week"], ["slips", "Slip log", "What moved later since the last version, and why"]];
+  const SLIPS = "keelson-slips", pcState = () => S.pc || (S.pc = { open: "quality", weeks: 8 });
+  const slipLog = () => { const l = store.get(SLIPS, {})[projKey()]; return Array.isArray(l) ? l : []; };
+  const pcPro = () => { if (isPro()) return true; openPro("See every task behind each plan check, keep a slip log with reasons and download workload and slip log as Excel, plus Word and PowerPoint export — $12 a month or $96 a year."); return false; };
+  // rows: all for Pro (to a readable limit), three for free with a button for the rest
+  const pcRows = (rows, fn) => { const cap = isPro() ? 40 : 3, left = rows.length - Math.min(rows.length, cap);
+    return { html: rows.slice(0, cap).map(fn).join(""), more: !left ? "" : isPro() ? `<p class="hint">and ${left} more</p>` : `<button class="btn line sm" type="button" data-pc-pro>See all ${rows.length} with Pro</button>` }; };
+  function pcBody(id) {
+    const I = window.KeelsonInsight, st = pcState(), k = S.k;
+    if (id === "quality") {
+      const q = I.quality(k), na = q.checks.length - q.of, lbl = { pass: "Pass", fail: "Look at", na: "Not checked" };
+      return `<p><b>${q.pass} of ${q.of}</b> checks passed${na ? `, ${na} not checked` : ""}. After the DCMA 14-point assessment; the limits are a starting point, not a verdict.</p><ul class="pc-q">` + q.checks.map(c => { const r = pcRows(c.rows, x => `<li>${esc(x.name)}${x.detail ? ` <small>${esc(x.detail)}</small>` : ""}</li>`);
+        return `<li><span class="pc-s ${c.state}">${lbl[c.state]}</span><b>${c.n}. ${esc(c.name)}</b><small>${c.state === "na" ? esc(c.why) : `${esc(c.value)} · limit: ${esc(c.limit)}`}</small>${c.state === "fail" && c.rows.length ? `<ul>${r.html}</ul><small>${r.more}</small>` : ""}</li>`; }).join("") + "</ul>";
+    }
+    if (id === "drivers") {
+      const d = I.drivers(k); if (!d.has) return `<p>This plan has no float or critical column, so Keelson won't guess. Open the MS Project .xml or Primavera .xer file, or add the Total Slack and Critical columns to your export.</p>`;
+      const all = [...d.critical.map(x => ({ ...x, c: 1 })), ...d.near], r = pcRows(all, x => `<tr><td>${esc(x.name)}${x.ms ? " <small>(milestone)</small>" : ""}</td><td>${esc(x.owner)}</td><td>${F(x.finish)}</td><td>${x.c ? "Critical" : "Near-critical"}${x.float != null ? ` · ${Math.round(x.float * 10) / 10} wd float` : ""}</td></tr>`);
+      return `<p><b>${plural(d.critical.length, "critical task")}</b>${d.near.length ? `, ${d.near.length} near-critical (within ${I.NEAR} working days of float)` : ""}. A day lost on a critical task is a day lost on the finish date. Read from the plan's own float, not recalculated.</p>` +
+        (all.length ? `<div class="pc-x"><table class="pc-t"><thead><tr><th>Task</th><th>Owner</th><th>Finish</th><th>Why it matters</th></tr></thead><tbody>${r.html}</tbody></table></div>${r.more}` : "");
+    }
+    if (id === "workload") {
+      const w = I.workload(k, st.weeks), max = Math.max(1, ...w.rows.map(r => r.peak)), cls = n => !n ? "" : n >= max * .75 ? " w3" : n >= max * .4 ? " w2" : " w1";
+      if (!w.rows.length) return `<p>No open tasks in the next ${st.weeks} weeks.</p>`;
+      const r = pcRows(w.rows, x => `<tr><td>${esc(x.owner)}</td>${x.counts.map(n => `<td class="n${cls(n)}">${n || ""}</td>`).join("")}<td class="n"><b>${x.peak}</b></td></tr>`);
+      return `<p>Open tasks each person has in each week, busiest first. Overdue work sits in this week until it is finished or re-dated. Milestones are not counted.</p>
+        <label class="hint">Weeks <select class="in" id="pc-wk">${[4, 8, 12].map(n => `<option${n === st.weeks ? " selected" : ""}>${n}</option>`).join("")}</select></label> <button class="btn line sm" type="button" data-pc-xlsx="workload">Download Excel</button>
+        <div class="pc-x"><table class="pc-t"><thead><tr><th>Owner</th>${w.weeks.map(d => `<th class="n">${E.fmt(d)}</th>`).join("")}<th class="n">Busiest</th></tr></thead><tbody>${r.html}</tbody></table></div>${r.more}`;
+    }
+    const d = ppDiff(), log = slipLog(), dl = log.length ? `<button class="btn line sm" type="button" data-pc-xlsx="slips">Download slip log (${log.length})</button>` : "";
+    if (!d) return `<p>Nothing to compare with yet. Save a version of this plan, or compare it with last week's file, and the tasks that moved later appear here.</p>${dl}`;
+    const sl = I.slips(d.changes), had = Object.fromEntries(log.map(x => [x.id, x]));
+    if (!sl.length) return `<p>No task finishes later than it did on ${F(d.since)}.</p>${dl}`;
+    const r = pcRows(sl, x => `<li data-slip="${esc(x.id)}"><div><b>${esc(x.name)}</b>${x.milestone ? " <small>(milestone)</small>" : ""} <small>${esc(x.owner)} · ${F(x.from)} to ${F(x.to)}, ${x.wd} working ${x.wd === 1 ? "day" : "days"} later</small></div>
+      <div class="row2"><select class="in" aria-label="Reason for ${esc(x.name)}"><option value="">Reason…</option>${I.REASONS.map(o => `<option${had[x.id]?.reason === o ? " selected" : ""}>${o}</option>`).join("")}</select>
+      <input class="in" type="text" maxlength="300" placeholder="Note (optional)" aria-label="Note for ${esc(x.name)}" value="${esc(had[x.id]?.note || "")}"></div></li>`);
+    return `<p><b>${plural(sl.length, "task")}</b> finish later than on ${F(d.since)}. Pick a reason once; Keelson keeps it in this browser and builds the log for your steering meeting or a delay claim.</p>
+      ${sl.length > 1 ? `<div class="pc-all"><select class="in" id="pc-all-r" aria-label="One reason for every task without one"><option value="">One reason for the rest…</option>${I.REASONS.map(o => `<option>${o}</option>`).join("")}</select><button class="btn line sm" type="button" data-pc-all>Apply to tasks without a reason</button></div>` : ""}
+      <ul class="pc-sl">${r.html}</ul>${r.more}${dl}`;
+  }
+  function paintPC() {
+    const st = pcState(); $("pc").hidden = !window.KeelsonInsight || !usable(); if ($("pc").hidden) return;
+    $("pc-list").innerHTML = PC.map(([id, t, sub]) => `<details class="pp-i" data-pc="${id}"${st.open === id ? " open" : ""}><summary><b>${t}</b><span>${sub}</span></summary><div class="pc-b">${pcBody(id)}</div></details>`).join("");
+  }
+  $("pc-list").addEventListener("toggle", e => { const d = e.target.closest("[data-pc]"); if (d && d.open) { pcState().open = d.dataset.pc; $("pc-list").querySelectorAll("[data-pc][open]").forEach(x => { if (x !== d) x.open = false; }); } }, true);
+  $("pc-list").addEventListener("change", e => {
+    if (e.target.id === "pc-wk") { pcState().weeks = +e.target.value; return paintPC(); }
+    if (e.target.id === "pc-all-r") return; // applied by its button
+    const li = e.target.closest("[data-slip]"); if (!li) return;
+    if (!pcPro()) return paintPC(); // the reason is not kept: put the row back as it was
+    const I = window.KeelsonInsight, d = ppDiff(), slip = d && I.slips(d.changes).find(x => x.id === li.dataset.slip); if (!slip) return;
+    const all = store.get(SLIPS, {}); all[projKey()] = I.setReason(slipLog(), slip, li.querySelector("select").value, li.querySelector("input").value, S.k.statusDate);
+    if (!store.set(SLIPS, all)) return toast("Couldn't save: this browser's storage is full or blocked.");
+    toast("Saved to the slip log"); const at = e.target.tagName; paintPC(); $("pc-list").querySelector(`[data-slip="${CSS.escape(slip.id)}"] ${at.toLowerCase()}`)?.focus();
+  });
+  $("pc-list").addEventListener("click", e => {
+    if (e.target.closest("[data-pc-pro]")) return void pcPro();
+    if (e.target.closest("[data-pc-all]")) { // one reason for every move that has none yet: knock-on slips share a cause
+      const I = window.KeelsonInsight, reason = $("pc-all-r").value, d = ppDiff(); if (!reason) return toast("Pick the reason first."); if (!d || !pcPro()) return;
+      let log = slipLog(); const had = new Set(log.map(x => x.id)), todo = I.slips(d.changes).filter(x => !had.has(x.id)); for (const x of todo) log = I.setReason(log, x, reason, "", S.k.statusDate);
+      const all = store.get(SLIPS, {}); all[projKey()] = log; if (!store.set(SLIPS, all)) return toast("Couldn't save: this browser's storage is full or blocked.");
+      toast(todo.length ? `Reason set for ${plural(todo.length, "task")}` : "Every task already has a reason"); return paintPC();
+    }
+    const x = e.target.closest("[data-pc-xlsx]"); if (!x || !pcPro()) return;
+    const I = window.KeelsonInsight, nm = (S.title || "project").replace(/[\\/:*?"<>|]+/g, " ").trim(), wl = x.dataset.pcXlsx === "workload";
+    saveBlob(new Blob([XW.book(wl ? I.workloadSheet(I.workload(S.k, pcState().weeks)) : I.slipSheet(slipLog()))], { type: XW.MIME }), `${wl ? "Workload" : "Slip log"} - ${nm} - ${F(S.sd)}.xlsx`);
+  });
   // chase list: who to ask for an update, from this plan (and the last saved version for stale progress); copying is Pro
   function paintChase() {
     const C = window.KeelsonChase, g = S.k ? C.build(S.k, prevVersion(), AC ? actsLog() : []) : [];
@@ -833,14 +952,14 @@
     const r = AC.merge(actsLog(), keep, S.sd); actsPut(r.log);
     actsDraft = null; paintDraft(); $("acts-text").value = "";
     $("acts-msg").className = "status ok"; $("acts-msg").textContent = `Saved: ${r.added} new, ${r.updated} updated${r.same ? `, ${r.same} already in the log` : ""}.`;
-    paintActs(); paintChase();
+    paintActs(); paintChase(); paintPP();
   });
   $("acts-list").addEventListener("click", e => {
     const b = e.target.closest("[data-act]"); if (!b || !actsPro()) return;
     const id = b.dataset.id, log = actsLog(), x = log.find(y => y.id === id); if (!x) return;
     if (b.dataset.act === "del" && !confirm(`Remove “${x.text}” from the log?`)) return;
     actsPut(b.dataset.act === "del" ? AC.remove(log, id) : AC.setStatus(log, id, b.dataset.act === "done" ? "Done" : "Open", S.sd));
-    paintActs(); paintChase();
+    paintActs(); paintChase(); paintPP();
   });
   $("acts-filter").addEventListener("change", paintActs);
   $("acts-csv").addEventListener("click", () => { if (actsPro()) saveBlob(new Blob([AC.toCSV(actsLog())], { type: "text/csv" }), `${(S.title || "project").replace(/[^\p{L}\p{N} _-]+/gu, "").trim() || "project"} actions ${E.iso(S.sd)}.csv`); });
@@ -1031,8 +1150,8 @@
     : c.type === "reopened" ? `Done → ${pctT(c.to)}` : c.type === "pctBackwards" ? `${pctT(c.from)} → ${pctT(c.to)}`
     : c.type === "added" ? `Due ${Ds(c.to)}` : ["removed", "cancelled"].includes(c.type) ? `Was due ${Ds(c.from)}` : `${Ds(c.from)} → ${Ds(c.to)}`;
   const toolHead = (r, title, sub, extra = "") => `<div class="tool-h"><div class="grow"><h3>${title}</h3><p>${sub}</p></div>${extra}</div>`;
-  const cmpDrop = () => `<label class="minidrop" for="cmp-file" id="cmp-drop"><input type="file" id="cmp-file" accept=".xlsx,.csv,.tsv,.txt">
-      ${icon("swap", "ic sm")}<span><b>Compare with another file</b><span>${S.cmp ? "Drop a different export to compare with instead." : "Last week's export of this plan, as .xlsx or CSV. Read here, never uploaded."}</span></span></label>`;
+  const cmpDrop = () => `<label class="minidrop" for="cmp-file" id="cmp-drop"><input type="file" id="cmp-file" accept=".xlsx,.csv,.tsv,.txt,.xml,.xer">
+      ${icon("swap", "ic sm")}<span><b>Compare with another file</b><span>${S.cmp ? "Drop a different export to compare with instead." : "Last week's version of this plan: .xlsx, CSV, MS Project .xml or Primavera .xer. Read here, never uploaded."}</span></span></label>`;
   function toolChanges(r) {
     const p = prevVersion(), cur = curVersion();
     const src = S.cmp ? `Comparing with <b>${esc(S.cmp.name)}</b>` : p ? `Comparing with your saved version of <b>${esc(F(fromIso(p.asOf)))}</b>` : "There is no earlier version of this project yet.";
@@ -1263,10 +1382,12 @@
     }
   }
   addEventListener("hashchange", route);
-  const buyer = location.hash === "#pro", cta = location.hash === "#upload"; // Lemon Squeezy sends buyers back to app.html#pro after checkout
+  const buyer = location.hash === "#pro", cta = location.hash === "#upload", demo = location.hash === "#sample"; // #sample: the homepage's "Try it on a sample plan" // Lemon Squeezy sends buyers back to app.html#pro after checkout
   if (buyer) history.replaceState(null, "", "#upload");
+  if (demo) history.replaceState(null, "", "#upload");
   route();
   if (buyer) openPro();
+  if (demo) $("try-sample").click();
 
   if (missing.length) upErr(`Part of the app didn't load (${missing.join(", ")}). Reload the page; if it keeps happening, tell us at keelson.co.in.`);
   // Word and PowerPoint (Pro) load their libraries on first use; for Pro, fetch both once the page is idle so they still work with Wi-Fi off
