@@ -128,7 +128,9 @@ textarea.in { resize: vertical; font: 500 16px/1.5 var(--font-sans) }
 .busy { display: inline-flex; gap: 10px; align-items: center; color: var(--muted) }
 .spin { display: inline-block; width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--line-strong); border-top-color: var(--primary); animation: spin .8s linear infinite }
 @keyframes spin { to { transform: rotate(360deg) } }
-.alt { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 16px; align-items: start; margin-top: 32px }
+.alt { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 16px; align-items: start; margin-top: 12px }
+.more-ways > summary { list-style: none } .more-ways > summary::-webkit-details-marker { display: none } .more-ways > summary::before { content: "+"; width: 18px; font-weight: 800 } .more-ways[open] > summary::before { content: "\2212" }
+.more-ways { margin-top: 28px } .more-ways > summary { display: inline-flex; align-items: center; min-height: 44px; cursor: pointer; font-size: 15px; font-weight: 700; color: var(--ink-2) }
 @media (max-width: 860px) { .alt { grid-template-columns: minmax(0, 1fr) } }
 textarea.paste { width: 100%; min-height: 128px; resize: vertical; border-radius: var(--r-sm); border: 1.5px solid var(--line-strong); background: var(--bg-soft); color: var(--ink); padding: 12px 14px; font: 13px/1.5 var(--font-mono); white-space: pre; overflow: auto }
 textarea.paste:focus { outline: none; border-color: var(--focus); box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 25%, transparent) }
@@ -211,8 +213,12 @@ textarea.paste:focus { outline: none; border-color: var(--focus); box-shadow: 0 
 .v-facts span, .v-facts small { display: block; font-size: 13px; color: var(--muted) } .v-facts b { display: block; font-size: 18px; overflow-wrap: anywhere }
 @media (max-width: 700px) { .verdict { grid-template-columns: 1fr } }
 /* the reports screen is long: one row of jumps to its sections */
-.jump { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: -8px 0 20px; font-size: 14px; color: var(--muted) } .jump select { width: auto; min-height: 40px }
-#gallery, #pp, #pc, #chase, #upd, #acts { scroll-margin-top: 84px }
+/* the reports screen in four tabs: one group of sections showing at a time (data-tab on #v-reports) */
+.tabs { display: flex; gap: 4px; margin: -4px 0 24px; padding: 4px; overflow-x: auto; border-radius: var(--r-pill); background: var(--bg-soft); width: fit-content; max-width: 100% }
+.tabs button { flex: none; min-height: 40px; padding: 0 16px; border: 0; border-radius: var(--r-pill); background: transparent; color: var(--ink-2); font: inherit; font-size: 15px; font-weight: 700; cursor: pointer }
+.tabs button[aria-current="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgb(0 0 0 / .12) }
+#v-reports:not([data-tab="reports"]) > :is(.compare, #gallery), #v-reports:not([data-tab="paper"]) #pp, #v-reports:not([data-tab="checks"]) #pc, #v-reports:not([data-tab="follow"]) :is(#chase, #upd, #acts) { display: none }
+#v-reports #pp, #v-reports #pc, #v-reports #chase { margin-top: 0 }
 /* nothing to pay for before a plan is open: the Pro button stays, quietly */
 body:has(#v-upload:not([hidden])) #pro-btn { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px var(--line-strong) }
 #pro-btn { transition: none } /* it changes style with the view: never show a half-way, low-contrast state */
@@ -529,6 +535,7 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
     </label>
     <div class="try"><button class="btn line" type="button" id="try-sample">No file? Try a sample plan</button></div>
     <div class="err" id="up-err" role="alert" hidden></div>
+    <details class="more-ways" id="more-ways"><summary>More sample plans, or paste a table</summary>
     <div class="alt">
       <div class="card">
         <h3 id="h-samples">Sample plans</h3>
@@ -542,6 +549,7 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
         <div><button class="btn line sm" type="button" id="paste-go">Use this plan</button></div>
       </div>
     </div>
+    </details>
     <p class="trust">Nothing to install. Once this page has loaded, it keeps working without a connection, as long as you don't reload.</p>
   </section>
 
@@ -612,7 +620,7 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
       <button class="btn line" type="button" id="hist-btn" data-hist><svg class="ic" aria-hidden="true"><use href="#i-history"/></svg><span id="hist-n">Version history</span></button>
     </div>
     <div class="verdict" id="verdict" aria-label="Where the plan stands" hidden></div>
-    <nav class="jump" id="jump" aria-label="On this screen" hidden></nav>
+    <nav class="tabs" id="tabs" aria-label="Sections of this screen" hidden></nav>
     <div class="compare" data-compare hidden></div>
     <div id="gallery"></div>
     <section class="card chase" id="pp" aria-labelledby="h-pp" hidden>
@@ -801,6 +809,6 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
 <script src="actions.js?v=397879ca"></script>
 <script src="studio.js?v=a272b249"></script>
 <script src="store-config.js?v=bee35025"></script>
-<script src="app.js?v=38fecfa1"></script>
+<script src="app.js?v=81b817a5"></script>
 </body>
 </html>

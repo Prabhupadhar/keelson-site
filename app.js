@@ -693,13 +693,17 @@
     paintDetected();
     fitThumbs();
     paintPP(); paintPC(); paintChase(); paintUpd(); paintActs();
-    // jumps to the sections that are showing
-    const here = JUMP.filter(([id]) => !$(id).hidden); $("jump").hidden = here.length < 3;
-    $("jump").innerHTML = `<label for="jump-to">Jump to</label><select class="in" id="jump-to"><option value="">On this screen…</option>${here.map(([id, t]) => `<option value="${id}">${t}</option>`).join("")}</select>`; // one tab stop, not six
+    paintTabs();
   }
-  const JUMP = [["gallery", "Reports"], ["pp", "Ready to paste"], ["pc", "Plan checks"], ["chase", "Chase list"], ["upd", "Collect updates"], ["acts", "Actions log"]];
-  $("jump").addEventListener("change", e => { const id = e.target.value; if (!id) return; e.target.value = ""; const el = $(id), h = el.querySelector("h3");
-    el.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" }); if (h) { h.tabIndex = -1; h.focus({ preventScroll: true }); } });
+  // four tabs on the reports screen; #reports/paper, #reports/checks and #reports/follow open one directly
+  const TABS = [["reports", "Reports", ["gallery"]], ["paper", "Ready to paste", ["pp"]], ["checks", "Plan checks", ["pc"]], ["follow", "Follow-up", ["chase", "upd", "acts"]]];
+  function paintTabs() {
+    const here = TABS.filter(([, , ids]) => ids.some(id => !$(id).hidden)); if (!here.some(([id]) => id === S.tab)) S.tab = "reports";
+    $("v-reports").dataset.tab = S.tab; $("tabs").hidden = here.length < 2;
+    $("tabs").innerHTML = here.map(([id, t]) => `<button type="button" data-tab="${id}" aria-current="${id === S.tab}">${t}</button>`).join("");
+  }
+  $("tabs").addEventListener("click", e => { const b = e.target.closest("[data-tab]"); if (!b || b.dataset.tab === S.tab) return;
+    S.tab = b.dataset.tab; history.replaceState(null, "", S.tab === "reports" ? "#reports" : `#reports/${S.tab}`); paintTabs(); $("tabs").querySelector('[aria-current="true"]').focus(); });
   // paperwork (brief.js): stand-up, status message, look-ahead and agenda as text. The stand-up is free; copying the rest is Pro
   const PP = [["today", "Today's stand-up", "Overdue, due and starting, by person", true], ["message", "Status message", "This week's status for the sponsor, the client or the team"],
     ["look", "Look-ahead by person", "Every open task in the coming weeks"], ["agenda", "Meeting agenda", "The next progress meeting, from the plan and your actions log"]];
@@ -1359,6 +1363,7 @@
     if (v !== "upload" && !S.k) { history.replaceState(null, "", "#upload"); v = "upload"; }
     if ((v === "reports" || v === "report" || v === "dash") && (!usable() || !callOk())) { history.replaceState(null, "", "#check"); v = "check"; }
     if (v === "report") { S.report = ALL.some(r => r.id === id) ? id : REPORTS[0]?.id; }
+    if (v === "reports") S.tab = ["paper", "checks", "follow"].includes(id) ? id : "reports";
     if (v === "dash") S.dashScreen = id;
     if (v !== "dash" && dash) { dash.destroy(); dash = null; }
     const changed = S.view !== v || v === "report", first = S.view == null;
