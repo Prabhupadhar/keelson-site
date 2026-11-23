@@ -742,3 +742,7 @@ table.cmp{width:100%;border-collapse:collapse;min-width:640px;font-size:15px}
 .hc-tb .hc-row{text-align:right;width:44px}
 .hc-more,.hc-ok{font-size:13px;color:var(--muted);margin:0 0 10px}
 .hc-ok{margin:4px 0 0}
+
+/* security page: the what-leaves table and the quoted policy */
+.sec-t{width:100%;border-collapse:collapse;font-size:15px}.sec-t th,.sec-t td{padding:10px 12px 10px 0;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}.sec-t th{font-size:14px;color:var(--muted)}
+.table-wrap{overflow-x:auto}.sec-csp{margin:var(--sp-3) 0;padding:12px 14px;border-radius:var(--r-sm,8px);background:var(--bg-soft);font:13px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere}

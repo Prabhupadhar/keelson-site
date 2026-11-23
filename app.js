@@ -673,15 +673,34 @@
   let toCols = false;
   // the answer before the reports: status and why, finish against the baseline, progress against plan, next milestone, overdue
   function paintVerdict() {
-    const k = S.k, v = $("verdict"), tone = { Green: "ok", Amber: "warn", Red: "bad" }[k.rag], why = k.ragReason || (k.why || []).join(" · ");
-    v.hidden = !tone && !why; if (v.hidden) return;
-    const pc = x => Math.round(x * 100) + "%", fact = (l, b, sub) => `<div><span>${l}</span><b>${esc(b)}</b><small>${esc(sub)}</small></div>`;
-    v.className = "verdict " + (tone || "");
-    v.innerHTML = `<div class="v-main">${tone ? `<span class="chip chip-${tone}">${esc(k.rag)}</span>` : ""}<b>${{ Green: "On track", Amber: "At risk", Red: "Off track" }[k.rag] || "Not enough dates to judge"}</b><p>${esc(why)}</p></div><div class="v-facts">` +
-      (k.finish != null ? fact("Finish", F(k.finish), k.bfinish == null ? "No baseline in this plan" : k.var > 0 ? `${k.var} working days after the baseline` : k.var < 0 ? `${-k.var} working days before the baseline` : "On the baseline") : "") +
-      (k.pct != null ? fact("Done", pc(k.pct), k.exp != null ? `${pc(k.exp)} expected by now` : `${k.nTaskDone} of ${k.nTask} tasks`) : "") +
-      (k.nextMs ? fact("Next milestone", k.nextMs.name, F(k.nextMs.finish)) : "") + fact("Overdue", String(k.overT ?? 0), k.overT === 1 ? "task" : "tasks") + "</div>";
+    const d = window.KeelsonSnapshot.verdict(S.k), v = $("verdict"); v.hidden = !d; if (!d) return;
+    v.className = "verdict " + d.tone;
+    v.innerHTML = `<div class="v-main">${d.rag ? `<span class="chip chip-${d.tone}">${esc(d.rag)}</span>` : ""}<b>${esc(d.label)}</b><p>${esc(d.why)}</p></div><div class="v-facts">` +
+      d.facts.map(([l, b, sub]) => `<div><span>${esc(l)}</span><b>${esc(b)}</b><small>${esc(sub)}</small></div>`).join("") + "</div>";
   }
+  // share a snapshot (snapshot.js): the ready reports, the 4-week look-ahead and, if asked, the plan checks, as one self-contained .html file. Pro
+  const snapD = $("snap");
+  const snapReady = () => ALL.filter(r => { let d; try { d = doc(r.id); } catch (e) { return false; } return !(isV2(r.id) && need(r.id, d)); });
+  function openSnap() {
+    if (!usable()) return; if (!isPro()) return openPro("Send one web page with your reports, look-ahead and plan checks, plus Word and PowerPoint export — $12 a month or $96 a year.");
+    $("snap-reps").innerHTML = snapReady().map(r => `<label class="chk"><input type="checkbox" value="${esc(r.id)}" checked> <span>${esc(r.name)}</span></label>`).join("") || `<p class="hint">No report is ready for this plan yet.</p>`;
+    $("snap-msg").textContent = ""; snapD.showModal(); $("snap-h").focus();
+  }
+  $("snap-btn").addEventListener("click", openSnap);
+  $("snap-x").addEventListener("click", () => snapD.close());
+  $("snap-go").addEventListener("click", () => {
+    const Sn = window.KeelsonSnapshot, I = window.KeelsonInsight, B = window.KeelsonBrief, ids = [...$("snap-reps").querySelectorAll("input:checked")].map(x => x.value);
+    const look = $("snap-look").checked, checks = $("snap-checks").checked && !!I;
+    if (!ids.length && !look && !checks) { $("snap-msg").className = "status bad"; $("snap-msg").textContent = "Pick at least one thing to include."; return; }
+    try {
+      const html = Sn.build({ title: S.title, asOf: S.k.statusDate, made: today(), verdict: Sn.verdict(S.k), reportCss: H.css,
+        reports: ids.map(id => ({ id, name: ALL.find(r => r.id === id).name, html: page(doc(id), false, true) })),
+        lookahead: look && B ? { weeks: 4, groups: B.lookahead(S.k, 4) } : null,
+        checks: checks ? { quality: I.quality(S.k), drivers: I.drivers(S.k), workload: I.workload(S.k, 8) } : null });
+      saveBlob(new Blob([html], { type: "text/html" }), Sn.fileName(S.title, S.k.statusDate));
+      snapD.close(); toast("Snapshot downloaded. Attach it to an email or a Teams message.");
+    } catch (e) { console.error("Keelson: snapshot", e); $("snap-msg").className = "status bad"; $("snap-msg").textContent = "The snapshot couldn't be made. Reload the page and try again."; }
+  });
   function paintGallery() {
     paintVerdict();
     $("loop-hint").hidden = isPro();
