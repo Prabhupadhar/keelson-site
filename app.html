@@ -6,6 +6,7 @@
 <meta name="keelson-support" content="support@keelson.co.in">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Keelson Pro · Stakeholder reports from your plan</title>
+<link rel="canonical" href="https://keelson.co.in/app.html">
 <meta name="description" content="Upload a project plan and get seven stakeholder reports filled with your own data: executive one-pager, weekly status, milestone roadmap, schedule variance, what changed, slip trend and finish-date confidence, as PDF or editable Word and PowerPoint. Your plan stays on your device.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preload" href="fonts/plus-jakarta-sans-800.woff2" as="font" type="font/woff2" crossorigin>
@@ -213,6 +214,10 @@ textarea.paste:focus { outline: none; border-color: var(--focus); box-shadow: 0 
 .v-facts span, .v-facts small { display: block; font-size: 13px; color: var(--muted) } .v-facts b { display: block; font-size: 18px; overflow-wrap: anywhere }
 @media (max-width: 700px) { .verdict { grid-template-columns: 1fr } }
 /* the reports screen is long: one row of jumps to its sections */
+/* share a snapshot dialog */
+.snap-fs { border: 0; margin: 16px 0 0; padding: 0 } .snap-fs legend { padding: 0; margin-bottom: 6px; font-weight: 800; font-size: 15px }
+.chk { display: flex; align-items: flex-start; gap: 10px; min-height: 36px; padding: 4px 0; font-size: 15px; cursor: pointer } .chk input { width: 18px; height: 18px; margin-top: 3px; flex: none; accent-color: var(--accent) }
+.chk small { display: inline }
 /* the reports screen in four tabs: one group of sections showing at a time (data-tab on #v-reports) */
 .tabs { display: flex; gap: 4px; margin: -4px 0 24px; padding: 4px; overflow-x: auto; border-radius: var(--r-pill); background: var(--bg-soft); width: fit-content; max-width: 100% }
 .tabs button { flex: none; min-height: 40px; padding: 0 16px; border: 0; border-radius: var(--r-pill); background: transparent; color: var(--ink-2); font: inherit; font-size: 15px; font-weight: 700; cursor: pointer }
@@ -617,7 +622,8 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
   <section class="view wrap" id="v-reports" aria-labelledby="h-reports" hidden>
     <div class="vh vh-row">
       <div style="display:grid;gap:8px;flex:1 1 520px"><h2 id="h-reports" tabindex="-1">Your reports</h2><p id="reports-sub"></p><p class="detected" id="detected"></p><p class="hint loop" id="loop-hint" hidden><svg class="ic" aria-hidden="true"><use href="#i-swap"/></svg>Upload next week's export and Keelson shows what changed since this one.</p></div>
-      <button class="btn line" type="button" id="hist-btn" data-hist><svg class="ic" aria-hidden="true"><use href="#i-history"/></svg><span id="hist-n">Version history</span></button>
+      <div class="row" style="gap:8px"><button class="btn line" type="button" id="snap-btn"><svg class="ic" aria-hidden="true"><use href="#i-upload"/></svg>Share a snapshot</button>
+      <button class="btn line" type="button" id="hist-btn" data-hist><svg class="ic" aria-hidden="true"><use href="#i-history"/></svg><span id="hist-n">Version history</span></button></div>
     </div>
     <div class="verdict" id="verdict" aria-label="Where the plan stands" hidden></div>
     <nav class="tabs" id="tabs" aria-label="Sections of this screen" hidden></nav>
@@ -757,6 +763,17 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
   </form>
 </dialog>
 
+<dialog id="snap" aria-labelledby="snap-h" aria-describedby="snap-sub">
+  <form class="dlg" method="dialog" id="snap-f">
+    <div class="dlg-h"><div><h2 id="snap-h" tabindex="-1">Share a snapshot</h2><p class="hint" id="snap-sub" style="margin-top:6px">One web page with tabs, as of this status date. Send it by email or Teams: it opens in any browser, needs no login and holds no script. It is a copy, so it doesn't change when the plan does.</p></div>
+      <button class="x" type="button" id="snap-x" aria-label="Close"><svg class="ic sm" aria-hidden="true"><use href="#i-x"/></svg></button></div>
+    <fieldset class="snap-fs"><legend>Reports</legend><div id="snap-reps"></div></fieldset>
+    <fieldset class="snap-fs"><legend>Also include</legend>
+      <label class="chk"><input type="checkbox" id="snap-look" checked> <span>Look-ahead: every open task in the next 4 weeks, by person</span></label>
+      <label class="chk"><input type="checkbox" id="snap-checks"> <span>Plan checks: quality score, critical tasks and workload <small class="hint">(for your own team: leave it off for a client)</small></span></label></fieldset>
+    <div class="row" style="gap:8px;margin-top:16px"><button class="btn fill" type="button" id="snap-go">Download snapshot</button><span class="status" id="snap-msg" role="status"></span></div>
+  </form>
+</dialog>
 <dialog id="hist" class="wide" aria-labelledby="hist-h">
   <div class="dlg">
     <div class="dlg-h"><div><h2 id="hist-h" tabindex="-1">Version history</h2><p class="hint" id="hist-sub" style="margin-top:6px"></p></div>
@@ -804,11 +821,12 @@ dialog[open] { animation: pop var(--dur-3) var(--ease-out) }
 <script src="chase.js?v=8304e086"></script>
 <script src="brief.js?v=70171f2a"></script>
 <script src="insight.js?v=1d68c0ba"></script>
+<script src="snapshot.js?v=5cd808c2"></script>
 <script src="xlsx-write.js?v=a0dd2717"></script>
 <script src="updates.js?v=ac3bfba8"></script>
 <script src="actions.js?v=397879ca"></script>
 <script src="studio.js?v=a272b249"></script>
 <script src="store-config.js?v=bee35025"></script>
-<script src="app.js?v=81b817a5"></script>
+<script src="app.js?v=42d27a85"></script>
 </body>
 </html>
